@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --vm:#C1272D;
+  --gold:#C9A227;
+  --preto:#1a1a1a;
+  --grafite:#2d2d2d;
+  --branco:#ffffff;
+  --off:#f7f5f2;
+  --cinza:#9a9490;
+  --borda:#e8e4de;
+  --sidebar:260px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--grafite);min-height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
+.sidebar-logo{padding:1.8rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.sidebar-logo img{width:32px;height:32px;object-fit:contain}
+.sidebar-logo-text{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;letter-spacing:.12em;color:#fff}
+.sidebar-logo-tag{font-size:.48rem;letter-spacing:.2em;color:rgba(255,255,255,.3);text-transform:uppercase;display:block;margin-top:-2px}
+.sidebar-nav{padding:1.5rem 0;flex:1}
+.nav-section{padding:.5rem 1.5rem .3rem;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:.8rem;padding:.75rem 1.5rem;color:rgba(255,255,255,.5);text-decoration:none;font-size:.82rem;font-weight:500;transition:all .2s;position:relative}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.08)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--vm)}
+.nav-icon{width:18px;height:18px;opacity:.6;flex-shrink:0}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.sidebar-footer{padding:1.5rem;border-top:1px solid rgba(255,255,255,.06)}
+.user-mini{display:flex;align-items:center;gap:.8rem}
+.user-mini-avatar{width:34px;height:34px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.user-mini-avatar img{width:100%;height:100%;object-fit:cover}
+.user-mini-info{flex:1;min-width:0}
+.user-mini-name{font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-mini-role{font-size:.62rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em}
+.btn-sair{font-size:.65rem;color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;background:none;border:none;cursor:pointer;padding:0}
+.btn-sair:hover{color:var(--vm)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--branco);border-bottom:1px solid var(--borda);padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza)}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.notif-btn{width:36px;height:36px;border-radius:50%;background:var(--off);border:1px solid var(--borda);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.notif-btn:hover{background:var(--borda)}
+.notif-dot{width:7px;height:7px;background:var(--vm);border-radius:50%;position:absolute;top:7px;right:7px;border:1.5px solid var(--branco)}
+.avatar-btn{width:36px;height:36px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;border:2px solid transparent;transition:border-color .2s}
+.avatar-btn:hover{border-color:var(--vm)}
+.avatar-btn img{width:100%;height:100%;object-fit:cover}
+
+/* CONTENT */
+.content{padding:2.5rem}
+
+/* HERO BOAS-VINDAS */
+.welcome{background:var(--grafite);border-radius:0;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between}
+.welcome::before{content:'ICONZA';position:absolute;right:-1rem;top:50%;transform:translateY(-50%);font-family:'Playfair Display',serif;font-size:8rem;font-weight:900;color:rgba(255,255,255,.03);pointer-events:none;user-select:none}
+.welcome-left h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:.4rem}
+.welcome-left h1 span{color:var(--gold)}
+.welcome-left p{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.6}
+.welcome-stats{display:flex;gap:2rem}
+.stat{text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.stat-label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.3rem;display:block}
+
+/* GRID PRINCIPAL */
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+
+/* CARDS */
+.card{background:var(--branco);border:1px solid var(--borda);padding:1.5rem}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.card-title{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);font-weight:600}
+.card-link{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--vm);text-decoration:none;font-weight:500;transition:opacity .2s}
+.card-link:hover{opacity:.7}
+
+/* PROGRESSO GERAL */
+.progress-ring-wrap{display:flex;align-items:center;justify-content:center;padding:1rem 0}
+.progress-ring{position:relative;width:100px;height:100px}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--preto)}
+.progress-ring-label{text-align:center;font-size:.72rem;color:var(--cinza);margin-top:.5rem}
+
+/* CURSOS */
+.curso-item{display:flex;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--borda)}
+.curso-item:last-child{border-bottom:none;padding-bottom:0}
+.curso-thumb{width:44px;height:44px;border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.curso-info{flex:1;min-width:0}
+.curso-nome{font-size:.82rem;font-weight:600;color:var(--preto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.3rem}
+.curso-progresso{height:3px;background:var(--borda);border-radius:2px;overflow:hidden}
+.curso-progresso-bar{height:100%;background:var(--vm);border-radius:2px;transition:width .4s}
+.curso-pct{font-size:.65rem;color:var(--cinza);margin-top:.25rem;display:block}
+
+/* AULAS RECENTES */
+.aula-item{display:flex;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--borda)}
+.aula-item:last-child{border-bottom:none;padding-bottom:0}
+.aula-icon{width:36px;height:36px;background:var(--off);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+.aula-info{flex:1}
+.aula-nome{font-size:.8rem;font-weight:500;color:var(--preto);margin-bottom:.2rem}
+.aula-meta{font-size:.68rem;color:var(--cinza)}
+.aula-btn{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--vm);text-decoration:none;font-weight:500;white-space:nowrap;transition:opacity .2s}
+.aula-btn:hover{opacity:.7}
+
+/* CERTIFICADOS */
+.cert-item{display:flex;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--borda)}
+.cert-item:last-child{border-bottom:none;padding-bottom:0}
+.cert-icon{width:36px;height:36px;background:rgba(201,162,39,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.cert-info{flex:1}
+.cert-nome{font-size:.8rem;font-weight:500;color:var(--preto);margin-bottom:.2rem}
+.cert-data{font-size:.68rem;color:var(--cinza)}
+.cert-download{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);text-decoration:none;font-weight:500;white-space:nowrap}
+
+/* ACESSO RÁPIDO */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.quick-card{background:var(--branco);border:1px solid var(--borda);padding:1.2rem;text-align:center;text-decoration:none;transition:border-color .2s,transform .2s;display:block}
+.quick-card:hover{border-color:var(--preto);transform:translateY(-2px)}
+.quick-icon{font-size:1.5rem;display:block;margin-bottom:.5rem}
+.quick-label{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--preto);font-weight:600;display:block;margin-bottom:.2rem}
+.quick-desc{font-size:.68rem;color:var(--cinza)}
+
+/* ESTADO VAZIO */
+.empty-state{text-align:center;padding:2rem 1rem}
+.empty-icon{font-size:2rem;display:block;margin-bottom:.8rem;opacity:.3}
+.empty-text{font-size:.8rem;color:var(--cinza);line-height:1.6}
+.empty-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--preto);color:#fff;padding:.6rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;margin-top:1rem;transition:background .2s}
+.empty-btn:hover{background:var(--vm)}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
+.loading-overlay.hide{opacity:0;pointer-events:none}
+.loading-spin{width:32px;height:32px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ABAS */
+.abas{display:flex;gap:0;border-bottom:1px solid var(--borda);margin-bottom:2rem;background:var(--branco);padding:0 2.5rem;margin-left:-2.5rem;margin-right:-2.5rem;margin-top:-2.5rem;padding-top:0}
+.aba{padding:.9rem 1.5rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--cinza);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;background:none;border-left:none;border-right:none;border-top:none}
+.aba:hover{color:var(--preto)}
+.aba.ativa{color:var(--preto);border-bottom-color:var(--vm)}
+.aba-content{display:none}
+.aba-content.ativo{display:block}
+
+/* GAMIFICAÇÃO */
+.gamif-bar{background:var(--grafite);padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.gamif-nivel{display:flex;align-items:center;gap:.8rem}
+.nivel-badge{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:2px solid var(--gold)}
+.nivel-info{display:flex;flex-direction:column}
+.nivel-nome{font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase}
+.nivel-sub{font-size:.62rem;color:rgba(255,255,255,.35)}
+.gamif-xp{flex:1;min-width:200px}
+.xp-label{display:flex;justify-content:space-between;margin-bottom:.4rem}
+.xp-label span{font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase}
+.xp-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--vm),var(--gold));border-radius:2px;transition:width 1s ease}
+.gamif-badges{display:flex;gap:.5rem;align-items:center}
+.badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;position:relative;transition:transform .2s}
+.badge:hover{transform:scale(1.2)}
+.badge.locked{opacity:.25;filter:grayscale(1)}
+.gamif-pontos{text-align:center}
+.pontos-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.pontos-label{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+
+/* CÉREBRO CRIATIVO */
+.cerebro-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.cerebro-busca{display:flex;align-items:center;gap:.5rem;background:var(--branco);border:1px solid var(--borda);padding:.6rem 1rem;flex:1;max-width:320px}
+.cerebro-busca input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--preto);background:transparent;width:100%}
+.cerebro-busca input::placeholder{color:var(--cinza)}
+.btn-novo-card{display:inline-flex;align-items:center;gap:.5rem;background:var(--preto);color:#fff;padding:.65rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s}
+.btn-novo-card:hover{background:var(--vm)}
+.tags-filtro{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag-filtro{font-size:.62rem;padding:.25rem .7rem;border:1px solid var(--borda);color:var(--cinza);cursor:pointer;transition:all .2s;background:var(--branco)}
+.tag-filtro:hover,.tag-filtro.ativa{background:var(--preto);color:#fff;border-color:var(--preto)}
+.cerebro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.cerebro-card{background:var(--branco);border:1px solid var(--borda);padding:1.2rem;position:relative;transition:border-color .2s,transform .2s;cursor:pointer}
+.cerebro-card:hover{border-color:var(--preto);transform:translateY(-2px)}
+.cc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem}
+.cc-titulo{font-size:.88rem;font-weight:600;color:var(--preto);line-height:1.3;flex:1;padding-right:.5rem}
+.cc-menu{font-size:1rem;color:var(--cinza);cursor:pointer;background:none;border:none;padding:0;line-height:1}
+.cc-texto{font-size:.78rem;line-height:1.7;color:#777;margin-bottom:1rem}
+.cc-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.8rem}
+.cc-tag{font-size:.58rem;padding:.15rem .5rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.cc-footer{display:flex;align-items:center;justify-content:space-between}
+.cc-data{font-size:.62rem;color:var(--cinza)}
+.cc-visib{font-size:.62rem;display:flex;align-items:center;gap:.3rem;color:var(--cinza)}
+.cc-visib.publico{color:#4a8c4a}
+.cc-visib.comunidade{color:var(--gold)}
+.cc-conexoes{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--borda)}
+.cc-conexao{font-size:.62rem;padding:.15rem .5rem;background:rgba(193,39,45,.06);color:var(--vm);cursor:pointer;transition:background .2s}
+.cc-conexao:hover{background:rgba(193,39,45,.12)}
+
+/* TESTES PRÁTICOS */
+.testes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
+.teste-card{background:var(--branco);border:1px solid var(--borda);padding:1.2rem;display:flex;align-items:center;gap:1rem}
+.teste-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.teste-info h4{font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.2rem}
+.teste-info p{font-size:.68rem;color:var(--cinza)}
+.teste-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--vm);margin-left:auto}
+
+/* MODAL NOVO CARD */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:var(--branco);width:100%;max-width:520px;padding:2rem;position:relative}
+.modal-titulo{font-size:1rem;font-weight:700;color:var(--preto);margin-bottom:1.5rem;font-family:'Playfair Display',serif}
+.modal-field{margin-bottom:1rem}
+.modal-field label{display:block;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);margin-bottom:.4rem;font-weight:600}
+.modal-field input,.modal-field textarea,.modal-field select{width:100%;padding:.7rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--preto);outline:none;background:var(--branco);transition:border-color .2s;resize:vertical}
+.modal-field input:focus,.modal-field textarea:focus,.modal-field select:focus{border-color:var(--preto)}
+.modal-field textarea{min-height:100px}
+.modal-btns{display:flex;gap:.8rem;margin-top:1.5rem}
+.modal-btn-prim{flex:1;padding:.8rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s}
+.modal-btn-prim:hover{background:var(--vm)}
+.modal-btn-sec{padding:.8rem 1.2rem;background:transparent;color:var(--cinza);font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;border:1px solid var(--borda);cursor:pointer;transition:all .2s}
+.modal-btn-sec:hover{border-color:var(--preto);color:var(--preto)}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;color:var(--cinza);cursor:pointer}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .dashboard-grid{grid-template-columns:1fr}
+  .quick-grid{grid-template-columns:1fr 1fr}
+  .welcome{flex-direction:column;gap:1.5rem}
+  .welcome-stats{gap:1.5rem}
+  .content{padding:1.5rem}
+  .topbar{padding:1rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spin"></div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <img src="coroa.png" alt="ICONZA">
+    <div>
+      <span class="sidebar-logo-text">ICONZA</span>
+      <span class="sidebar-logo-tag">Criar · Narrar · Com IA</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <p class="nav-section">Principal</p>
+    <a href="dashboard.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="cursos.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Meus Cursos
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Continuar Assistindo
+    </a>
+
+    <p class="nav-section" style="margin-top:1rem">Aprender</p>
+    <a href="loja.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Loja
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Comunidade
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+      Certificados
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Meu Cérebro
+    </a>
+
+    <p class="nav-section" style="margin-top:1rem">Conta</p>
+    <a href="perfil.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Meu Perfil
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Configurações
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-mini">
+      <div class="user-mini-avatar" id="sidebarAvatar">?</div>
+      <div class="user-mini-info">
+        <p class="user-mini-name" id="sidebarNome">Carregando...</p>
+        <p class="user-mini-role">Aluna</p>
+      </div>
+      <button class="btn-sair" onclick="sair()" title="Sair">✕</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-title">Dashboard</span>
+    <div class="topbar-right">
+      <div class="notif-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cinza)" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </div>
+      <div class="avatar-btn" id="topbarAvatar">?</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- BOAS-VINDAS -->
+    <div class="welcome">
+      <div class="welcome-left">
+        <h1>Bem-vinda de volta, <span id="nomeUsuario">aluna</span>! 👑</h1>
+        <p>Continue sua jornada criativa. Você está construindo algo extraordinário.</p>
+      </div>
+      <div class="welcome-stats">
+        <div class="stat">
+          <span class="stat-num" id="statCursos">0</span>
+          <span class="stat-label">Cursos</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statAulas">0</span>
+          <span class="stat-label">Aulas</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statCerts">0</span>
+          <span class="stat-label">Certificados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMIFICAÇÃO -->
+    <div class="gamif-bar">
+      <div class="gamif-nivel">
+        <div class="nivel-badge">🌱</div>
+        <div class="nivel-info">
+          <span class="nivel-nome" id="nivelNome">Criadora Iniciante</span>
+          <span class="nivel-sub">Nível <span id="nivelNum">1</span></span>
+        </div>
+      </div>
+      <div class="gamif-xp">
+        <div class="xp-label">
+          <span>XP</span>
+          <span><span id="xpAtual">0</span> / <span id="xpProx">100</span></span>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+      </div>
+      <div class="gamif-badges">
+        <div class="badge" title="Primeira aula concluída">🎯</div>
+        <div class="badge locked" title="Complete 5 aulas">⚡</div>
+        <div class="badge locked" title="Crie 10 cards no Cérebro">🧠</div>
+        <div class="badge locked" title="Compartilhe na comunidade">🌟</div>
+        <div class="badge locked" title="Complete um curso">👑</div>
+      </div>
+      <div class="gamif-pontos">
+        <span class="pontos-num" id="pontosNum">0</span>
+        <span class="pontos-label">Pontos</span>
+      </div>
+    </div>
+
+    <!-- ABAS -->
+    <div class="abas">
+      <button class="aba ativa" onclick="mudarAba('visao-geral',this)">Visão Geral</button>
+      <button class="aba" onclick="mudarAba('cerebro',this)">✦ Cérebro Criativo</button>
+      <button class="aba" onclick="mudarAba('testes',this)">Testes Práticos</button>
+      <button class="aba" onclick="mudarAba('conquistas',this)">Conquistas</button>
+    </div>
+    <div class="quick-grid">
+      <a href="cursos.html" class="quick-card">
+        <span class="quick-icon">📚</span>
+        <span class="quick-label">Meus Cursos</span>
+        <span class="quick-desc">Continue de onde parou</span>
+      </a>
+      <a href="loja.html" class="quick-card">
+        <span class="quick-icon">🛍️</span>
+        <span class="quick-label">Loja</span>
+        <span class="quick-desc">Cursos, mentorias e produtos</span>
+      </a>
+      <a href="#" class="quick-card">
+        <span class="quick-icon">👥</span>
+        <span class="quick-label">Comunidade</span>
+        <span class="quick-desc">Conecte-se com outras alunas</span>
+      </a>
+      <a href="#" class="quick-card">
+        <span class="quick-icon">✦</span>
+        <span class="quick-label">Meu Cérebro</span>
+        <span class="quick-desc">Suas notas e conexões</span>
+      </a>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="dashboard-grid">
+
+      <!-- CURSOS EM ANDAMENTO -->
+      <div class="card" style="grid-column:span 2">
+        <div class="card-header">
+          <span class="card-title">Cursos em Andamento</span>
+          <a href="cursos.html" class="card-link">Ver todos →</a>
+        </div>
+        <div id="cursosLista">
+          <div class="empty-state">
+            <span class="empty-icon">📚</span>
+            <p class="empty-text">Você ainda não está matriculada em nenhum curso.<br>Explore nossa loja e comece sua jornada.</p>
+            <a href="loja.html" class="empty-btn">Explorar cursos →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESSO GERAL -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Progresso Geral</span>
+        </div>
+        <div class="progress-ring-wrap">
+          <div class="progress-ring">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--borda)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--vm)" stroke-width="8"
+                stroke-dasharray="264" stroke-dashoffset="264" id="progressCircle"
+                stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/>
+            </svg>
+            <span class="progress-ring-num" id="progressNum">0%</span>
+          </div>
+        </div>
+        <p class="progress-ring-label" id="progressLabel">Nenhum curso iniciado</p>
+        <div style="margin-top:1.5rem;border-top:1px solid var(--borda);padding-top:1rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.5rem">
+            <span style="font-size:.72rem;color:var(--cinza)">Aulas concluídas</span>
+            <span style="font-size:.72rem;font-weight:600;color:var(--preto)" id="aulasNum">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:.72rem;color:var(--cinza)">Horas de estudo</span>
+            <span style="font-size:.72rem;font-weight:600;color:var(--preto)" id="horasNum">0h</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+      <!-- AULAS RECENTES -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Continue Assistindo</span>
+          <a href="#" class="card-link">Ver histórico →</a>
+        </div>
+        <div id="aulasRecentes">
+          <div class="empty-state">
+            <span class="empty-icon">▶️</span>
+            <p class="empty-text">Nenhuma aula assistida ainda.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICADOS -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Certificados</span>
+          <a href="#" class="card-link">Ver todos →</a>
+        </div>
+        <div id="certificadosLista">
+          <div class="empty-state">
+            <span class="empty-icon">🏆</span>
+            <p class="empty-text">Conclua um curso para ganhar seu primeiro certificado.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- UNIVERSO ATUAL -->
+      <div class="card" style="background:var(--grafite);border-color:var(--grafite)">
+        <div class="card-header">
+          <span class="card-title" style="color:rgba(255,255,255,.4)">Universo Atual</span>
+          <span style="font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--vm);font-weight:600">FASE 1</span>
+        </div>
+        <div style="margin-bottom:1rem">
+          <p style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.3rem">Surrealismo Radical</p>
+          <p style="font-size:.75rem;color:rgba(255,255,255,.4);line-height:1.6">Frida Kahlo · Schiaparelli · Massimo Bottura</p>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-bottom:1.2rem">
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(193,39,45,.2);color:var(--vm);letter-spacing:.1em;text-transform:uppercase">Arte</span>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(201,162,39,.15);color:var(--gold);letter-spacing:.1em;text-transform:uppercase">Moda</span>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(74,140,74,.15);color:#4a8c4a;letter-spacing:.1em;text-transform:uppercase">Gastronomia</span>
+        </div>
+        <a href="loja.html" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--vm);color:#fff;padding:.7rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s;width:100%;justify-content:center">
+          Começar Universo 1 →
+        </a>
+      </div>
+
+    </div>
+
+    </div><!-- /aba visao-geral -->
+
+    <!-- ABA CÉREBRO CRIATIVO -->
+    <div class="aba-content" id="aba-cerebro">
+      <div class="cerebro-toolbar">
+        <div class="cerebro-busca">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cinza)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Buscar notas..." id="buscaCards" oninput="filtrarCards()">
+        </div>
+        <div class="tags-filtro">
+          <span class="tag-filtro ativa" onclick="filtrarTag('todas',this)">Todas</span>
+          <span class="tag-filtro" onclick="filtrarTag('arte',this)">Arte</span>
+          <span class="tag-filtro" onclick="filtrarTag('moda',this)">Moda</span>
+          <span class="tag-filtro" onclick="filtrarTag('gastronomia',this)">Gastronomia</span>
+          <span class="tag-filtro" onclick="filtrarTag('inspiracao',this)">Inspiração</span>
+        </div>
+        <button class="btn-novo-card" onclick="abrirModal()">+ Novo Card</button>
+      </div>
+
+      <div class="cerebro-grid" id="cerebroGrid">
+        <!-- Card exemplo -->
+        <div class="cerebro-card" data-tags="arte inspiracao">
+          <div class="cc-header">
+            <span class="cc-titulo">A dor como linguagem visual — Frida Kahlo</span>
+            <button class="cc-menu">⋯</button>
+          </div>
+          <p class="cc-texto">Frida não pintava para ser compreendida — pintava para existir. Cada tela é um diário sem censura, onde o corpo partido vira metáfora política e pessoal...</p>
+          <div class="cc-tags">
+            <span class="cc-tag" style="background:rgba(193,39,45,.08);color:var(--vm)">Arte</span>
+            <span class="cc-tag" style="background:rgba(193,39,45,.06);color:var(--vm)">Inspiração</span>
+          </div>
+          <div class="cc-footer">
+            <span class="cc-data">18 mai 2026</span>
+            <span class="cc-visib">🔒 Privado</span>
+          </div>
+          <div class="cc-conexoes">
+            <span class="cc-conexao">→ Schiaparelli</span>
+            <span class="cc-conexao">→ Surrealismo</span>
+          </div>
+        </div>
+        <div class="cerebro-card" data-tags="gastronomia">
+          <div class="cc-header">
+            <span class="cc-titulo">Oops I Dropped the Lemon Tart — Bottura</span>
+            <button class="cc-menu">⋯</button>
+          </div>
+          <p class="cc-texto">O prato mais famoso do mundo nasceu de um acidente. A sobremesa caiu e Bottura decidiu servir assim mesmo — o imperfeito como manifesto estético...</p>
+          <div class="cc-tags">
+            <span class="cc-tag" style="background:rgba(74,140,74,.08);color:#4a8c4a">Gastronomia</span>
+          </div>
+          <div class="cc-footer">
+            <span class="cc-data">17 mai 2026</span>
+            <span class="cc-visib comunidade">🌍 Comunidade</span>
+          </div>
+          <div class="cc-conexoes">
+            <span class="cc-conexao">→ Frida Kahlo</span>
+            <span class="cc-conexao">→ Acidente criativo</span>
+          </div>
+        </div>
+        <div class="cerebro-card" data-tags="moda inspiracao">
+          <div class="cc-header">
+            <span class="cc-titulo">Lobster Dress — Schiaparelli × Dalí</span>
+            <button class="cc-menu">⋯</button>
+          </div>
+          <p class="cc-texto">Quando a moda se une ao surrealismo, o resultado é uma linguagem que desafia o corpo como tela. A lagosta não é decoração — é pergunta...</p>
+          <div class="cc-tags">
+            <span class="cc-tag" style="background:rgba(201,162,39,.1);color:var(--gold)">Moda</span>
+            <span class="cc-tag" style="background:rgba(193,39,45,.06);color:var(--vm)">Inspiração</span>
+          </div>
+          <div class="cc-footer">
+            <span class="cc-data">16 mai 2026</span>
+            <span class="cc-visib publico">🟢 Público</span>
+          </div>
+          <div class="cc-conexoes">
+            <span class="cc-conexao">→ Frida Kahlo</span>
+            <span class="cc-conexao">→ Surrealismo</span>
+            <span class="cc-conexao">→ Dalí</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA TESTES PRÁTICOS -->
+    <div class="aba-content" id="aba-testes">
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header">
+          <span class="card-title">Seus Testes Práticos</span>
+          <span style="font-size:.72rem;color:var(--cinza)">Universo 1 — Surrealismo Radical</span>
+        </div>
+        <div class="testes-grid">
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(193,39,45,.08)">🎨</div>
+            <div class="teste-info">
+              <h4>Background Visual</h4>
+              <p>Criar fundo com textura emocional</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(201,162,39,.08)">🎨</div>
+            <div class="teste-info">
+              <h4>Paleta de Cor</h4>
+              <p>Extrair paleta de obra de arte</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(74,140,74,.08)">📐</div>
+            <div class="teste-info">
+              <h4>Composição</h4>
+              <p>Montar layout com hierarquia</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(193,39,45,.08)">⚡</div>
+            <div class="teste-info">
+              <h4>Contraste</h4>
+              <p>Aplicar luz e sombra em imagem</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(201,162,39,.08)">🖋️</div>
+            <div class="teste-info">
+              <h4>Tipografia</h4>
+              <p>Criar hierarquia tipográfica</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+          <div class="teste-card">
+            <div class="teste-icon" style="background:rgba(74,140,74,.08)">🍋</div>
+            <div class="teste-info">
+              <h4>Empatamento</h4>
+              <p>Montar prato como composição</p>
+            </div>
+            <span class="teste-num">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="empty-state" style="background:var(--branco);border:1px solid var(--borda);padding:3rem">
+        <span class="empty-icon">🎯</span>
+        <p class="empty-text">Complete as aulas para desbloquear os testes práticos.<br>Cada teste concluído vale pontos de XP e aproxima você do próximo nível.</p>
+        <a href="cursos.html" class="empty-btn">Ver cursos disponíveis →</a>
+      </div>
+    </div>
+
+    <!-- ABA CONQUISTAS -->
+    <div class="aba-content" id="aba-conquistas">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem">
+        <div class="card" style="text-align:center;padding:2rem 1rem">
+          <div style="font-size:2.5rem;margin-bottom:.8rem">🎯</div>
+          <p style="font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.3rem">Primeira Aula</p>
+          <p style="font-size:.68rem;color:var(--cinza)">Complete sua primeira aula</p>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(0,0,0,.04);color:#bbb;display:inline-block;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Bloqueado</span>
+        </div>
+        <div class="card" style="text-align:center;padding:2rem 1rem">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;opacity:.3">⚡</div>
+          <p style="font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.3rem">5 Aulas Seguidas</p>
+          <p style="font-size:.68rem;color:var(--cinza)">Complete 5 aulas sem parar</p>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(0,0,0,.04);color:#bbb;display:inline-block;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Bloqueado</span>
+        </div>
+        <div class="card" style="text-align:center;padding:2rem 1rem">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;opacity:.3">🧠</div>
+          <p style="font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.3rem">Cérebro Ativo</p>
+          <p style="font-size:.68rem;color:var(--cinza)">Crie 10 cards no Cérebro Criativo</p>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(0,0,0,.04);color:#bbb;display:inline-block;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Bloqueado</span>
+        </div>
+        <div class="card" style="text-align:center;padding:2rem 1rem">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;opacity:.3">🌟</div>
+          <p style="font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.3rem">Voz da Comunidade</p>
+          <p style="font-size:.68rem;color:var(--cinza)">Compartilhe 3 cards na comunidade</p>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(0,0,0,.04);color:#bbb;display:inline-block;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Bloqueado</span>
+        </div>
+        <div class="card" style="text-align:center;padding:2rem 1rem">
+          <div style="font-size:2.5rem;margin-bottom:.8rem;opacity:.3">👑</div>
+          <p style="font-size:.78rem;font-weight:600;color:var(--preto);margin-bottom:.3rem">ICONZA Completa</p>
+          <p style="font-size:.68rem;color:var(--cinza)">Conclua o Universo 1</p>
+          <span style="font-size:.6rem;padding:.2rem .6rem;background:rgba(0,0,0,.04);color:#bbb;display:inline-block;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Bloqueado</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL NOVO CARD -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal()">✕</button>
+    <h2 class="modal-titulo">Novo Card — Cérebro Criativo</h2>
+    <div class="modal-field">
+      <label>Título</label>
+      <input type="text" id="cardTitulo" placeholder="Nome da sua ideia ou análise">
+    </div>
+    <div class="modal-field">
+      <label>Conteúdo</label>
+      <textarea id="cardTexto" placeholder="Escreva sua análise, insight ou anotação..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label>Tags (separadas por vírgula)</label>
+      <input type="text" id="cardTags" placeholder="arte, inspiração, frida...">
+    </div>
+    <div class="modal-field">
+      <label>Visibilidade</label>
+      <select id="cardVisib">
+        <option value="privado">🔒 Privado — só você vê</option>
+        <option value="publico">🟢 Público — aparece no seu perfil</option>
+        <option value="comunidade">🌍 Comunidade — compartilhar com todas</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-prim" onclick="salvarCard()">Salvar Card</button>
+      <button class="modal-btn-sec" onclick="fecharModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const user = session.user;
+  const meta = user.user_metadata || {};
+  const nome = meta.nome || meta.full_name || user.email.split('@')[0];
+  const inicial = nome.charAt(0).toUpperCase();
+  const avatarUrl = meta.avatar_url || null;
+
+  // Preenche nome
+  document.getElementById('nomeUsuario').textContent = nome.split(' ')[0];
+  document.getElementById('sidebarNome').textContent = nome;
+
+  // Avatar
+  const avatarEls = [document.getElementById('sidebarAvatar'), document.getElementById('topbarAvatar')];
+  avatarEls.forEach(el => {
+    if (avatarUrl) {
+      el.innerHTML = `<img src="${avatarUrl}" alt="${nome}">`;
+    } else {
+      el.textContent = inicial;
+    }
+  });
+
+  // Esconde loading
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hide');
+  }, 600);
+}
+
+// ABAS
+function mudarAba(id, btn) {
+  document.querySelectorAll('.aba-content').forEach(el => el.classList.remove('ativo'));
+  document.querySelectorAll('.aba').forEach(el => el.classList.remove('ativa'));
+  document.getElementById('aba-' + id).classList.add('ativo');
+  btn.classList.add('ativa');
+}
+
+// MODAL
+function abrirModal() {
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function fecharModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// SALVAR CARD
+let cards = JSON.parse(localStorage.getItem('iconza_cards') || '[]');
+
+function salvarCard() {
+  const titulo = document.getElementById('cardTitulo').value.trim();
+  const texto = document.getElementById('cardTexto').value.trim();
+  const tags = document.getElementById('cardTags').value.trim();
+  const visib = document.getElementById('cardVisib').value;
+  if (!titulo) return;
+  const card = { id: Date.now(), titulo, texto, tags, visib, data: new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'}) };
+  cards.unshift(card);
+  localStorage.setItem('iconza_cards', JSON.stringify(cards));
+  renderCards();
+  fecharModal();
+  document.getElementById('cardTitulo').value = '';
+  document.getElementById('cardTexto').value = '';
+  document.getElementById('cardTags').value = '';
+}
+
+function renderCards() {
+  const grid = document.getElementById('cerebroGrid');
+  const extras = cards.map(c => {
+    const visibLabel = c.visib === 'privado' ? '🔒 Privado' : c.visib === 'publico' ? '🟢 Público' : '🌍 Comunidade';
+    const visibClass = c.visib === 'comunidade' ? 'comunidade' : c.visib === 'publico' ? 'publico' : '';
+    const tagsHtml = c.tags ? c.tags.split(',').map(t => `<span class="cc-tag" style="background:rgba(193,39,45,.08);color:var(--vm)">${t.trim()}</span>`).join('') : '';
+    return `<div class="cerebro-card">
+      <div class="cc-header"><span class="cc-titulo">${c.titulo}</span><button class="cc-menu">⋯</button></div>
+      <p class="cc-texto">${c.texto}</p>
+      <div class="cc-tags">${tagsHtml}</div>
+      <div class="cc-footer"><span class="cc-data">${c.data}</span><span class="cc-visib ${visibClass}">${visibLabel}</span></div>
+    </div>`;
+  }).join('');
+  // Mantém os 3 cards exemplo + adiciona novos no início
+  const exemplos = grid.querySelectorAll('.cerebro-card');
+  exemplos.forEach((el, i) => { if (i > 2) el.remove(); });
+  grid.insertAdjacentHTML('afterbegin', extras);
+}
+
+function filtrarCards() {
+  const busca = document.getElementById('buscaCards').value.toLowerCase();
+  document.querySelectorAll('.cerebro-card').forEach(card => {
+    const titulo = card.querySelector('.cc-titulo').textContent.toLowerCase();
+    const texto = card.querySelector('.cc-texto').textContent.toLowerCase();
+    card.style.display = (titulo.includes(busca) || texto.includes(busca)) ? '' : 'none';
+  });
+}
+
+function filtrarTag(tag, btn) {
+  document.querySelectorAll('.tag-filtro').forEach(el => el.classList.remove('ativa'));
+  btn.classList.add('ativa');
+  document.querySelectorAll('.cerebro-card').forEach(card => {
+    if (tag === 'todas') { card.style.display = ''; return; }
+    const tags = card.dataset.tags || '';
+    card.style.display = tags.includes(tag) ? '' : 'none';
+  });
+}
+
+// Fechar modal clicando fora
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) fecharModal();
+});
+
+async function sair() {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+init();
+renderCards();
+</script>
+</body>
+</html>
