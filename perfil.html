@@ -206,7 +206,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);m
         </div>
         <div class="perfil-acoes">
           <button class="btn-editar" onclick="document.getElementById('formPerfil').scrollIntoView({behavior:'smooth'})">✎ Editar perfil</button>
-          <button class="btn-secundario">Compartilhar</button>
+          <button class="btn-secundario" onclick="window.open('u.html','_blank')">↗ Ver público</button><button class="btn-secundario" onclick="copiarLinkPerfil()">🔗 Link</button>
         </div>
       </div>
     </div>
@@ -395,6 +395,15 @@ function selecionarIdioma(el, lang) {
 async function sair() {
   await sb.auth.signOut();
   window.location.href = 'login.html';
+}
+
+async function copiarLinkPerfil() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const link = `${window.location.origin}/u.html?id=${session.user.id}`;
+    navigator.clipboard.writeText(link);
+    alert('Link copiado! ' + link);
+  }
 }
 
 init();
