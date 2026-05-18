@@ -314,7 +314,7 @@ async function fazerCadastro() {
 async function loginGoogle() {
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/dashboard.html' }
+    options: { redirectTo: 'https://iconza.vercel.app/dashboard.html' }
   });
   if (error) mostrarMsg('Erro ao conectar com Google.', 'erro');
 }
