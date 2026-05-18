@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Meu Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;
+  --branco:#ffffff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;--sidebar:260px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh;display:flex}
+
+/* SIDEBAR — igual ao dashboard */
+.sidebar{width:var(--sidebar);background:var(--grafite);min-height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:50}
+.sidebar-logo{padding:1.8rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.8rem;text-decoration:none}
+.sidebar-logo img{width:32px;height:32px;object-fit:contain}
+.sidebar-logo-text{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;letter-spacing:.12em;color:#fff;display:block}
+.sidebar-logo-tag{font-size:.48rem;letter-spacing:.2em;color:rgba(255,255,255,.3);text-transform:uppercase;display:block;margin-top:-2px}
+.sidebar-nav{padding:1.5rem 0;flex:1}
+.nav-section{padding:.5rem 1.5rem .3rem;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:.8rem;padding:.75rem 1.5rem;color:rgba(255,255,255,.5);text-decoration:none;font-size:.82rem;font-weight:500;transition:all .2s;position:relative}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.08)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--vm)}
+.nav-icon{width:18px;height:18px;opacity:.6;flex-shrink:0}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+.sidebar-footer{padding:1.5rem;border-top:1px solid rgba(255,255,255,.06)}
+.user-mini{display:flex;align-items:center;gap:.8rem}
+.user-mini-avatar{width:34px;height:34px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.user-mini-avatar img{width:100%;height:100%;object-fit:cover}
+.user-mini-info{flex:1;min-width:0}
+.user-mini-name{font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-mini-role{font-size:.62rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em}
+.btn-sair{font-size:.65rem;color:rgba(255,255,255,.3);background:none;border:none;cursor:pointer;padding:0;transition:color .2s}
+.btn-sair:hover{color:var(--vm)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh}
+.topbar{background:var(--branco);border-bottom:1px solid var(--borda);padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza)}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.avatar-btn{width:36px;height:36px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;border:2px solid transparent}
+.avatar-btn img{width:100%;height:100%;object-fit:cover}
+.content{padding:2.5rem}
+
+/* PERFIL HERO */
+.perfil-hero{background:var(--branco);border:1px solid var(--borda);margin-bottom:1.5rem;position:relative;overflow:hidden}
+.perfil-capa{height:140px;background:linear-gradient(135deg,var(--grafite) 0%,#3d2020 100%);position:relative}
+.perfil-capa-texto{position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;color:rgba(255,255,255,.04);user-select:none}
+.perfil-capa-btn{position:absolute;bottom:.8rem;right:.8rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.perfil-capa-btn:hover{background:rgba(255,255,255,.2)}
+.perfil-info{padding:0 2rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}
+.perfil-avatar-wrap{margin-top:-40px;position:relative;flex-shrink:0}
+.perfil-avatar{width:80px;height:80px;border-radius:50%;border:3px solid var(--branco);overflow:hidden;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;cursor:pointer}
+.perfil-avatar img{width:100%;height:100%;object-fit:cover}
+.perfil-avatar-edit{position:absolute;bottom:2px;right:2px;width:22px;height:22px;background:var(--preto);border-radius:50%;border:2px solid var(--branco);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem}
+.perfil-dados{flex:1;padding-top:1.2rem}
+.perfil-nome{font-size:1.2rem;font-weight:700;color:var(--preto);margin-bottom:.2rem}
+.perfil-email{font-size:.78rem;color:var(--cinza);margin-bottom:.5rem}
+.perfil-badges-row{display:flex;gap:.4rem;flex-wrap:wrap}
+.perfil-badge{font-size:.58rem;padding:.2rem .6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.pb-nivel{background:rgba(193,39,45,.08);color:var(--vm)}
+.pb-pais{background:rgba(0,0,0,.04);color:var(--cinza)}
+.perfil-acoes{display:flex;gap:.8rem;padding-top:1.5rem}
+.btn-editar{display:inline-flex;align-items:center;gap:.5rem;background:var(--preto);color:#fff;padding:.6rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s}
+.btn-editar:hover{background:var(--vm)}
+.btn-secundario{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--preto);padding:.6rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border:1px solid var(--borda);cursor:pointer;transition:all .2s}
+.btn-secundario:hover{border-color:var(--preto)}
+
+/* GRID PERFIL */
+.perfil-grid{display:grid;grid-template-columns:1fr 2fr;gap:1.5rem}
+.card{background:var(--branco);border:1px solid var(--borda);padding:1.5rem}
+.card-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:1.2rem}
+
+/* STATS VISUAIS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--borda);margin-bottom:1.5rem}
+.stat-box{background:var(--branco);padding:1.2rem;text-align:center}
+.stat-box-num{font-family:'DM Sans',sans-serif;font-size:1.6rem;font-weight:700;color:var(--preto);display:block;line-height:1;margin-bottom:.3rem}
+.stat-box-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza)}
+
+/* FORMULÁRIO */
+.form-field{margin-bottom:1.2rem}
+.form-field label{display:block;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);margin-bottom:.4rem;font-weight:600}
+.form-field input,.form-field textarea,.form-field select{width:100%;padding:.7rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--preto);outline:none;background:var(--branco);transition:border-color .2s}
+.form-field input:focus,.form-field textarea:focus{border-color:var(--preto)}
+.form-field textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-salvar{width:100%;padding:.85rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s;margin-top:.5rem}
+.btn-salvar:hover{background:var(--vm)}
+
+/* IDIOMA */
+.idioma-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.idioma-opt{display:flex;align-items:center;gap:.8rem;padding:.8rem;border:1px solid var(--borda);cursor:pointer;transition:all .2s}
+.idioma-opt:hover{border-color:var(--preto)}
+.idioma-opt.selected{border-color:var(--vm);background:rgba(193,39,45,.04)}
+.idioma-flag{font-size:1.2rem}
+.idioma-nome{font-size:.78rem;font-weight:500;color:var(--preto)}
+.idioma-sub{font-size:.62rem;color:var(--cinza)}
+
+/* CONQUISTAS NO PERFIL */
+.conquistas-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem}
+.conquista-mini{text-align:center;padding:.8rem .4rem}
+.conquista-icon{font-size:1.6rem;display:block;margin-bottom:.4rem}
+.conquista-nome{font-size:.6rem;color:var(--cinza);line-height:1.4}
+.conquista-mini.locked .conquista-icon{opacity:.2;filter:grayscale(1)}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
+.loading-overlay.hide{opacity:0;pointer-events:none}
+.loading-spin{width:28px;height:28px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MSG */
+.msg-sucesso{background:rgba(74,140,74,.08);border-left:3px solid #4a8c4a;color:#4a8c4a;padding:.7rem 1rem;font-size:.78rem;margin-bottom:1rem;display:none}
+.msg-sucesso.show{display:block}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.main{margin-left:0}
+  .perfil-grid{grid-template-columns:1fr}.content{padding:1.5rem}
+  .form-row{grid-template-columns:1fr}.conquistas-mini{grid-template-columns:repeat(3,1fr)}
+  .idioma-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="loading-spin"></div></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <img src="coroa.png" alt="ICONZA">
+    <div><span class="sidebar-logo-text">ICONZA</span><span class="sidebar-logo-tag">Criar · Narrar · Com IA</span></div>
+  </a>
+  <nav class="sidebar-nav">
+    <p class="nav-section">Principal</p>
+    <a href="dashboard.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Meus Cursos
+    </a>
+    <p class="nav-section" style="margin-top:1rem">Aprender</p>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Loja
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Comunidade
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificados
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Meu Cérebro
+    </a>
+    <p class="nav-section" style="margin-top:1rem">Conta</p>
+    <a href="perfil.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Meu Perfil
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-mini">
+      <div class="user-mini-avatar" id="sidebarAvatar">?</div>
+      <div class="user-mini-info">
+        <p class="user-mini-name" id="sidebarNome">Carregando...</p>
+        <p class="user-mini-role">Aluna</p>
+      </div>
+      <button class="btn-sair" onclick="sair()">✕</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title">Meu Perfil</span>
+    <div class="topbar-right">
+      <div class="avatar-btn" id="topbarAvatar">?</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HERO PERFIL -->
+    <div class="perfil-hero">
+      <div class="perfil-capa">
+        <span class="perfil-capa-texto">ICONZA</span>
+        <button class="perfil-capa-btn">✎ Editar capa</button>
+      </div>
+      <div class="perfil-info">
+        <div class="perfil-avatar-wrap">
+          <div class="perfil-avatar" id="perfilAvatar">?</div>
+          <div class="perfil-avatar-edit">✎</div>
+        </div>
+        <div class="perfil-dados">
+          <h1 class="perfil-nome" id="perfilNome">Carregando...</h1>
+          <p class="perfil-email" id="perfilEmail"></p>
+          <div class="perfil-badges-row">
+            <span class="perfil-badge pb-nivel">🌱 Criadora Iniciante</span>
+            <span class="perfil-badge pb-pais">🇧🇷 Brasil</span>
+          </div>
+        </div>
+        <div class="perfil-acoes">
+          <button class="btn-editar" onclick="document.getElementById('formPerfil').scrollIntoView({behavior:'smooth'})">✎ Editar perfil</button>
+          <button class="btn-secundario">Compartilhar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid" style="margin-bottom:1.5rem">
+      <div class="stat-box"><span class="stat-box-num">0</span><span class="stat-box-label">Cursos</span></div>
+      <div class="stat-box"><span class="stat-box-num">0</span><span class="stat-box-label">Aulas</span></div>
+      <div class="stat-box"><span class="stat-box-num">0</span><span class="stat-box-label">Certificados</span></div>
+      <div class="stat-box"><span class="stat-box-num">0</span><span class="stat-box-label">Pontos XP</span></div>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="perfil-grid">
+
+      <!-- COLUNA ESQUERDA -->
+      <div>
+
+        <!-- IDIOMA -->
+        <div class="card" style="margin-bottom:1.5rem">
+          <span class="card-title">Idioma preferido</span>
+          <div class="idioma-grid">
+            <div class="idioma-opt selected" onclick="selecionarIdioma(this,'pt')">
+              <span class="idioma-flag">🇧🇷</span>
+              <div><div class="idioma-nome">Português</div><div class="idioma-sub">Brasil</div></div>
+            </div>
+            <div class="idioma-opt" onclick="selecionarIdioma(this,'en')">
+              <span class="idioma-flag">🇺🇸</span>
+              <div><div class="idioma-nome">English</div><div class="idioma-sub">United States</div></div>
+            </div>
+            <div class="idioma-opt" onclick="selecionarIdioma(this,'it')">
+              <span class="idioma-flag">🇮🇹</span>
+              <div><div class="idioma-nome">Italiano</div><div class="idioma-sub">Italia</div></div>
+            </div>
+            <div class="idioma-opt" onclick="selecionarIdioma(this,'es')">
+              <span class="idioma-flag">🇪🇸</span>
+              <div><div class="idioma-nome">Español</div><div class="idioma-sub">España</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONQUISTAS -->
+        <div class="card">
+          <span class="card-title">Conquistas</span>
+          <div class="conquistas-mini">
+            <div class="conquista-mini locked"><span class="conquista-icon">🎯</span><span class="conquista-nome">Primeira Aula</span></div>
+            <div class="conquista-mini locked"><span class="conquista-icon">⚡</span><span class="conquista-nome">5 Seguidas</span></div>
+            <div class="conquista-mini locked"><span class="conquista-icon">🧠</span><span class="conquista-nome">Cérebro Ativo</span></div>
+            <div class="conquista-mini locked"><span class="conquista-icon">🌟</span><span class="conquista-nome">Comunidade</span></div>
+            <div class="conquista-mini locked"><span class="conquista-icon">👑</span><span class="conquista-nome">ICONZA</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUNA DIREITA — FORMULÁRIO -->
+      <div class="card" id="formPerfil">
+        <span class="card-title">Editar informações</span>
+        <div class="msg-sucesso" id="msgSucesso">✓ Perfil atualizado com sucesso!</div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Nome</label>
+            <input type="text" id="inputNome" placeholder="Seu nome">
+          </div>
+          <div class="form-field">
+            <label>Sobrenome</label>
+            <input type="text" id="inputSobrenome" placeholder="Sobrenome">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>E-mail</label>
+          <input type="email" id="inputEmail" placeholder="seu@email.com" disabled style="opacity:.5;cursor:not-allowed">
+        </div>
+        <div class="form-field">
+          <label>Bio</label>
+          <textarea id="inputBio" placeholder="Conte um pouco sobre você, sua área criativa, seus projetos..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>País</label>
+            <select id="inputPais">
+              <option value="BR">🇧🇷 Brasil</option>
+              <option value="IT">🇮🇹 Itália</option>
+              <option value="US">🇺🇸 Estados Unidos</option>
+              <option value="ES">🇪🇸 Espanha</option>
+              <option value="PT">🇵🇹 Portugal</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Instagram</label>
+            <input type="text" id="inputInsta" placeholder="@seuinstagram">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>YouTube</label>
+          <input type="text" id="inputYt" placeholder="https://youtube.com/@seucanal">
+        </div>
+        <button class="btn-salvar" onclick="salvarPerfil()">Salvar alterações</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  const user = session.user;
+  const meta = user.user_metadata || {};
+  const nome = meta.nome || meta.full_name || user.email.split('@')[0];
+  const sobrenome = meta.sobrenome || '';
+  const inicial = nome.charAt(0).toUpperCase();
+  const avatarUrl = meta.avatar_url || null;
+
+  // Preenche nome e email
+  document.getElementById('perfilNome').textContent = nome + (sobrenome ? ' ' + sobrenome : '');
+  document.getElementById('perfilEmail').textContent = user.email;
+  document.getElementById('sidebarNome').textContent = nome;
+  document.getElementById('inputNome').value = meta.nome || nome.split(' ')[0];
+  document.getElementById('inputSobrenome').value = meta.sobrenome || '';
+  document.getElementById('inputEmail').value = user.email;
+  document.getElementById('inputBio').value = meta.bio || '';
+  document.getElementById('inputInsta').value = meta.instagram || '';
+  document.getElementById('inputYt').value = meta.youtube || '';
+
+  // Avatars
+  const avatarEls = [
+    document.getElementById('perfilAvatar'),
+    document.getElementById('sidebarAvatar'),
+    document.getElementById('topbarAvatar')
+  ];
+  avatarEls.forEach(el => {
+    if (avatarUrl) { el.innerHTML = `<img src="${avatarUrl}" alt="${nome}">`; }
+    else { el.textContent = inicial; }
+  });
+
+  setTimeout(() => { document.getElementById('loadingOverlay').classList.add('hide'); }, 500);
+}
+
+async function salvarPerfil() {
+  const btn = document.querySelector('.btn-salvar');
+  btn.textContent = 'Salvando...';
+  btn.disabled = true;
+
+  const { error } = await sb.auth.updateUser({
+    data: {
+      nome: document.getElementById('inputNome').value,
+      sobrenome: document.getElementById('inputSobrenome').value,
+      bio: document.getElementById('inputBio').value,
+      instagram: document.getElementById('inputInsta').value,
+      youtube: document.getElementById('inputYt').value,
+      pais: document.getElementById('inputPais').value
+    }
+  });
+
+  if (!error) {
+    const msg = document.getElementById('msgSucesso');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 3000);
+    // Atualiza nome no perfil
+    const nome = document.getElementById('inputNome').value;
+    const sobrenome = document.getElementById('inputSobrenome').value;
+    document.getElementById('perfilNome').textContent = nome + (sobrenome ? ' ' + sobrenome : '');
+  }
+
+  btn.textContent = 'Salvar alterações';
+  btn.disabled = false;
+}
+
+function selecionarIdioma(el, lang) {
+  document.querySelectorAll('.idioma-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  localStorage.setItem('iconza_lang', lang);
+}
+
+async function sair() {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+init();
+</script>
+</body>
+</html>
