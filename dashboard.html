@@ -742,6 +742,9 @@ const sb = createClient(
   'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
 );
 
+// Emails com acesso admin
+const ADMINS = ['lizarutyon@gmail.com', 'apoiozaruty@gmail.com'];
+
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
 
@@ -751,6 +754,13 @@ async function init() {
   }
 
   const user = session.user;
+
+  // Se for admin, redireciona para painel de gestão
+  if (ADMINS.includes(user.email)) {
+    window.location.href = 'admin-crm.html';
+    return;
+  }
+
   const meta = user.user_metadata || {};
   const nome = meta.nome || meta.full_name || user.email.split('@')[0];
   const inicial = nome.charAt(0).toUpperCase();

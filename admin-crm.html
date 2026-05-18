@@ -275,12 +275,25 @@ const sb = createClient(
 let todosAlunos = [];
 let alunoAtual = null;
 
+const ADMINS = ['lizarutyon@gmail.com', 'apoiozaruty@gmail.com'];
+
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
 
-  // Carrega lista de usuários via admin API (simulado com dados locais por enquanto)
-  // Na versão completa, usar Supabase Admin API ou Edge Function
+  // Bloqueia acesso de não-admins
+  if (!ADMINS.includes(session.user.email)) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  // Mostra nome da admin no nav
+  const meta = session.user.user_metadata || {};
+  const nome = meta.full_name || meta.nome || session.user.email.split('@')[0];
+  document.querySelector('.nav-right').insertAdjacentHTML('afterbegin',
+    `<span style="font-size:.75rem;color:rgba(255,255,255,.5)">👑 ${nome}</span>`
+  );
+
   await carregarAlunos();
   setTimeout(() => document.getElementById('loadingOverlay').classList.add('hide'), 500);
 }
