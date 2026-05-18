@@ -1,0 +1,172 @@
+/* ============================================
+   ICONZA — Sistema de Acessibilidade Global
+   Inclua este arquivo em todas as páginas:
+   <link rel="stylesheet" href="acesso.css">
+   <script src="acesso.js"></script>
+   ============================================ */
+
+/* BOTÃO FLUTUANTE */
+.acesso-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 48px;
+  height: 48px;
+  background: var(--grafite, #2d2d2d);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  font-size: 1.1rem;
+  transition: transform .2s, background .2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+.acesso-btn:hover { transform: scale(1.1); }
+
+/* PAINEL */
+.acesso-painel {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 2rem;
+  background: #fff;
+  border: 1px solid #e8e4de;
+  padding: 1.2rem;
+  width: 220px;
+  z-index: 999;
+  box-shadow: 0 4px 24px rgba(0,0,0,.12);
+  display: none;
+  animation: slideUp .2s ease;
+}
+.acesso-painel.show { display: block; }
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.acesso-titulo {
+  font-size: .6rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #9a9490;
+  font-weight: 600;
+  display: block;
+  margin-bottom: .8rem;
+  font-family: 'DM Sans', sans-serif;
+}
+.acesso-row { margin-bottom: 1rem; }
+.acesso-label {
+  font-size: .68rem;
+  color: #666;
+  display: block;
+  margin-bottom: .5rem;
+  font-family: 'DM Sans', sans-serif;
+}
+.acesso-btns { display: flex; gap: .4rem; }
+.acesso-opt {
+  flex: 1;
+  padding: .4rem .2rem;
+  border: 1px solid #e8e4de;
+  background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .68rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+  color: #666;
+}
+.acesso-opt:hover { border-color: #1a1a1a; color: #1a1a1a; }
+.acesso-opt.ativo { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+/* MODO ESCURO */
+body.modo-escuro {
+  --branco: #1e1e1e;
+  --off: #161616;
+  --borda: #333;
+  --preto: #f0ede8;
+  --cinza: #888;
+  background: #161616 !important;
+  color: #f0ede8 !important;
+}
+body.modo-escuro .topbar,
+body.modo-escuro .card,
+body.modo-escuro .perfil-wrap,
+body.modo-escuro .quick-card,
+body.modo-escuro .gamif-bar,
+body.modo-escuro .section-wrap,
+body.modo-escuro .stats-pub,
+body.modo-escuro .stat-pub,
+body.modo-escuro .stat-box,
+body.modo-escuro .acesso-painel,
+body.modo-escuro .modal,
+body.modo-escuro .cerebro-card,
+body.modo-escuro .tool,
+body.modo-escuro .fase,
+body.modo-escuro .ap-card,
+body.modo-escuro .card-pub {
+  background: #1e1e1e !important;
+  border-color: #333 !important;
+  color: #f0ede8 !important;
+}
+body.modo-escuro .topbar-title,
+body.modo-escuro .card-title,
+body.modo-escuro .sec-eyebrow,
+body.modo-escuro h1, body.modo-escuro h2, body.modo-escuro h3,
+body.modo-escuro .perfil-nome, body.modo-escuro .ut-nome,
+body.modo-escuro .fase-titulo, body.modo-escuro .ap-titulo,
+body.modo-escuro .tool-info h4, body.modo-escuro .quick-label,
+body.modo-escuro .cc-titulo, body.modo-escuro .opcao-texto-label {
+  color: #f0ede8 !important;
+}
+body.modo-escuro .perfil-email,
+body.modo-escuro .ut-desc, body.modo-escuro .fase-desc,
+body.modo-escuro .ap-lista li, body.modo-escuro .tool-info p,
+body.modo-escuro .quick-desc, body.modo-escuro .cc-texto,
+body.modo-escuro .hero-desc, body.modo-escuro .hero-italic {
+  color: #888 !important;
+}
+body.modo-escuro .nav-links a { color: rgba(255,255,255,.5) !important; }
+body.modo-escuro .nav-links a:hover,
+body.modo-escuro .nav-links a.active { color: #fff !important; }
+body.modo-escuro .acesso-opt { background: #1e1e1e; border-color: #444; color: #aaa; }
+body.modo-escuro .acesso-opt.ativo { background: #f0ede8; color: #1a1a1a; border-color: #f0ede8; }
+body.modo-escuro .acesso-painel { background: #1e1e1e; border-color: #333; }
+body.modo-escuro .acesso-label { color: #aaa; }
+body.modo-escuro .form-field input,
+body.modo-escuro .form-field textarea,
+body.modo-escuro .form-field select,
+body.modo-escuro .modal-field input,
+body.modo-escuro .modal-field textarea,
+body.modo-escuro .modal-field select {
+  background: #2a2a2a !important;
+  border-color: #444 !important;
+  color: #f0ede8 !important;
+}
+body.modo-escuro .hero { background: #161616 !important; }
+body.modo-escuro .utensilios { background: #111 !important; }
+body.modo-escuro .ferramentas { background: #1a1a1a !important; }
+
+/* TAMANHOS DE FONTE */
+body.fonte-pequena { font-size: 13px; }
+body.fonte-media   { font-size: 15px; }
+body.fonte-grande  { font-size: 17px; }
+
+body.fonte-grande .hero-headline  { font-size: clamp(3.2rem,6.5vw,6rem) !important; }
+body.fonte-grande .nav-links a    { font-size: .8rem !important; }
+body.fonte-grande .nav-item       { font-size: .9rem !important; }
+body.fonte-grande .card-title     { font-size: .78rem !important; }
+body.fonte-grande .ut-nome        { font-size: .72rem !important; }
+body.fonte-grande .ut-desc        { font-size: .82rem !important; }
+body.fonte-grande .quick-label    { font-size: .8rem !important; }
+body.fonte-grande .quick-desc     { font-size: .78rem !important; }
+body.fonte-grande .perfil-nome    { font-size: 1.4rem !important; }
+body.fonte-grande .perfil-bio     { font-size: 1.1rem !important; }
+body.fonte-grande .welcome-left h1{ font-size: 1.6rem !important; }
+body.fonte-grande .tool-info h4   { font-size: .85rem !important; }
+body.fonte-grande .tool-info p    { font-size: .82rem !important; }
+body.fonte-grande .opcao-label    { font-size: .95rem !important; }
+body.fonte-grande .opcao-desc     { font-size: .82rem !important; }
+body.fonte-grande .form-field input,
+body.fonte-grande .form-field textarea { font-size: 1rem !important; }
+body.fonte-grande label           { font-size: .78rem !important; }

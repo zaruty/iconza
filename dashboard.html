@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICONZA — Dashboard</title>
+<link rel="stylesheet" href="acesso.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -19,7 +20,7 @@
   --borda:#e8e4de;
   --sidebar:260px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh;display:flex}
+body{font-family:'DM Sans',sans-serif;font-size:15px;background:var(--off);color:var(--preto);min-height:100vh;display:flex}
 
 /* SIDEBAR */
 .sidebar{width:var(--sidebar);background:var(--grafite);min-height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
@@ -852,5 +853,6 @@ async function sair() {
 init();
 renderCards();
 </script>
+<script src="acesso.js"></script>
 </body>
 </html>
