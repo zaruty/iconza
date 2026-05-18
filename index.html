@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="ICONZA — Criar, Narrar, Transformar. Plataforma educacional de arte, história, gastronomia, psicologia e IA.">
-<title>ICONZA — Criar, Narrar, Transformar</title>
+<meta name="description" content="ICONZA — Criar, Narrar, com IA. Plataforma educacional de arte, história, gastronomia, psicologia e IA.">
+<title>ICONZA — Criar, Narrar, com IA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -12,205 +12,160 @@
 :root{
   --vm:#C1272D;
   --gold:#C9A227;
-  --preto:#0a0a0a;
-  --branco:#f5f2ee;
-  --cinza:#b0a89a;
-  --cinza-claro:#e8e4de;
+  --preto:#1a1a1a;
+  --grafite:#2d2d2d;
+  --branco:#ffffff;
+  --off:#f7f5f2;
+  --cinza:#9a9490;
+  --borda:#e8e4de;
 }
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--branco);color:var(--preto);overflow-x:hidden;cursor:none}
-
-/* CURSOR */
-.cursor{position:fixed;width:8px;height:8px;background:var(--vm);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s}
-.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(193,39,45,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .15s ease}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+.cursor{position:fixed;width:6px;height:6px;background:var(--vm);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s}
+.cursor-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(193,39,45,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3.5rem;background:#2d2d2d;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}
 .nav-logo{display:flex;align-items:center;gap:.8rem;text-decoration:none}
-.logo-crown{width:38px;height:38px;background:var(--preto);border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.logo-crown{width:36px;height:36px;background:var(--preto);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-crown svg{width:18px;height:18px;fill:var(--gold)}
-.logo-words{display:flex;flex-direction:column}
-.logo-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;letter-spacing:.15em;color:var(--branco)}
-.logo-tagline{font-size:.55rem;letter-spacing:.25em;color:rgba(255,255,255,.35);text-transform:uppercase;margin-top:-2px}
+.logo-name{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.15em;color:#fff;display:block}
+.logo-tagline{font-size:.52rem;letter-spacing:.22em;color:rgba(255,255,255,.4);text-transform:uppercase;display:block;margin-top:-1px}
 .nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:rgba(255,255,255,.5);font-weight:500;transition:color .2s;position:relative}
+.nav-links a{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:rgba(255,255,255,.5);font-weight:500;transition:color .2s;position:relative}
 .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--vm);transition:width .3s}
-.nav-links a:hover{color:var(--branco)}
+.nav-links a:hover{color:#fff}
 .nav-links a:hover::after,.nav-links a.active::after{width:100%}
-.nav-links a.active{color:var(--branco)}
-.nav-cta{background:var(--vm);color:var(--branco);padding:.6rem 1.4rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s,transform .2s;display:inline-block}
-.nav-cta:hover{background:#a01e23;transform:translateX(3px)}
-
-/* HERO */
-.hero{min-height:100vh;padding-top:72px;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
-.hero-left{display:flex;flex-direction:column;justify-content:center;padding:5rem 3rem 5rem 4rem;position:relative;z-index:2;background:var(--branco)}
-.hero-eyebrow{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--vm);font-weight:500;margin-bottom:2rem;opacity:0;animation:fadeUp .6s .1s forwards}
-.hero-headline{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,6vw,6rem);font-weight:900;line-height:.92;color:var(--preto);margin-bottom:.4rem;opacity:0;animation:fadeUp .6s .2s forwards}
+.nav-links a.active{color:#fff}
+.nav-acoes{display:flex;align-items:center;gap:1rem}
+.btn-entrar{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;transition:color .2s}
+.btn-entrar:hover{color:var(--vm)}
+.btn-comecar{background:var(--preto);color:var(--branco);padding:.6rem 1.3rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s}
+.btn-comecar:hover{background:var(--vm)}
+.hero{min-height:100vh;padding-top:72px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--branco)}
+.vetores{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.v{position:absolute;opacity:.08;transition:margin .1s ease}
+.v-coracao{top:8%;right:10%;animation:fl1 7s ease-in-out infinite}
+.v-coroa{top:5%;left:7%;animation:fl2 6s ease-in-out infinite .5s}
+.v-rosa{bottom:18%;right:7%;animation:fl3 8s ease-in-out infinite 1s}
+.v-folha{top:28%;left:4%;animation:fl1 9s ease-in-out infinite 2s}
+.v-losango{bottom:28%;left:14%;animation:fl2 5.5s ease-in-out infinite 1.5s}
+.v-estrela{top:52%;right:4%;animation:fl3 7s ease-in-out infinite .8s}
+.v-onda{bottom:8%;right:22%;animation:fl1 6.5s ease-in-out infinite 2.5s}
+.v-circulo{top:18%;right:32%;animation:fl2 8.5s ease-in-out infinite .3s}
+.v-espiral{bottom:38%;right:2%;animation:fl3 7.5s ease-in-out infinite 1.8s}
+.v-cruz{top:68%;left:2%;animation:fl1 6s ease-in-out infinite 3s}
+@keyframes fl1{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(6deg)}}
+@keyframes fl2{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(-5deg)}}
+@keyframes fl3{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-24px) rotate(4deg)}}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:780px;padding:0 2rem}
+.hero-eyebrow{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--vm);font-weight:500;margin-bottom:2rem;opacity:0;animation:fadeUp .6s .1s forwards;display:block}
+.hero-headline{font-family:'DM Sans',sans-serif;font-size:clamp(3rem,6vw,5.8rem);font-weight:900;line-height:.9;color:var(--preto);margin-bottom:.3rem;opacity:0;animation:fadeUp .6s .2s forwards}
 .hero-headline .dot{color:var(--vm)}
-.hero-italic{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.4rem;color:var(--cinza);line-height:1.6;margin:1.8rem 0 1.2rem;opacity:0;animation:fadeUp .6s .35s forwards}
-.hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.8rem;opacity:0;animation:fadeUp .6s .4s forwards}
-.pill{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);padding:.3rem .7rem;border:1px solid var(--cinza-claro)}
-.hero-desc{font-size:.95rem;line-height:1.9;color:#666;max-width:420px;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .45s forwards}
-.hero-btn{display:inline-flex;align-items:center;gap:.8rem;background:var(--preto);color:var(--branco);padding:1.1rem 2.2rem;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s,gap .2s;opacity:0;animation:fadeUp .6s .55s forwards;width:fit-content}
-.hero-btn:hover{background:var(--vm);gap:1.2rem}
-.hero-right{position:relative;background:var(--preto);overflow:hidden}
-.hero-right-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 30%,rgba(193,39,45,.12) 0%,transparent 60%)}
-
-/* ÍCONES FLUTUANTES */
-.floating-icon{position:absolute;pointer-events:none;opacity:.75;filter:drop-shadow(0 0 8px rgba(193,39,45,.3))}
-.fi-heart{top:12%;right:18%;font-size:2.8rem;animation:float1 6s ease-in-out infinite}
-.fi-crown{top:8%;left:20%;font-size:2.2rem;animation:float2 7s ease-in-out infinite}
-.fi-rose{top:35%;right:8%;font-size:2.4rem;animation:float3 5.5s ease-in-out infinite}
-.fi-leaf{bottom:30%;left:12%;font-size:2rem;animation:float1 8s ease-in-out infinite 1s}
-.fi-star{top:55%;right:25%;font-size:1.8rem;animation:float2 6.5s ease-in-out infinite .5s}
-.fi-lotus{bottom:18%;right:15%;font-size:2.2rem;animation:float3 7.5s ease-in-out infinite 1.5s}
-.fi-wave{bottom:35%;left:25%;font-size:1.6rem;animation:float1 5s ease-in-out infinite 2s}
-.fi-lemon{top:70%;left:8%;font-size:1.8rem;animation:float2 8.5s ease-in-out infinite .8s}
-
-@keyframes float1{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(5deg)}}
-@keyframes float2{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(-4deg)}}
-@keyframes float3{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-22px) rotate(3deg)}}
-
-.hero-center-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-size:9rem;font-weight:900;color:rgba(255,255,255,.03);white-space:nowrap;pointer-events:none;user-select:none}
-.hero-vertical{position:absolute;right:2rem;top:50%;transform:translateY(-50%) rotate(90deg);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.2);white-space:nowrap}
-
-/* SECTION UTENSÍLIOS */
-.utensilios{background:var(--preto);padding:6rem 4rem}
-.sec-eyebrow{text-align:center;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--vm);margin-bottom:.6rem}
-.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;text-align:center;color:var(--branco);margin-bottom:4rem}
-.sec-title.dark{color:var(--preto)}
-.grid-8{display:grid;grid-template-columns:repeat(8,1fr);gap:0}
-.ut-card{padding:2rem 1rem;border-top:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.04);text-align:center;transition:background .3s;position:relative;overflow:hidden}
-.ut-card:last-child{border-right:none}
-.ut-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--vm);opacity:.08;transition:height .3s}
-.ut-card:hover::before{height:100%}
-.ut-card:hover .ut-num{color:var(--branco)}
-.ut-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--vm);display:block;margin-bottom:.5rem;transition:color .3s}
-.ut-nome{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--branco);font-weight:500;display:block;margin-bottom:.7rem}
-.ut-desc{font-size:.72rem;line-height:1.7;color:rgba(255,255,255,.35)}
-.ver-todos{text-align:center;margin-top:3rem}
-.link-arrow{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:color .2s,gap .2s}
+.hero-linha{width:40px;height:2px;background:var(--vm);margin:2rem auto;opacity:0;animation:fadeUp .6s .3s forwards}
+.hero-italic{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.5rem;color:var(--cinza);line-height:1.6;margin-bottom:1.5rem;opacity:0;animation:fadeUp .6s .35s forwards}
+.hero-pills{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2.5rem;opacity:0;animation:fadeUp .6s .4s forwards}
+.pill{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);padding:.3rem .8rem;border:1px solid var(--borda);background:var(--branco)}
+.hero-desc{font-size:1rem;line-height:1.9;color:#777;max-width:480px;margin:0 auto 3rem;opacity:0;animation:fadeUp .6s .45s forwards}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .6s .55s forwards}
+.btn-prim{display:inline-flex;align-items:center;gap:.7rem;background:var(--preto);color:var(--branco);padding:1rem 2rem;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s,gap .2s}
+.btn-prim:hover{background:var(--vm);gap:1.1rem}
+.btn-sec{display:inline-flex;align-items:center;gap:.7rem;background:transparent;color:var(--preto);padding:1rem 2rem;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;text-decoration:none;border:1px solid var(--borda);transition:border-color .2s,color .2s}
+.btn-sec:hover{border-color:var(--preto)}
+.sep{display:flex;align-items:center;gap:1rem;padding:0 3.5rem}
+.sep-line{flex:1;height:1px;background:var(--borda)}
+.sep-text{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);white-space:nowrap}
+.secao{padding:6rem 3.5rem}
+.sec-eyebrow{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--vm);margin-bottom:.6rem;text-align:center;display:block}
+.sec-titulo{font-family:'DM Sans',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:700;text-align:center;color:var(--preto);margin-bottom:4rem}
+.utensilios{background:var(--off)}
+.grid-8{display:grid;grid-template-columns:repeat(8,1fr);border:1px solid var(--borda);border-right:none;border-bottom:none}
+.ut-card{padding:2rem 1rem;border-right:1px solid var(--borda);border-bottom:1px solid var(--borda);text-align:center;transition:background .3s;position:relative;overflow:hidden}
+.ut-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--vm);opacity:.05;transition:height .3s}
+.ut-card:hover::after{height:100%}
+.ut-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--vm);display:block;margin-bottom:.5rem}
+.ut-nome{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--preto);font-weight:600;display:block;margin-bottom:.6rem}
+.ut-desc{font-size:.7rem;line-height:1.7;color:var(--cinza)}
+.ver-todos{text-align:center;margin-top:2.5rem}
+.link-arrow{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:color .2s,gap .2s}
 .link-arrow:hover{color:var(--vm);gap:.9rem}
-
-/* ONDE APLICAMOS */
-.aplicacoes{padding:6rem 4rem;background:var(--branco)}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--cinza-claro)}
-.ap-card{background:var(--branco);padding:0;overflow:hidden;position:relative}
-.ap-img{width:100%;height:200px;background:#1a1a1a;overflow:hidden;position:relative}
-.ap-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;opacity:.3}
-.ap-img-1{background:linear-gradient(135deg,#0a0a0a 0%,#1a0808 100%)}
-.ap-img-2{background:linear-gradient(135deg,#0a0a0a 0%,#0a1208 100%)}
-.ap-img-3{background:linear-gradient(135deg,#0a0a0a 0%,#08080a 100%)}
-.ap-content{padding:2rem}
-.ap-bar{width:0;height:2px;background:var(--vm);transition:width .4s;margin-bottom:1.2rem}
-.ap-card:hover .ap-bar{width:40px}
-.ap-titulo{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--preto);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--borda);margin-top:3rem}
+.ap-card{background:var(--branco);overflow:hidden;position:relative}
+.ap-img{width:100%;height:180px;background:var(--off);display:flex;align-items:center;justify-content:center;position:relative}
+.ap-img svg{width:60px;height:60px;opacity:.15}
+.ap-barra{width:0;height:2px;background:var(--vm);transition:width .4s;position:absolute;bottom:0;left:0}
+.ap-card:hover .ap-barra{width:100%}
+.ap-body{padding:2rem}
+.ap-titulo{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--preto);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.8rem}
 .ap-lista{list-style:none;margin-bottom:1.5rem}
-.ap-lista li{font-size:.8rem;line-height:1.9;color:#777;padding-left:1rem;position:relative}
+.ap-lista li{font-size:.78rem;line-height:1.9;color:#888;padding-left:1rem;position:relative}
 .ap-lista li::before{content:'·';position:absolute;left:0;color:var(--vm);font-weight:700}
-.ap-link{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--preto);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--preto);padding-bottom:2px;transition:color .2s,border-color .2s}
+.ap-link{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--preto);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--preto);padding-bottom:1px;transition:color .2s,border-color .2s}
 .ap-link:hover{color:var(--vm);border-color:var(--vm)}
-
-/* FERRAMENTAS */
-.ferramentas{background:var(--cinza-claro);padding:5rem 4rem}
-.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:3rem;background:rgba(0,0,0,.08)}
-.tool-item{background:var(--cinza-claro);padding:2rem 1.5rem;display:flex;align-items:flex-start;gap:1rem;transition:background .2s}
-.tool-item:hover{background:var(--branco)}
-.tool-logo{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.65rem;letter-spacing:.05em;flex-shrink:0}
-.tl-cc{background:#000;color:#fff}
-.tl-cv{background:#00C4CC;color:#fff}
-.tl-gpt{background:#10a37f;color:#fff}
-.tl-cl{background:#c9592a;color:#fff}
-.tool-info h4{font-size:.75rem;font-weight:600;color:var(--preto);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.08em}
-.tool-info p{font-size:.75rem;color:#888;line-height:1.6}
-
-/* CAMINHO */
-.caminho{padding:6rem 4rem;background:var(--branco)}
+.ferramentas{background:var(--off)}
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--borda);margin-top:3rem}
+.tool{background:var(--branco);padding:2rem 1.5rem;display:flex;align-items:flex-start;gap:1rem;transition:background .2s}
+.tool:hover{background:var(--off)}
+.tool-logo{width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.6rem;flex-shrink:0}
+.tl1{background:#000;color:#fff}.tl2{background:#00C4CC;color:#fff}.tl3{background:#10a37f;color:#fff}.tl4{background:#c9592a;color:#fff}
+.tool-info h4{font-size:.72rem;font-weight:600;color:var(--preto);margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.08em}
+.tool-info p{font-size:.72rem;color:var(--cinza);line-height:1.5}
 .fases-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;margin-top:4rem}
-.fase-card{border:1px solid rgba(0,0,0,.08);padding:2.5rem 2rem;transition:transform .3s}
-.fase-card:hover{transform:translateY(-4px)}
-.fase-card.ativa{background:var(--preto);border-color:var(--preto)}
-.fase-card.ativa .fase-titulo{color:var(--branco)}
-.fase-card.ativa .fase-sub{color:var(--vm)}
-.fase-card.ativa .fase-desc{color:rgba(255,255,255,.45)}
-.fase-tag{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--vm);font-weight:500;margin-bottom:1rem;display:block}
-.fase-img-box{width:100%;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;overflow:hidden;background:rgba(0,0,0,.04)}
-.fase-card.ativa .fase-img-box{background:rgba(255,255,255,.04)}
-.fase-img-num{font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;color:var(--vm);opacity:.15}
-.fase-titulo{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--preto);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
-.fase-sub{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--vm);margin-bottom:1rem;display:block}
-.fase-desc{font-size:.78rem;line-height:1.8;color:#888;margin-bottom:1.5rem}
-.fase-status{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;padding:.3rem .8rem;display:inline-flex;align-items:center;gap:.4rem}
-.st-atual{background:rgba(193,39,45,.1);color:var(--vm)}
-.st-breve{background:rgba(0,0,0,.05);color:#aaa}
-.st-futuro{background:rgba(0,0,0,.04);color:#bbb}
-.fase-seta{display:flex;align-items:center;justify-content:center;padding:0 1.5rem;padding-top:7rem;color:var(--cinza);font-size:1rem}
-
-/* CITAÇÃO */
-.citacao{background:var(--preto);padding:6rem 4rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
-.cit-bloco{border-left:2px solid var(--vm);padding-left:2.5rem}
-.cit-aspas{font-family:'Playfair Display',serif;font-size:6rem;line-height:.4;color:var(--vm);opacity:.5;display:block;margin-bottom:1.5rem}
-.cit-texto{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.7rem;line-height:1.5;color:var(--branco);margin-bottom:1.5rem}
-.cit-autor{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--vm)}
-.cit-direita{display:flex;flex-direction:column;gap:1rem}
-.cit-logo-big{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:var(--branco);letter-spacing:.1em}
-.cit-tag{font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.3)}
-.cit-btn{display:inline-flex;align-items:center;gap:.7rem;background:var(--vm);color:var(--branco);padding:1rem 2rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;text-decoration:none;margin-top:1.5rem;transition:background .2s,gap .2s;width:fit-content}
+.fase{border:1px solid var(--borda);padding:2.5rem 2rem;transition:transform .3s,border-color .3s}
+.fase:hover{transform:translateY(-4px);border-color:var(--preto)}
+.fase.ativa{background:#2d2d2d;border-color:#2d2d2d}
+.fase.ativa .fase-titulo{color:#fff}
+.fase.ativa .fase-sub{color:var(--gold)}
+.fase.ativa .fase-desc{color:rgba(255,255,255,.4)}
+.fase-tag{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:1rem;display:block}
+.fase-img{width:100%;height:110px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;background:rgba(0,0,0,.03)}
+.fase.ativa .fase-img{background:rgba(255,255,255,.04)}
+.fase-num{font-family:'Playfair Display',serif;font-size:4.5rem;font-weight:900;color:var(--gold);opacity:.2}
+.fase-titulo{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--preto);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem}
+.fase-sub{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--vm);margin-bottom:.8rem;display:block}
+.fase-desc{font-size:.76rem;line-height:1.8;color:var(--cinza);margin-bottom:1.2rem}
+.fase-badge{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;padding:.28rem .7rem;display:inline-flex;align-items:center;gap:.3rem}
+.b-atual{background:rgba(201,162,39,.12);color:var(--gold)}
+.b-breve,.b-futuro{background:rgba(0,0,0,.04);color:#bbb}
+.fase-seta{display:flex;align-items:center;justify-content:center;padding:0 1.2rem;padding-top:6rem;color:var(--borda);font-size:.9rem}
+.citacao{background:#2d2d2d;padding:6rem 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+.cit-esq{border-left:2px solid var(--vm);padding-left:2.5rem}
+.cit-aspas{font-family:'Playfair Display',serif;font-size:5rem;line-height:.4;color:var(--vm);opacity:.5;display:block;margin-bottom:1.2rem}
+.cit-texto{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.6rem;line-height:1.5;color:var(--branco);margin-bottom:1.2rem}
+.cit-autor{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--vm)}
+.cit-dir{display:flex;flex-direction:column;gap:.8rem}
+.cit-nome{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--branco);letter-spacing:.1em}
+.cit-tag{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.cit-btn{display:inline-flex;align-items:center;gap:.7rem;background:var(--vm);color:var(--branco);padding:.9rem 1.8rem;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;text-decoration:none;margin-top:1.2rem;transition:background .2s,gap .2s;width:fit-content}
 .cit-btn:hover{background:#a01e23;gap:1rem}
-
-/* FOOTER */
-footer{background:var(--preto);border-top:1px solid rgba(255,255,255,.05);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center}
-footer p{font-size:.68rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
-
-/* SCROLL ANIMATIONS */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-left{opacity:0;transform:translateX(-20px);transition:opacity .6s ease,transform .6s ease}
-.reveal-left.visible{opacity:1;transform:translateX(0)}
-.reveal-right{opacity:0;transform:translateX(20px);transition:opacity .6s ease,transform .6s ease}
-.reveal-right.visible{opacity:1;transform:translateX(0)}
-
-/* ANIMAÇÕES */
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-
-/* MOBILE */
+footer{background:var(--preto);border-top:1px solid rgba(255,255,255,.05);padding:2rem 3.5rem;display:flex;justify-content:space-between;align-items:center}
+footer p{font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.on{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-18px);transition:opacity .6s ease,transform .6s ease}
+.reveal-l.on{opacity:1;transform:translateX(0)}
+.reveal-r{opacity:0;transform:translateX(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal-r.on{opacity:1;transform:translateX(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:768px){
-  nav{padding:1rem 1.5rem}
-  .nav-links{display:none}
-  .hero{grid-template-columns:1fr;min-height:auto}
-  .hero-left{padding:3rem 1.5rem}
-  .hero-right{height:280px}
-  .hero-headline{font-size:3rem}
-  .utensilios{padding:4rem 1.5rem}
+  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  .hero-content{padding:0 1.5rem}.secao{padding:4rem 1.5rem}
   .grid-8{grid-template-columns:repeat(2,1fr)}
-  .ut-card{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}
-  .aplicacoes{padding:4rem 1.5rem}
-  .grid-3{grid-template-columns:1fr}
-  .ferramentas{padding:4rem 1.5rem}
+  .grid-3,.fases-row{grid-template-columns:1fr}
+  .fase-seta{padding:.5rem;transform:rotate(90deg)}
   .tools-grid{grid-template-columns:1fr 1fr}
-  .caminho{padding:4rem 1.5rem}
-  .fases-row{grid-template-columns:1fr;gap:1rem}
-  .fase-seta{padding:0;transform:rotate(90deg)}
-  .citacao{padding:4rem 1.5rem;grid-template-columns:1fr;gap:3rem}
-  footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}
+  .citacao{grid-template-columns:1fr;gap:3rem;padding:4rem 1.5rem}
+  footer{flex-direction:column;gap:.8rem;text-align:center;padding:2rem 1.5rem}
+  .sep{padding:0 1.5rem}
 }
 </style>
 </head>
 <body>
-
 <div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+<div class="cursor-ring" id="cRing"></div>
 
-<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">
-    <div class="logo-crown">
-      <svg viewBox="0 0 24 20"><path d="M2 18h20v2H2v-2zM2 14l4-8 6 5 4-9 4 9 2-1v4H2v-1z"/></svg>
-    </div>
-    <div class="logo-words">
-      <span class="logo-name">ICONZA</span>
-      <span class="logo-tagline">Criar · Narrar · Transformar</span>
-    </div>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-crown" style="background:transparent;border:none"><img src="coroa.png" style="width:36px;height:36px;object-fit:contain"></div>
+    <div><span class="logo-name">ICONZA</span><span class="logo-tagline">Criar · Narrar · Transformar</span></div>
   </a>
   <ul class="nav-links">
     <li><a href="#metodo" class="active">Método</a></li>
@@ -220,51 +175,103 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
     <li><a href="#arte">Arte & História</a></li>
     <li><a href="#recursos">Recursos</a></li>
   </ul>
-  <div style="display:flex;gap:.8rem;align-items:center">
-    <a href="login.html" style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);text-decoration:none;font-weight:500;transition:color .2s" onmouseover="this.style.color='#f5f2ee'" onmouseout="this.style.color='rgba(255,255,255,.6)'">Entrar</a>
-    <a href="login.html#cadastro" class="nav-cta">Começar grátis →</a>
+  <div class="nav-acoes">
+    <a href="login.html" class="btn-entrar">Entrar</a>
+    <a href="login.html" class="btn-comecar">Começar grátis →</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero" id="metodo">
-  <div class="hero-left">
+  <div class="vetores">
+    <!-- Coração -->
+    <svg class="v v-coracao" width="110" height="110" viewBox="0 0 100 100">
+      <path fill="var(--vm)" d="M50 85C50 85 15 60 15 35C15 20 28 10 40 18C44 21 48 26 50 30C52 26 56 21 60 18C72 10 85 20 85 35C85 60 50 85 50 85Z"/>
+      <line stroke="#fff" stroke-width="1.5" x1="50" y1="30" x2="50" y2="75" opacity=".4"/>
+      <path fill="none" stroke="#fff" stroke-width="1" d="M35 42Q40 37 45 42M55 42Q60 37 65 42" opacity=".4"/>
+    </svg>
+    <!-- Coroa -->
+    <svg class="v v-coroa" width="100" height="75" viewBox="0 0 100 70">
+      <polygon fill="var(--gold)" points="10,60 10,20 25,40 50,10 75,40 90,20 90,60"/>
+      <rect fill="var(--gold)" x="10" y="60" width="80" height="8" rx="1"/>
+      <circle fill="var(--branco)" cx="50" cy="25" r="4" opacity=".6"/>
+      <circle fill="var(--branco)" cx="20" cy="38" r="3" opacity=".6"/>
+      <circle fill="var(--branco)" cx="80" cy="38" r="3" opacity=".6"/>
+    </svg>
+    <!-- Rosa -->
+    <svg class="v v-rosa" width="80" height="110" viewBox="0 0 70 100">
+      <line stroke="var(--preto)" stroke-width="2" x1="35" y1="100" x2="35" y2="48"/>
+      <path fill="none" stroke="var(--preto)" stroke-width="1.5" d="M35 72Q15 62 20 48"/>
+      <path fill="none" stroke="var(--preto)" stroke-width="1.5" d="M35 68Q55 58 50 44"/>
+      <ellipse fill="var(--vm)" cx="35" cy="28" rx="18" ry="22"/>
+      <path fill="rgba(193,39,45,.7)" d="M26 18Q35 8 44 18Q48 28 35 38Q22 28 26 18Z"/>
+      <path fill="rgba(193,39,45,.9)" d="M31 13Q35 6 39 13Q42 23 35 30Q28 23 31 13Z"/>
+    </svg>
+    <!-- Folha -->
+    <svg class="v v-folha" width="75" height="95" viewBox="0 0 65 85">
+      <line stroke="var(--preto)" stroke-width="1.5" x1="32" y1="80" x2="32" y2="18"/>
+      <path fill="rgba(70,110,50,.45)" d="M32 18Q56 28 51 52Q46 66 32 70Q18 66 13 52Q8 28 32 18Z"/>
+      <path fill="none" stroke="rgba(70,110,50,.7)" stroke-width="1" d="M32 70Q39 55 42 40M32 70Q25 55 22 40"/>
+    </svg>
+    <!-- Losango -->
+    <svg class="v v-losango" width="65" height="85" viewBox="0 0 58 78">
+      <polygon fill="none" stroke="var(--preto)" stroke-width="1.5" points="29,4 54,39 29,74 4,39"/>
+      <polygon fill="none" stroke="var(--vm)" stroke-width="1" points="29,14 46,39 29,64 12,39"/>
+      <circle fill="var(--vm)" cx="29" cy="39" r="3"/>
+    </svg>
+    <!-- Estrela -->
+    <svg class="v v-estrela" width="75" height="75" viewBox="0 0 75 75">
+      <polygon fill="var(--gold)" points="37,4 45,28 70,28 50,44 58,68 37,53 16,68 24,44 4,28 29,28"/>
+    </svg>
+    <!-- Onda -->
+    <svg class="v v-onda" width="115" height="48" viewBox="0 0 115 48">
+      <path fill="none" stroke="var(--preto)" stroke-width="1.5" d="M4 24Q18 4 33 24Q48 44 63 24Q78 4 93 24Q108 44 115 24"/>
+      <path fill="none" stroke="var(--vm)" stroke-width="1" d="M4 34Q18 14 33 34Q48 54 63 34Q78 14 93 34"/>
+    </svg>
+    <!-- Círculo -->
+    <svg class="v v-circulo" width="78" height="78" viewBox="0 0 78 78">
+      <circle fill="none" stroke="var(--preto)" stroke-width="1.5" cx="39" cy="39" r="34"/>
+      <circle fill="none" stroke="var(--vm)" stroke-width="1" stroke-dasharray="4 4" cx="39" cy="39" r="24"/>
+      <circle fill="var(--vm)" cx="39" cy="39" r="4"/>
+      <line stroke="var(--preto)" stroke-width="1" x1="39" y1="5" x2="39" y2="73"/>
+      <line stroke="var(--preto)" stroke-width="1" x1="5" y1="39" x2="73" y2="39"/>
+    </svg>
+    <!-- Espiral -->
+    <svg class="v v-espiral" width="78" height="78" viewBox="0 0 78 78">
+      <path fill="none" stroke="var(--preto)" stroke-width="1.5" d="M39 39Q54 24 39 14Q24 4 14 19Q4 34 19 49Q34 64 54 54Q69 44 64 24Q59 4 39 4"/>
+    </svg>
+    <!-- Cruz ornamental -->
+    <svg class="v v-cruz" width="58" height="58" viewBox="0 0 58 58">
+      <line stroke="var(--preto)" stroke-width="1.5" x1="29" y1="4" x2="29" y2="54"/>
+      <line stroke="var(--preto)" stroke-width="1.5" x1="4" y1="29" x2="54" y2="29"/>
+      <circle fill="none" stroke="var(--vm)" stroke-width="1" cx="29" cy="29" r="8"/>
+      <circle fill="var(--vm)" cx="29" cy="29" r="3"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
     <span class="hero-eyebrow">Método</span>
-    <h1 class="hero-headline">CRIAR,<br>NARRAR,<br>TRANSFORMAR<span class="dot">.</span></h1>
-    <p class="hero-italic">Da inspiração à obra.<br>Da ideia à narrativa visual.</p>
+    <h1 class="hero-headline">CRIAR,<br>NARRAR,<br>COM<span class="dot">.</span> IA</h1>
+    <div class="hero-linha"></div>
+    <p class="hero-italic">Da inspiração à obra. Da ideia à narrativa visual.</p>
     <div class="hero-pills">
-      <span class="pill">Arte</span>
-      <span class="pill">História</span>
-      <span class="pill">Gastronomia</span>
-      <span class="pill">Psicologia</span>
-      <span class="pill">IA</span>
-      <span class="pill">Motion Design</span>
+      <span class="pill">Arte</span><span class="pill">História</span><span class="pill">Gastronomia</span><span class="pill">Psicologia</span><span class="pill">IA</span><span class="pill">Motion Design</span>
     </div>
     <p class="hero-desc">Um método autoral que integra arte, análise e tecnologia para transformar referências em criações únicas e com propósito.</p>
-    <a href="#fase1" class="hero-btn">Começar pelo Background →</a>
-  </div>
-  <div class="hero-right" id="heroRight">
-    <div class="hero-right-bg"></div>
-    <div class="hero-center-text">ICONZA</div>
-    <span class="hero-vertical">Universo 1 — Surrealismo Radical</span>
-    <span class="floating-icon fi-heart">🫀</span>
-    <span class="floating-icon fi-crown">👑</span>
-    <span class="floating-icon fi-rose">🌹</span>
-    <span class="floating-icon fi-leaf">🍃</span>
-    <span class="floating-icon fi-star">✦</span>
-    <span class="floating-icon fi-lotus">🪷</span>
-    <span class="floating-icon fi-wave">🌊</span>
-    <span class="floating-icon fi-lemon">🍋</span>
+    <div class="hero-btns">
+      <a href="login.html" class="btn-prim">Começar gratuitamente →</a>
+      <a href="#fase1" class="btn-sec">Ver o método ↓</a>
+    </div>
   </div>
 </section>
 
-<!-- UTENSÍLIOS -->
-<section class="utensilios" id="fase1">
-  <p class="sec-eyebrow reveal">Aprender os elementos fundamentais</p>
-  <h2 class="sec-title reveal">Fase 1 — Utensílios</h2>
+<div class="sep"><div class="sep-line"></div><span class="sep-text">Universo 1 · Surrealismo Radical · Frida Kahlo</span><div class="sep-line"></div></div>
+
+<section class="secao utensilios" id="fase1">
+  <span class="sec-eyebrow reveal">Aprender os elementos fundamentais</span>
+  <h2 class="sec-titulo reveal">Fase 1 — Utensílios</h2>
   <div class="grid-8">
     <div class="ut-card reveal"><span class="ut-num">1.</span><span class="ut-nome">Background</span><p class="ut-desc">Fundos, texturas, atmosfera e contexto visual.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">2.</span><span class="ut-nome">Cor</span><p class="ut-desc">Paletas, emoções, extração de cor e harmonia visual.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">2.</span><span class="ut-nome">Cor</span><p class="ut-desc">Paletas, emoções, extração de cor e harmonia.</p></div>
     <div class="ut-card reveal"><span class="ut-num">3.</span><span class="ut-nome">Composição</span><p class="ut-desc">Enquadramento, hierarquia e direção do olhar.</p></div>
     <div class="ut-card reveal"><span class="ut-num">4.</span><span class="ut-nome">Contraste</span><p class="ut-desc">Luz e sombra, destaque e impacto visual.</p></div>
     <div class="ut-card reveal"><span class="ut-num">5.</span><span class="ut-nome">Textura</span><p class="ut-desc">Profundidade, detalhes e sensação tátil visual.</p></div>
@@ -275,173 +282,107 @@ footer p{font-size:.68rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
   <div class="ver-todos reveal"><a href="#" class="link-arrow">Ver todos os módulos da Fase 1 →</a></div>
 </section>
 
-<!-- ONDE APLICAMOS -->
-<section class="aplicacoes" id="gastronomia">
-  <p class="sec-eyebrow reveal" style="color:var(--vm)">Onde aplicamos na Fase 1</p>
-  <h2 class="sec-title dark reveal" style="margin-bottom:3rem">Três mundos, uma linguagem</h2>
+<section class="secao" id="gastronomia" style="background:var(--branco)">
+  <span class="sec-eyebrow reveal">Onde aplicamos na Fase 1</span>
+  <h2 class="sec-titulo reveal">Três mundos, uma linguagem</h2>
   <div class="grid-3">
-    <div class="ap-card reveal-left">
-      <div class="ap-img ap-img-1"><div class="ap-img-placeholder">🎬</div></div>
-      <div class="ap-content">
-        <div class="ap-bar"></div>
-        <h3 class="ap-titulo">Vídeo / Documentário</h3>
-        <ul class="ap-lista">
-          <li>Criar atmosferas visuais</li>
-          <li>Definir tom e narrativa</li>
-          <li>Construir mundos visuais desde o fundo</li>
-        </ul>
-        <a href="#" class="ap-link">Explorar →</a>
-      </div>
+    <div class="ap-card reveal-l">
+      <div class="ap-img"><svg viewBox="0 0 60 60" fill="none" stroke="var(--preto)" stroke-width="1.5"><rect x="5" y="10" width="50" height="35" rx="2"/><polygon points="22,18 22,38 42,28" fill="var(--preto)" stroke="none"/></svg><div class="ap-barra"></div></div>
+      <div class="ap-body"><h3 class="ap-titulo">Vídeo / Documentário</h3><ul class="ap-lista"><li>Criar atmosferas visuais</li><li>Definir tom e narrativa</li><li>Construir mundos visuais desde o fundo</li></ul><a href="#" class="ap-link">Explorar →</a></div>
     </div>
     <div class="ap-card reveal">
-      <div class="ap-img ap-img-2"><div class="ap-img-placeholder">🍽</div></div>
-      <div class="ap-content">
-        <div class="ap-bar"></div>
-        <h3 class="ap-titulo">Gastronomia / Empatamento</h3>
-        <ul class="ap-lista">
-          <li>Prato em branco como tela</li>
-          <li>Molhos, cores e texturas como fundo</li>
-          <li>Equilíbrio, contraste e composição</li>
-        </ul>
-        <a href="#" class="ap-link">Explorar →</a>
-      </div>
+      <div class="ap-img"><svg viewBox="0 0 60 60" fill="none" stroke="var(--preto)" stroke-width="1.5"><circle cx="30" cy="28" r="20"/><path d="M15 42Q30 50 45 42"/><line x1="30" y1="8" x2="30" y2="48"/></svg><div class="ap-barra"></div></div>
+      <div class="ap-body"><h3 class="ap-titulo">Gastronomia / Empatamento</h3><ul class="ap-lista"><li>Prato em branco como tela</li><li>Molhos, cores e texturas como fundo</li><li>Equilíbrio, contraste e composição</li></ul><a href="#" class="ap-link">Explorar →</a></div>
     </div>
-    <div class="ap-card reveal-right">
-      <div class="ap-img ap-img-3"><div class="ap-img-placeholder">🧠</div></div>
-      <div class="ap-content">
-        <div class="ap-bar"></div>
-        <h3 class="ap-titulo">Psicologia / Identidade</h3>
-        <ul class="ap-lista">
-          <li>Origem e história pessoal</li>
-          <li>Arquétipos e símbolos</li>
-          <li>Mapa mental visual da própria vida</li>
-        </ul>
-        <a href="#" class="ap-link">Explorar →</a>
-      </div>
+    <div class="ap-card reveal-r">
+      <div class="ap-img"><svg viewBox="0 0 60 60" fill="none" stroke="var(--preto)" stroke-width="1.5"><circle cx="30" cy="20" r="12"/><path d="M10 55Q30 35 50 55"/><line x1="30" y1="32" x2="30" y2="45"/></svg><div class="ap-barra"></div></div>
+      <div class="ap-body"><h3 class="ap-titulo">Psicologia / Identidade</h3><ul class="ap-lista"><li>Origem e história pessoal</li><li>Arquétipos e símbolos</li><li>Mapa mental visual da própria vida</li></ul><a href="#" class="ap-link">Explorar →</a></div>
     </div>
   </div>
 </section>
 
-<!-- FERRAMENTAS -->
-<section class="ferramentas" id="recursos">
-  <p class="sec-eyebrow reveal" style="color:var(--vm)">Infraestrutura criativa</p>
-  <h2 class="sec-title dark reveal">Ferramentas Principais</h2>
+<section class="secao ferramentas" id="recursos">
+  <span class="sec-eyebrow reveal">Infraestrutura criativa</span>
+  <h2 class="sec-titulo reveal">Ferramentas Principais</h2>
   <div class="tools-grid">
-    <div class="tool-item reveal"><div class="tool-logo tl-cc">CC</div><div class="tool-info"><h4>CapCut</h4><p>Edição de vídeo e animação</p></div></div>
-    <div class="tool-item reveal"><div class="tool-logo tl-cv">Cv</div><div class="tool-info"><h4>Canva</h4><p>Design gráfico e identidade visual</p></div></div>
-    <div class="tool-item reveal"><div class="tool-logo tl-gpt">GP</div><div class="tool-info"><h4>ChatGPT</h4><p>Geração de ideias e roteiros</p></div></div>
-    <div class="tool-item reveal"><div class="tool-logo tl-cl">Cl</div><div class="tool-info"><h4>Claude</h4><p>Pesquisa profunda e estruturação</p></div></div>
+    <div class="tool reveal"><div class="tool-logo tl1">CC</div><div class="tool-info"><h4>CapCut</h4><p>Edição de vídeo e animação</p></div></div>
+    <div class="tool reveal"><div class="tool-logo tl2">Cv</div><div class="tool-info"><h4>Canva</h4><p>Design gráfico e identidade visual</p></div></div>
+    <div class="tool reveal"><div class="tool-logo tl3">GP</div><div class="tool-info"><h4>ChatGPT</h4><p>Geração de ideias e roteiros</p></div></div>
+    <div class="tool reveal"><div class="tool-logo tl4">Cl</div><div class="tool-info"><h4>Claude</h4><p>Pesquisa profunda e estruturação</p></div></div>
   </div>
 </section>
 
-<!-- CAMINHO -->
-<section class="caminho" id="arte">
-  <p class="sec-eyebrow reveal">Jornada de aprendizado</p>
-  <h2 class="sec-title dark reveal">O Caminho Completo</h2>
+<section class="secao" id="arte" style="background:var(--branco)">
+  <span class="sec-eyebrow reveal">Jornada de aprendizado</span>
+  <h2 class="sec-titulo reveal">O Caminho Completo</h2>
   <div class="fases-row">
-    <div class="fase-card ativa reveal">
+    <div class="fase ativa reveal">
       <span class="fase-tag">Fase 1</span>
-      <div class="fase-img-box"><span class="fase-img-num" style="color:var(--vm);opacity:.2">I</span></div>
+      <div class="fase-img"><span class="fase-num">I</span></div>
       <h3 class="fase-titulo">Utensílios</h3>
       <span class="fase-sub">Aprender os elementos fundamentais</span>
       <p class="fase-desc">Fundamentos visuais que constroem toda narrativa: fundo, cor, composição, textura e tipografia.</p>
-      <span class="fase-status st-atual">● Atual</span>
+      <span class="fase-badge b-atual">● Atual</span>
     </div>
     <div class="fase-seta reveal">→</div>
-    <div class="fase-card reveal">
+    <div class="fase reveal">
       <span class="fase-tag">Fase 2</span>
-      <div class="fase-img-box"><span class="fase-img-num" style="opacity:.06">II</span></div>
+      <div class="fase-img"><span class="fase-num" style="opacity:.08;color:var(--preto)">II</span></div>
       <h3 class="fase-titulo">Animação e Movimento</h3>
-      <span class="fase-sub" style="color:#aaa">Dar vida aos elementos</span>
+      <span class="fase-sub" style="color:var(--cinza)">Dar vida aos elementos</span>
       <p class="fase-desc">Transformar o estático em dinâmico. Motion, transições e ritmo visual para contar histórias.</p>
-      <span class="fase-status st-breve">🔒 Em Breve</span>
+      <span class="fase-badge b-breve">🔒 Em Breve</span>
     </div>
     <div class="fase-seta reveal">→</div>
-    <div class="fase-card reveal">
+    <div class="fase reveal">
       <span class="fase-tag">Fase 3</span>
-      <div class="fase-img-box"><span class="fase-img-num" style="opacity:.06">III</span></div>
+      <div class="fase-img"><span class="fase-num" style="opacity:.08;color:var(--preto)">III</span></div>
       <h3 class="fase-titulo">Cozinha Criativa</h3>
-      <span class="fase-sub" style="color:#aaa">Unir tudo em linguagem autoral</span>
+      <span class="fase-sub" style="color:var(--cinza)">Unir tudo em linguagem autoral</span>
       <p class="fase-desc">Projetos completos. Do conceito ao produto final — brandbook, conteúdo, produtos físicos.</p>
-      <span class="fase-status st-futuro">🔒 Futuro</span>
+      <span class="fase-badge b-futuro">🔒 Futuro</span>
     </div>
   </div>
 </section>
 
-<!-- CITAÇÃO -->
 <section class="citacao">
-  <div class="cit-bloco reveal-left">
+  <div class="cit-esq reveal-l">
     <span class="cit-aspas">"</span>
     <p class="cit-texto">Quem olha para fora, sonha.<br>Quem olha para dentro, desperta.</p>
     <p class="cit-autor">— Frida Kahlo</p>
   </div>
-  <div class="cit-direita reveal-right">
-    <div class="logo-crown" style="width:52px;height:52px">
-      <svg viewBox="0 0 24 20" style="width:24px;height:24px;fill:var(--gold)"><path d="M2 18h20v2H2v-2zM2 14l4-8 6 5 4-9 4 9 2-1v4H2v-1z"/></svg>
-    </div>
-    <p class="cit-logo-big">ICONZA</p>
+  <div class="cit-dir reveal-r">
+    <img src="coroa.png" style="width:50px;height:50px;object-fit:contain">
+    <p class="cit-nome">ICONZA</p>
     <p class="cit-tag">Criar · Narrar · Transformar</p>
-    <a href="#fase1" class="cit-btn">Começar agora →</a>
+    <a href="login.html" class="cit-btn">Começar agora →</a>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <p>© 2026 ICONZA — Sistema Educacional de Ícones Femininas</p>
   <p>Universo 1 · Surrealismo Radical · Frida Kahlo + Schiaparelli + Bottura</p>
 </footer>
 
 <script>
-// CURSOR
-const cursor=document.getElementById('cursor');
-const ring=document.getElementById('cursorRing');
+const cur=document.getElementById('cursor'),crg=document.getElementById('cRing');
 document.addEventListener('mousemove',e=>{
-  cursor.style.left=e.clientX+'px';
-  cursor.style.top=e.clientY+'px';
-  setTimeout(()=>{ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'},80);
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  setTimeout(()=>{crg.style.left=e.clientX+'px';crg.style.top=e.clientY+'px'},80);
 });
 document.querySelectorAll('a,button').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.transform='translate(-50%,-50%) scale(1.5)'});
-  el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)'});
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';crg.style.transform='translate(-50%,-50%) scale(1.5)'});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';crg.style.transform='translate(-50%,-50%) scale(1)'});
 });
-
-// PARALLAX MOUSE nos ícones flutuantes
-const heroRight=document.getElementById('heroRight');
-const icons=document.querySelectorAll('.floating-icon');
-const depths=[.06,.04,.08,.05,.07,.03,.09,.05];
-heroRight.addEventListener('mousemove',e=>{
-  const r=heroRight.getBoundingClientRect();
-  const x=(e.clientX-r.left-r.width/2);
-  const y=(e.clientY-r.top-r.height/2);
-  icons.forEach((ic,i)=>{
-    const d=depths[i]||.05;
-    ic.style.transform=`translate(${x*d}px,${y*d}px)`;
-  });
+const vs=document.querySelectorAll('.v'),ds=[.05,.03,.07,.04,.06,.08,.04,.05,.06,.03];
+document.addEventListener('mousemove',e=>{
+  const cx=window.innerWidth/2,cy=window.innerHeight/2,dx=e.clientX-cx,dy=e.clientY-cy;
+  vs.forEach((v,i)=>{const d=ds[i]||.05;v.style.marginLeft=dx*d+'px';v.style.marginTop=dy*d+'px'});
 });
-heroRight.addEventListener('mouseleave',()=>{
-  icons.forEach(ic=>{ic.style.transform='translate(0,0)'});
-});
-
-// SCROLL ANIMATIONS
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('visible');
-    }
-  });
-},{threshold:.1});
-document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach((el,i)=>{
-  el.style.transitionDelay=(i%4)*.08+'s';
-  observer.observe(el);
-});
-
-// SMOOTH SCROLL
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')})},{threshold:.1});
+document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el,i)=>{el.style.transitionDelay=(i%5)*.07+'s';obs.observe(el)});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const t=document.querySelector(a.getAttribute('href'));
-    if(t)t.scrollIntoView({behavior:'smooth'});
-  });
+  a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})});
 });
 </script>
 </body>
