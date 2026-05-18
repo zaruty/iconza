@@ -3,475 +3,895 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICONZA — Admin CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<title>ICONZA — Painel Administrativo</title>
+<link rel="stylesheet" href="acesso.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;--branco:#fff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;--verde:#4a8c4a}
-body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh}
+:root{
+  --vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;
+  --branco:#fff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;--verde:#4a8c4a;
+  --admin-sidebar:240px;
+}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;font-size:16px;background:var(--off);color:var(--preto);display:flex;flex-direction:column;overflow:hidden}
 
-nav{background:var(--grafite);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
-.nav-logo img{width:26px;height:26px;object-fit:contain}
-.nav-logo-text{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;letter-spacing:.12em;color:#fff}
-.nav-badge{font-size:.6rem;padding:.2rem .6rem;background:var(--vm);color:#fff;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
-.nav-right{display:flex;gap:1rem;align-items:center}
-.nav-btn{font-size:.7rem;padding:.5rem 1rem;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
-.nav-btn:hover{border-color:#fff;color:#fff}
-.nav-btn.destaque{background:var(--verde);border-color:var(--verde);color:#fff}
+/* TOPBAR */
+.adm-top{background:var(--grafite);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.05)}
+.adm-top-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.adm-top-logo img{width:28px;height:28px;object-fit:contain}
+.adm-top-logo-text{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;letter-spacing:.12em;color:#fff}
+.adm-top-tag{font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);display:block;margin-top:-2px}
+.adm-top-center{display:flex;align-items:center;gap:.8rem}
+.adm-badge{font-size:.6rem;padding:.25rem .7rem;background:var(--vm);color:#fff;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.adm-top-right{display:flex;gap:.8rem;align-items:center}
+.adm-btn{font-size:.68rem;padding:.5rem 1rem;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;letter-spacing:.05em}
+.adm-btn:hover{border-color:#fff;color:#fff}
+.adm-btn.verde{background:var(--verde);border-color:var(--verde);color:#fff;font-weight:600}
+.adm-btn.verde:hover{background:#3d7a3d}
 
-/* STATS TOPO */
-.stats-topo{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--borda);margin-bottom:1.5rem}
-.stat-topo{background:var(--branco);padding:1.2rem 1.5rem}
-.stat-topo-num{font-size:1.8rem;font-weight:700;color:var(--preto);display:block;line-height:1;margin-bottom:.2rem}
-.stat-topo-label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza)}
-.stat-topo-sub{font-size:.72rem;color:var(--verde);margin-top:.2rem}
+/* LAYOUT */
+.adm-wrap{display:flex;flex:1;min-height:0}
+
+/* SIDEBAR */
+.adm-side{width:var(--admin-sidebar);background:var(--grafite);display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid rgba(255,255,255,.05)}
+.adm-side-perfil{padding:1.3rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.8rem}
+.adm-side-avatar{width:42px;height:42px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.1)}
+.adm-side-avatar img{width:100%;height:100%;object-fit:cover}
+.adm-side-info{flex:1;min-width:0}
+.adm-side-nome{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-side-cargo{font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:1px}
+
+.adm-side-nav{padding:.8rem 0;flex:1;overflow-y:auto}
+.adm-side-section{font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.25);font-weight:700;padding:.6rem 1.2rem .3rem;display:block}
+.adm-side-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.2rem;color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;font-weight:600;transition:all .15s;cursor:pointer;border:none;background:none;width:100%;text-align:left;position:relative;font-family:'DM Sans',sans-serif}
+.adm-side-item:hover{color:#fff;background:rgba(255,255,255,.04)}
+.adm-side-item.ativo{color:#fff;background:rgba(255,255,255,.07)}
+.adm-side-item.ativo::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--vm)}
+.adm-side-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.adm-side-item.ativo .adm-side-icon,.adm-side-item:hover .adm-side-icon{opacity:1}
+.adm-side-counter{margin-left:auto;font-size:.6rem;background:rgba(255,255,255,.08);padding:.1rem .4rem;color:rgba(255,255,255,.6);font-weight:600}
+.adm-side-item.ativo .adm-side-counter{background:var(--vm);color:#fff}
+
+.adm-side-footer{padding:.8rem 1.2rem;border-top:1px solid rgba(255,255,255,.06)}
+.adm-side-link{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);padding:.55rem .9rem;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .2s;width:100%;text-decoration:none;font-family:'DM Sans',sans-serif;margin-bottom:.5rem}
+.adm-side-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.adm-side-sair{font-size:.62rem;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;padding:.3rem 0}
+.adm-side-sair:hover{color:var(--vm)}
+
+/* CONTEÚDO */
+.adm-content{flex:1;overflow-y:auto;background:var(--off)}
+.modulo{display:none;padding:1.5rem 2rem}
+.modulo.ativo{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.mod-header{margin-bottom:1.5rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.mod-titulo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--preto)}
+.mod-sub{font-size:.82rem;color:var(--cinza);margin-top:.3rem}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-c{background:var(--branco);border:1px solid var(--borda);padding:1.1rem 1.2rem}
+.stat-c-icon{font-size:1rem;margin-bottom:.5rem;color:var(--vm)}
+.stat-c-num{font-size:1.5rem;font-weight:700;color:var(--preto);display:block;line-height:1}
+.stat-c-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);margin-top:.4rem;display:block}
+.stat-c-sub{font-size:.7rem;color:var(--verde);margin-top:.3rem;font-weight:600}
+
+/* GRID 2 COLUNAS */
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.card{background:var(--branco);border:1px solid var(--borda);padding:1.5rem}
+.card-titulo{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:1px solid var(--borda)}
 
 /* FILTROS */
-.filtros{background:var(--branco);border:1px solid var(--borda);padding:1rem 1.5rem;margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
-.filtro-input{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:var(--branco);color:var(--preto);transition:border-color .2s;flex:1;min-width:200px}
-.filtro-input:focus{border-color:var(--preto)}
-.filtro-select{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;background:var(--branco);color:var(--preto);cursor:pointer}
-.btn-exportar{padding:.55rem 1.2rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;white-space:nowrap}
-.btn-exportar:hover{background:var(--vm)}
+.filtros{background:var(--branco);border:1px solid var(--borda);padding:1rem 1.2rem;margin-bottom:1rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
+.f-input{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:var(--branco);color:var(--preto);flex:1;min-width:200px}
+.f-input:focus{border-color:var(--preto)}
+.f-select{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;background:var(--branco);color:var(--preto);cursor:pointer}
+.btn-prim{padding:.55rem 1.2rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;font-weight:600}
+.btn-prim:hover{background:var(--vm)}
 
 /* TABELA */
-.tabela-wrap{background:var(--branco);border:1px solid var(--borda);overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:900px}
+.tab-wrap{background:var(--branco);border:1px solid var(--borda);overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:800px}
 thead tr{background:var(--grafite)}
-th{padding:.75rem 1rem;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:600;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
-th:hover{color:#fff}
+th{padding:.7rem 1rem;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65);font-weight:700;text-align:left;white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--borda);transition:background .15s;cursor:pointer}
 tbody tr:hover{background:var(--off)}
-tbody tr:last-child{border-bottom:none}
-td{padding:.85rem 1rem;font-size:.82rem;color:var(--preto);vertical-align:middle}
-.td-avatar{width:32px;height:32px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
-.td-avatar img{width:100%;height:100%;object-fit:cover}
-.td-nome{font-weight:600}
-.td-email{color:var(--cinza);font-size:.76rem}
+td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
+.td-av{width:32px;height:32px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.td-av img{width:100%;height:100%;object-fit:cover}
+.td-nm{font-weight:600;color:var(--preto)}
+.td-em{color:var(--cinza);font-size:.75rem}
 
 /* BADGES */
-.badge{font-size:.58rem;padding:.18rem .55rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:inline-block;margin:.1rem}
+.bdg{font-size:.56rem;padding:.18rem .55rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:inline-block;margin:.1rem}
 .b-verde{background:rgba(74,140,74,.1);color:var(--verde)}
 .b-vm{background:rgba(193,39,45,.1);color:var(--vm)}
 .b-gold{background:rgba(201,162,39,.12);color:var(--gold)}
 .b-cinza{background:rgba(0,0,0,.05);color:var(--cinza)}
 .b-azul{background:rgba(30,100,200,.08);color:#1e64c8}
 
-/* MODAL DETALHE */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
-.modal-overlay.show{display:flex}
-.modal{background:var(--branco);width:100%;max-width:680px;position:relative;margin:auto}
-.modal-header{background:var(--grafite);padding:1.5rem 2rem;display:flex;align-items:center;gap:1.2rem}
-.modal-avatar{width:56px;height:56px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
-.modal-avatar img{width:100%;height:100%;object-fit:cover}
-.modal-nome{font-size:1.1rem;font-weight:700;color:#fff}
-.modal-email{font-size:.78rem;color:rgba(255,255,255,.45)}
-.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer;padding:.3rem}
-.modal-close:hover{color:#fff}
-.modal-body{padding:1.5rem 2rem}
-.modal-section{margin-bottom:1.5rem}
-.modal-section-title{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--borda)}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-.modal-campo{display:flex;flex-direction:column;gap:.2rem}
-.modal-campo-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600}
-.modal-campo-valor{font-size:.88rem;color:var(--preto);font-weight:500}
-.modal-campo-valor.vazio{color:var(--borda)}
-.modal-tags{display:flex;flex-wrap:wrap;gap:.3rem}
-.modal-footer{padding:1rem 2rem;border-top:1px solid var(--borda);display:flex;gap:.8rem;justify-content:flex-end}
-.btn-modal{padding:.6rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .2s}
-.btn-modal-prim{background:var(--preto);color:#fff;border:none}
-.btn-modal-prim:hover{background:var(--vm)}
-.btn-modal-sec{background:transparent;color:var(--cinza);border:1px solid var(--borda)}
-.btn-modal-sec:hover{border-color:var(--preto);color:var(--preto)}
+/* MODAL */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.mov.show{display:flex}
+.mod{background:var(--branco);width:100%;max-width:680px;position:relative;margin:auto}
+.mod-h{background:var(--grafite);padding:1.4rem 1.8rem;display:flex;align-items:center;gap:1rem}
+.mod-h-av{width:52px;height:52px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.mod-h-av img{width:100%;height:100%;object-fit:cover}
+.mod-h-nome{font-size:1.05rem;font-weight:700;color:#fff}
+.mod-h-em{font-size:.76rem;color:rgba(255,255,255,.45)}
+.mod-cl{position:absolute;top:.8rem;right:.8rem;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer;padding:.3rem}
+.mod-cl:hover{color:#fff}
+.mod-b{padding:1.4rem 1.8rem}
+.mod-sec{margin-bottom:1.3rem}
+.mod-sec-t{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:1px solid var(--borda)}
+.mod-gr{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.mod-c{display:flex;flex-direction:column;gap:.15rem}
+.mod-c-l{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600}
+.mod-c-v{font-size:.85rem;color:var(--preto);font-weight:500}
+.mod-c-v.vazio{color:var(--borda)}
+.mod-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.mod-f{padding:1rem 1.8rem;border-top:1px solid var(--borda);display:flex;gap:.7rem;justify-content:flex-end}
+.btn-m{padding:.55rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;cursor:pointer}
+.btn-m-p{background:var(--preto);color:#fff;border:none}
+.btn-m-p:hover{background:var(--vm)}
+.btn-m-s{background:transparent;color:var(--cinza);border:1px solid var(--borda)}
+.btn-m-s:hover{border-color:var(--preto);color:var(--preto)}
 
-/* STATUS EDIT */
-.status-select{padding:.4rem .6rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;background:var(--branco)}
+/* PLACEHOLDER */
+.placeholder{background:var(--branco);border:1px solid var(--borda);padding:3rem;text-align:center}
+.ph-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.5}
+.ph-tit{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.ph-desc{font-size:.85rem;color:var(--cinza);margin-bottom:1rem;line-height:1.7}
+.ph-bdg{font-size:.6rem;padding:.25rem .7rem;background:rgba(0,0,0,.05);color:var(--cinza);letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:inline-block}
 
 /* LOADING */
-.loading-overlay{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
-.loading-overlay.hide{opacity:0;pointer-events:none}
+.load{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
+.load.hide{opacity:0;pointer-events:none}
 .spin{width:28px;height:28px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.content{padding:1.5rem 2rem}
-.empty{text-align:center;padding:3rem;color:var(--cinza);font-size:.9rem}
+.empty{text-align:center;padding:2.5rem;color:var(--cinza);font-size:.88rem}
 
-@media(max-width:768px){
-  .stats-topo{grid-template-columns:1fr 1fr}
-  .content{padding:1rem}
-  .modal-grid{grid-template-columns:1fr}
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+  .adm-side{width:60px}
+  .adm-side-info,.adm-side-section,.adm-side-counter,.adm-side-link,.adm-side-sair,.adm-side-cargo{display:none}
+  .adm-side-item{justify-content:center;padding:.7rem 0}
+  :root{--admin-sidebar:60px}
 }
 </style>
 </head>
 <body>
-<div class="loading-overlay" id="loadingOverlay"><div class="spin"></div></div>
 
-<nav>
-  <a href="dashboard.html" class="nav-logo">
+<div class="load" id="load"><div class="spin"></div></div>
+
+<!-- TOPBAR -->
+<header class="adm-top">
+  <a href="#" class="adm-top-logo">
     <img src="coroa.png" alt="ICONZA">
-    <span class="nav-logo-text">ICONZA</span>
+    <div>
+      <span class="adm-top-logo-text">ICONZA</span>
+      <span class="adm-top-tag">Painel Administrativo</span>
+    </div>
   </a>
-  <div style="display:flex;align-items:center;gap:.8rem">
-    <span class="nav-badge">Admin</span>
-    <span style="font-size:.72rem;color:rgba(255,255,255,.4)">CRM</span>
+  <div class="adm-top-center">
+    <span class="adm-badge">Admin</span>
+    <span style="font-size:.72rem;color:rgba(255,255,255,.4)" id="adm-nome-top">—</span>
   </div>
-  <div class="nav-right">
-    <button class="nav-btn destaque" onclick="exportarCSV()">⬇ Exportar CSV</button>
-    <a href="dashboard.html" class="nav-btn">← Dashboard</a>
+  <div class="adm-top-right">
+    <button class="adm-btn verde" onclick="exportarCSV()">⬇ Exportar CSV</button>
+    <a href="dashboard.html" class="adm-btn">Ver plataforma →</a>
   </div>
-</nav>
+</header>
 
-<div class="content">
+<div class="adm-wrap">
 
-  <!-- STATS -->
-  <div class="stats-topo" id="statsTopo">
-    <div class="stat-topo"><span class="stat-topo-num" id="totalAlunos">—</span><span class="stat-topo-label">Alunas cadastradas</span></div>
-    <div class="stat-topo"><span class="stat-topo-num" id="totalOnboarding">—</span><span class="stat-topo-label">Onboarding completo</span></div>
-    <div class="stat-topo"><span class="stat-topo-num" id="totalPaises">—</span><span class="stat-topo-label">Países</span></div>
-    <div class="stat-topo"><span class="stat-topo-num" id="totalHoje">—</span><span class="stat-topo-label">Cadastros hoje</span></div>
-  </div>
+  <!-- SIDEBAR -->
+  <aside class="adm-side">
+    <div class="adm-side-perfil">
+      <div class="adm-side-avatar" id="adm-av">L</div>
+      <div class="adm-side-info">
+        <span class="adm-side-nome" id="adm-nome">Carregando</span>
+        <span class="adm-side-cargo">Fundadora · Admin</span>
+      </div>
+    </div>
 
-  <!-- FILTROS -->
-  <div class="filtros">
-    <input class="filtro-input" type="text" placeholder="🔍  Buscar por nome ou email..." id="buscaInput" oninput="filtrar()">
-    <select class="filtro-select" id="filtroProduto" onchange="filtrar()">
-      <option value="">Todos os produtos</option>
-      <option>Acesso Gratuito</option>
-      <option>Tronco</option>
-      <option>Tronco VIP</option>
-      <option>Mentoria</option>
-      <option>E-book</option>
-    </select>
-    <select class="filtro-select" id="filtroStatus" onchange="filtrar()">
-      <option value="">Todos os status</option>
-      <option>Em andamento</option>
-      <option>Pendente</option>
-      <option>Concluído</option>
-      <option>Cancelado</option>
-    </select>
-    <select class="filtro-select" id="filtroOnboarding" onchange="filtrar()">
-      <option value="">Onboarding: todos</option>
-      <option value="sim">Completo</option>
-      <option value="nao">Incompleto</option>
-    </select>
-    <button class="btn-exportar" onclick="exportarCSV()">⬇ CSV</button>
-  </div>
+    <nav class="adm-side-nav">
+      <span class="adm-side-section">Geral</span>
+      <button class="adm-side-item ativo" data-mod="dashboard" onclick="mostrar('dashboard',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
 
-  <!-- TABELA -->
-  <div class="tabela-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Aluna</th>
-          <th>Telefone</th>
-          <th>País</th>
-          <th>Produto</th>
-          <th>Aptidões</th>
-          <th>Horário</th>
-          <th>Status</th>
-          <th>Onboarding</th>
-          <th>Cadastro</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaBody">
-        <tr><td colspan="9" class="empty">Carregando alunas...</td></tr>
-      </tbody>
-    </table>
-  </div>
+      <span class="adm-side-section">Gestão de Pessoas</span>
+      <button class="adm-side-item" data-mod="usuarios" onclick="mostrar('usuarios',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Usuários <span class="adm-side-counter" id="cnt-usuarios">0</span>
+      </button>
+      <button class="adm-side-item" data-mod="onboarding" onclick="mostrar('onboarding',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Onboarding <span class="adm-side-counter" id="cnt-onb">0</span>
+      </button>
+      <button class="adm-side-item" data-mod="cerebros" onclick="mostrar('cerebros',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5a3 3 0 100 6m0-6a3 3 0 110 6m6-6a3 3 0 100 6m0-6a3 3 0 110 6M9 19a3 3 0 100-6m0 6a3 3 0 110-6m6 6a3 3 0 100-6m0 6a3 3 0 110-6"/></svg>
+        Cérebros
+      </button>
 
+      <span class="adm-side-section">Plataforma</span>
+      <button class="adm-side-item" data-mod="fases" onclick="mostrar('fases',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        Fases & Ícones
+      </button>
+      <button class="adm-side-item" data-mod="cursos" onclick="mostrar('cursos',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Cursos
+      </button>
+      <button class="adm-side-item" data-mod="aulas" onclick="mostrar('aulas',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Aulas
+      </button>
+      <button class="adm-side-item" data-mod="prompts" onclick="mostrar('prompts',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Prompts
+      </button>
+      <button class="adm-side-item" data-mod="biblioteca" onclick="mostrar('biblioteca',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        Biblioteca
+      </button>
+
+      <span class="adm-side-section">Engajamento</span>
+      <button class="adm-side-item" data-mod="comunidade" onclick="mostrar('comunidade',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Comunidade
+      </button>
+      <button class="adm-side-item" data-mod="blog" onclick="mostrar('blog',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Blog
+      </button>
+      <button class="adm-side-item" data-mod="certificados" onclick="mostrar('certificados',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        Certificados
+      </button>
+
+      <span class="adm-side-section">Análise</span>
+      <button class="adm-side-item" data-mod="analytics" onclick="mostrar('analytics',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </button>
+      <button class="adm-side-item" data-mod="idiomas" onclick="mostrar('idiomas',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        Idiomas
+      </button>
+
+      <span class="adm-side-section">Sistema</span>
+      <button class="adm-side-item" data-mod="config" onclick="mostrar('config',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configurações
+      </button>
+      <button class="adm-side-item" data-mod="suporte" onclick="mostrar('suporte',this)">
+        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Suporte
+      </button>
+    </nav>
+
+    <div class="adm-side-footer">
+      <a href="u.html" target="_blank" class="adm-side-link">↗ Perfil público</a>
+      <button class="adm-side-sair" onclick="sair()">✕ Sair</button>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <main class="adm-content">
+
+    <!-- MÓDULO DASHBOARD -->
+    <section class="modulo ativo" id="mod-dashboard">
+      <div class="mod-header">
+        <div>
+          <h1 class="mod-titulo">Dashboard</h1>
+          <p class="mod-sub">Visão geral da plataforma · <span id="agoraData"></span></p>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-c">
+          <div class="stat-c-icon">👥</div>
+          <span class="stat-c-num" id="s-usuarios">—</span>
+          <span class="stat-c-label">Usuários totais</span>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-icon">✓</div>
+          <span class="stat-c-num" id="s-onb">—</span>
+          <span class="stat-c-label">Onboarding completo</span>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-icon">🌍</div>
+          <span class="stat-c-num" id="s-paises">—</span>
+          <span class="stat-c-label">Países ativos</span>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-icon">🗣</div>
+          <span class="stat-c-num" id="s-idiomas">—</span>
+          <span class="stat-c-label">Idiomas</span>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-icon">📅</div>
+          <span class="stat-c-num" id="s-hoje">—</span>
+          <span class="stat-c-label">Cadastros hoje</span>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-icon">📊</div>
+          <span class="stat-c-num" id="s-semana">—</span>
+          <span class="stat-c-label">Últimos 7 dias</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-titulo">Últimos cadastros</span>
+          <div id="ultimosCadastros"><p class="empty">Carregando...</p></div>
+        </div>
+        <div class="card">
+          <span class="card-titulo">Distribuição por país</span>
+          <div id="distPais"><p class="empty">Carregando...</p></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-titulo">Aptidões em alta</span>
+          <div id="aptidoesAlta"><p class="empty">Carregando...</p></div>
+        </div>
+        <div class="card">
+          <span class="card-titulo">Produtos mais escolhidos</span>
+          <div id="prodTop"><p class="empty">Carregando...</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO USUÁRIOS -->
+    <section class="modulo" id="mod-usuarios">
+      <div class="mod-header">
+        <div>
+          <h1 class="mod-titulo">Usuários</h1>
+          <p class="mod-sub" id="usuariosCount">Carregando...</p>
+        </div>
+      </div>
+
+      <div class="filtros">
+        <input class="f-input" type="text" placeholder="🔍  Buscar por nome, email ou telefone..." id="busca" oninput="filtrarUsuarios()">
+        <select class="f-select" id="fProd" onchange="filtrarUsuarios()">
+          <option value="">Todos os produtos</option>
+          <option>Acesso Gratuito</option><option>Tronco</option>
+          <option>Tronco VIP</option><option>Mentoria</option><option>E-book</option>
+        </select>
+        <select class="f-select" id="fStatus" onchange="filtrarUsuarios()">
+          <option value="">Todos os status</option>
+          <option>Em andamento</option><option>Pendente</option>
+          <option>Concluído</option><option>Cancelado</option>
+        </select>
+        <select class="f-select" id="fPais" onchange="filtrarUsuarios()">
+          <option value="">Todos os países</option>
+        </select>
+        <select class="f-select" id="fOnb" onchange="filtrarUsuarios()">
+          <option value="">Onboarding: todos</option>
+          <option value="sim">Completo</option><option value="nao">Incompleto</option>
+        </select>
+      </div>
+
+      <div class="tab-wrap">
+        <table>
+          <thead><tr>
+            <th>Usuária</th><th>Telefone</th><th>País</th><th>Produto</th>
+            <th>Idioma</th><th>Status</th><th>Onboarding</th><th>Cadastro</th>
+          </tr></thead>
+          <tbody id="tabUsuarios"><tr><td colspan="8" class="empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MÓDULO ONBOARDING -->
+    <section class="modulo" id="mod-onboarding">
+      <div class="mod-header">
+        <div>
+          <h1 class="mod-titulo">Respostas do Onboarding</h1>
+          <p class="mod-sub">Análise das respostas e padrões comportamentais</p>
+        </div>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-c"><span class="stat-c-num" id="o-completos">—</span><span class="stat-c-label">Completaram</span></div>
+        <div class="stat-c"><span class="stat-c-num" id="o-incompletos">—</span><span class="stat-c-label">Incompletos</span></div>
+        <div class="stat-c"><span class="stat-c-num" id="o-taxa">—</span><span class="stat-c-label">Taxa de conclusão</span></div>
+        <div class="stat-c"><span class="stat-c-num" id="o-objetivos">—</span><span class="stat-c-label">Objetivos únicos</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="card-titulo">Objetivos mais escolhidos</span>
+          <div id="objTop"><p class="empty">Carregando...</p></div>
+        </div>
+        <div class="card">
+          <span class="card-titulo">Como conheceram o ICONZA</span>
+          <div id="origemTop"><p class="empty">Carregando...</p></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-titulo">Distribuição por horário preferido</span>
+        <div id="horariosDist"><p class="empty">Carregando...</p></div>
+      </div>
+    </section>
+
+    <!-- MÓDULOS PLACEHOLDER -->
+    <section class="modulo" id="mod-cerebros">
+      <div class="mod-header"><div><h1 class="mod-titulo">Cérebros Criativos</h1><p class="mod-sub">Mapa neural de cada aluna</p></div></div>
+      <div class="placeholder"><span class="ph-icon">🧠</span><h2 class="ph-tit">Cérebros Criativos</h2><p class="ph-desc">Visualização neural das conexões criativas de cada aluna.<br>Sistema em desenvolvimento.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-fases">
+      <div class="mod-header"><div><h1 class="mod-titulo">Fases & Ícones</h1><p class="mod-sub">Sistema de 6 fases e desbloqueios</p></div></div>
+      <div class="placeholder"><span class="ph-icon">⭐</span><h2 class="ph-tit">Sistema de Fases</h2><p class="ph-desc">Descoberta · Linguagem · Criação · Comunicação · Projeto · Legado</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-cursos">
+      <div class="mod-header"><div><h1 class="mod-titulo">Cursos</h1><p class="mod-sub">Gestão de cursos da plataforma</p></div></div>
+      <div class="placeholder"><span class="ph-icon">📚</span><h2 class="ph-tit">Gestão de Cursos</h2><p class="ph-desc">Cadastre módulos, aulas, PDFs, quizzes e desafios.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-aulas">
+      <div class="mod-header"><div><h1 class="mod-titulo">Aulas</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">▶️</span><h2 class="ph-tit">Gestão de Aulas</h2><p class="ph-desc">Vídeos, materiais e progresso das aulas.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-prompts">
+      <div class="mod-header"><div><h1 class="mod-titulo">Prompts</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">⚡</span><h2 class="ph-tit">Biblioteca de Prompts</h2><p class="ph-desc">Prompts públicos, privados, virais e tags emocionais.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-biblioteca">
+      <div class="mod-header"><div><h1 class="mod-titulo">Biblioteca</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">📖</span><h2 class="ph-tit">Biblioteca</h2><p class="ph-desc">PDFs, e-books, iscas digitais e materiais.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-comunidade">
+      <div class="mod-header"><div><h1 class="mod-titulo">Comunidade</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Comunidade</h2><p class="ph-desc">Mural, posts, conexões e cérebros públicos.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-blog">
+      <div class="mod-header"><div><h1 class="mod-titulo">Blog</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">📝</span><h2 class="ph-tit">Blog</h2><p class="ph-desc">Artigos, editoriais e conteúdos.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-certificados">
+      <div class="mod-header"><div><h1 class="mod-titulo">Certificados</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">🏆</span><h2 class="ph-tit">Certificados</h2><p class="ph-desc">Emissão automática com QR Code.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-analytics">
+      <div class="mod-header"><div><h1 class="mod-titulo">Analytics</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">📊</span><h2 class="ph-tit">Analytics</h2><p class="ph-desc">Métricas de engajamento, retenção e tendências.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+    <section class="modulo" id="mod-idiomas">
+      <div class="mod-header"><div><h1 class="mod-titulo">Idiomas</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">🌐</span><h2 class="ph-tit">Sistema Multilíngue</h2><p class="ph-desc">Português · Inglês · Espanhol · Italiano · Francês</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+
+    <!-- CONFIG -->
+    <section class="modulo" id="mod-config">
+      <div class="mod-header"><div><h1 class="mod-titulo">Configurações</h1></div></div>
+      <div class="card" style="margin-bottom:1rem">
+        <span class="card-titulo">Plataforma</span>
+        <p style="font-size:.85rem;color:#555;margin-bottom:.4rem">🌐 <strong>URL:</strong> iconza.vercel.app</p>
+        <p style="font-size:.85rem;color:#555;margin-bottom:.4rem">🗄 <strong>Banco:</strong> Supabase — rwnedxbhlnvmqjsdzwyo</p>
+        <p style="font-size:.85rem;color:#555">📁 <strong>Repositório:</strong> github.com/zaruty/iconza</p>
+      </div>
+      <div class="card">
+        <span class="card-titulo">Administradores</span>
+        <div id="listaAdmins"><p class="empty">Carregando...</p></div>
+      </div>
+    </section>
+
+    <section class="modulo" id="mod-suporte">
+      <div class="mod-header"><div><h1 class="mod-titulo">Suporte</h1></div></div>
+      <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Central de Suporte</h2><p class="ph-desc">Tickets, mensagens e atendimento das alunas.</p><span class="ph-bdg">Em breve</span></div>
+    </section>
+
+  </main>
 </div>
 
-<!-- MODAL DETALHE -->
-<div class="modal-overlay" id="modalOverlay" onclick="fecharModal(event)">
-  <div class="modal" id="modalConteudo">
-    <div class="modal-header">
-      <div class="modal-avatar" id="mAvatar">?</div>
+<!-- MODAL USUÁRIO -->
+<div class="mov" id="modal" onclick="if(event.target===this)fechar()">
+  <div class="mod">
+    <div class="mod-h">
+      <div class="mod-h-av" id="mAv">?</div>
       <div>
-        <div class="modal-nome" id="mNome">—</div>
-        <div class="modal-email" id="mEmail">—</div>
+        <div class="mod-h-nome" id="mNome">—</div>
+        <div class="mod-h-em" id="mEm">—</div>
       </div>
-      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('show')">✕</button>
+      <button class="mod-cl" onclick="fechar()">✕</button>
     </div>
-    <div class="modal-body">
-
-      <div class="modal-section">
-        <span class="modal-section-title">Dados Pessoais</span>
-        <div class="modal-grid">
-          <div class="modal-campo"><span class="modal-campo-label">Telefone</span><span class="modal-campo-valor" id="mTel">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Aniversário</span><span class="modal-campo-valor" id="mAniv">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">País / Cidade</span><span class="modal-campo-valor" id="mPais">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Filhos</span><span class="modal-campo-valor" id="mFilhos">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Etnia</span><span class="modal-campo-valor" id="mEtnia">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Signo</span><span class="modal-campo-valor" id="mSigno">—</span></div>
+    <div class="mod-b">
+      <div class="mod-sec">
+        <span class="mod-sec-t">Dados Pessoais</span>
+        <div class="mod-gr">
+          <div class="mod-c"><span class="mod-c-l">Telefone</span><span class="mod-c-v" id="mTel">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Aniversário</span><span class="mod-c-v" id="mAniv">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">País / Cidade</span><span class="mod-c-v" id="mPais">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Filhos</span><span class="mod-c-v" id="mFilhos">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Etnia</span><span class="mod-c-v" id="mEtnia">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Signo</span><span class="mod-c-v" id="mSigno">—</span></div>
         </div>
       </div>
-
-      <div class="modal-section">
-        <span class="modal-section-title">Perfil Criativo</span>
-        <div class="modal-campo" style="margin-bottom:.8rem">
-          <span class="modal-campo-label">Aptidões</span>
-          <div class="modal-tags" id="mAptidoes"></div>
+      <div class="mod-sec">
+        <span class="mod-sec-t">Perfil Criativo</span>
+        <div class="mod-c" style="margin-bottom:.7rem">
+          <span class="mod-c-l">Aptidões</span>
+          <div class="mod-tags" id="mApt"></div>
         </div>
-        <div class="modal-grid">
-          <div class="modal-campo"><span class="modal-campo-label">Disponibilidade</span><span class="modal-campo-valor" id="mHorario">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Como conheceu</span><span class="modal-campo-valor" id="mOrigem">—</span></div>
-        </div>
-      </div>
-
-      <div class="modal-section">
-        <span class="modal-section-title">Redes Sociais</span>
-        <div class="modal-grid">
-          <div class="modal-campo"><span class="modal-campo-label">Instagram</span><span class="modal-campo-valor" id="mInsta">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">YouTube</span><span class="modal-campo-valor" id="mYt">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">TikTok</span><span class="modal-campo-valor" id="mTiktok">—</span></div>
+        <div class="mod-gr">
+          <div class="mod-c"><span class="mod-c-l">Horários</span><span class="mod-c-v" id="mHor">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Origem</span><span class="mod-c-v" id="mOrig">—</span></div>
         </div>
       </div>
-
-      <div class="modal-section">
-        <span class="modal-section-title">Assinatura e Status</span>
-        <div class="modal-grid">
-          <div class="modal-campo"><span class="modal-campo-label">Produto</span><span class="modal-campo-valor" id="mProduto">—</span></div>
-          <div class="modal-campo"><span class="modal-campo-label">Objetivo</span><div class="modal-tags" id="mObjetivo"></div></div>
-          <div class="modal-campo">
-            <span class="modal-campo-label">Status</span>
-            <select class="status-select" id="mStatus">
-              <option>Em andamento</option>
-              <option>Pendente</option>
-              <option>Concluído</option>
-              <option>Cancelado</option>
+      <div class="mod-sec">
+        <span class="mod-sec-t">Redes Sociais</span>
+        <div class="mod-gr">
+          <div class="mod-c"><span class="mod-c-l">Instagram</span><span class="mod-c-v" id="mInsta">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">YouTube</span><span class="mod-c-v" id="mYt">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">TikTok</span><span class="mod-c-v" id="mTk">—</span></div>
+        </div>
+      </div>
+      <div class="mod-sec">
+        <span class="mod-sec-t">Assinatura</span>
+        <div class="mod-gr">
+          <div class="mod-c"><span class="mod-c-l">Produto</span><span class="mod-c-v" id="mProd">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Status</span>
+            <select class="f-select" id="mStatusSel" style="margin-top:.2rem">
+              <option>Em andamento</option><option>Pendente</option>
+              <option>Concluído</option><option>Cancelado</option>
             </select>
           </div>
-          <div class="modal-campo"><span class="modal-campo-label">Data de cadastro</span><span class="modal-campo-valor" id="mData">—</span></div>
+          <div class="mod-c"><span class="mod-c-l">Objetivos</span><div class="mod-tags" id="mObj"></div></div>
+          <div class="mod-c"><span class="mod-c-l">Cadastro</span><span class="mod-c-v" id="mDt">—</span></div>
         </div>
       </div>
-
-      <div class="modal-section" id="mObsSection">
-        <span class="modal-section-title">Observações</span>
+      <div class="mod-sec">
+        <span class="mod-sec-t">Observações</span>
         <p style="font-size:.85rem;color:var(--cinza);line-height:1.7" id="mObs">—</p>
       </div>
-
-      <div class="modal-section">
-        <span class="modal-section-title">Notas internas (admin)</span>
-        <textarea id="mNotas" style="width:100%;padding:.7rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;min-height:80px;resize:vertical;outline:none" placeholder="Adicionar nota sobre esta aluna..."></textarea>
-      </div>
-
     </div>
-    <div class="modal-footer">
-      <button class="btn-modal btn-modal-sec" onclick="document.getElementById('modalOverlay').classList.remove('show')">Fechar</button>
-      <button class="btn-modal btn-modal-prim" onclick="salvarNota()">Salvar nota</button>
+    <div class="mod-f">
+      <button class="btn-m btn-m-s" onclick="fechar()">Fechar</button>
+      <button class="btn-m btn-m-p" onclick="salvarStatus()">Salvar alterações</button>
     </div>
   </div>
 </div>
 
 <script>
+// ============================================
+// ICONZA ADMIN — Arquitetura Modular
+// ============================================
 const { createClient } = supabase;
 const sb = createClient(
   'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
   'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
 );
 
-let todosAlunos = [];
-let alunoAtual = null;
+let TODOS = [];
+let usuarioAtual = null;
+let perfilAdmin = null;
 
-const ADMINS = ['lizarutyon@gmail.com', 'apoiozaruty@gmail.com'];
-
+// ============================================
+// AUTH + AUTORIZAÇÃO
+// ============================================
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
 
-  // Bloqueia acesso de não-admins
-  if (!ADMINS.includes(session.user.email)) {
+  // Busca perfil do usuário logado
+  const { data: profile, error } = await sb
+    .from('profiles')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+  if (error || !profile || profile.role !== 'admin') {
+    alert('Acesso restrito. Apenas administradores.');
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Mostra nome da admin no nav
-  const meta = session.user.user_metadata || {};
-  const nome = meta.full_name || meta.nome || session.user.email.split('@')[0];
-  document.querySelector('.nav-right').insertAdjacentHTML('afterbegin',
-    `<span style="font-size:.75rem;color:rgba(255,255,255,.5)">👑 ${nome}</span>`
-  );
+  perfilAdmin = profile;
+  renderAdminUI(profile);
 
-  await carregarAlunos();
-  setTimeout(() => document.getElementById('loadingOverlay').classList.add('hide'), 500);
+  // Carrega dados em paralelo
+  await carregarUsuarios();
+
+  document.getElementById('agoraData').textContent = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  setTimeout(() => document.getElementById('load').classList.add('hide'), 400);
 }
 
-async function carregarAlunos() {
-  // Busca dados do Supabase auth users
-  // Como o plano free não tem admin API direto no browser,
-  // usamos os dados salvos no user_metadata via login atual
-  // + dados de uma tabela 'profiles' que criamos
+function renderAdminUI(p) {
+  const nome = p.nome_completo || p.email.split('@')[0];
+  const inicial = nome.charAt(0).toUpperCase();
 
-  const { data: { session } } = await sb.auth.getSession();
-  const user = session?.user;
+  document.getElementById('adm-nome').textContent = nome;
+  document.getElementById('adm-nome-top').textContent = '👑 ' + nome;
 
-  if (user) {
-    const meta = user.user_metadata || {};
-    // Simula lista com o usuário atual
-    todosAlunos = [{
-      id: user.id,
-      email: user.email,
-      avatar: meta.avatar_url || null,
-      nome_completo: meta.nome_completo || meta.full_name || meta.nome || user.email.split('@')[0],
-      telefone: meta.telefone || '',
-      aniversario: meta.aniversario || '',
-      pais: meta.pais || '',
-      cidade: meta.cidade || '',
-      filhos: meta.filhos || '',
-      etnia: meta.etnia || '',
-      signo: meta.signo || '',
-      horarios: meta.horarios || [],
-      aptidoes: meta.aptidoes || [],
-      instagram: meta.instagram || '',
-      youtube: meta.youtube || '',
-      tiktok: meta.tiktok || '',
-      produto: meta.produto || 'Acesso Gratuito',
-      objetivo: meta.objetivo || [],
-      origem: meta.origem || '',
-      observacoes: meta.observacoes || '',
-      status: meta.status || 'Em andamento',
-      onboarding_completo: meta.onboarding_completo || false,
-      data_cadastro: meta.data_cadastro || user.created_at
-    }];
+  const av = document.getElementById('adm-av');
+  const avatar = perfilAdmin.avatar_url || null;
+  if (avatar) av.innerHTML = `<img src="${avatar}">`;
+  else av.textContent = inicial;
+}
+
+// ============================================
+// USUÁRIOS — Carrega da tabela profiles
+// ============================================
+async function carregarUsuarios() {
+  const { data, error } = await sb
+    .from('profiles')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erro carregar usuários:', error);
+    document.getElementById('tabUsuarios').innerHTML = `<tr><td colspan="8" class="empty">Erro: ${error.message}</td></tr>`;
+    return;
   }
 
+  TODOS = data || [];
+  preencherFiltroPaises();
   atualizarStats();
-  renderTabela(todosAlunos);
+  renderTabela(TODOS);
+  renderDashboard();
+  renderOnboarding();
+  renderConfig();
+}
+
+function preencherFiltroPaises() {
+  const paises = [...new Set(TODOS.map(u => u.pais).filter(Boolean))].sort();
+  const sel = document.getElementById('fPais');
+  sel.innerHTML = '<option value="">Todos os países</option>' + paises.map(p => `<option>${p}</option>`).join('');
 }
 
 function atualizarStats() {
-  document.getElementById('totalAlunos').textContent = todosAlunos.length;
-  document.getElementById('totalOnboarding').textContent = todosAlunos.filter(a => a.onboarding_completo).length;
-  const paises = [...new Set(todosAlunos.map(a => a.pais).filter(Boolean))];
-  document.getElementById('totalPaises').textContent = paises.length || '—';
+  const total = TODOS.length;
+  const completos = TODOS.filter(u => u.onboarding_completo).length;
+  const paises = [...new Set(TODOS.map(u => u.pais).filter(Boolean))];
+  const idiomas = [...new Set(TODOS.map(u => u.idioma).filter(Boolean))];
   const hoje = new Date().toDateString();
-  const cadastrosHoje = todosAlunos.filter(a => new Date(a.data_cadastro).toDateString() === hoje).length;
-  document.getElementById('totalHoje').textContent = cadastrosHoje;
+  const cadHoje = TODOS.filter(u => new Date(u.created_at).toDateString() === hoje).length;
+  const semanaAtras = new Date(Date.now() - 7*24*60*60*1000);
+  const cadSemana = TODOS.filter(u => new Date(u.created_at) >= semanaAtras).length;
+
+  document.getElementById('s-usuarios').textContent = total;
+  document.getElementById('s-onb').textContent = completos;
+  document.getElementById('s-paises').textContent = paises.length;
+  document.getElementById('s-idiomas').textContent = idiomas.length || '—';
+  document.getElementById('s-hoje').textContent = cadHoje;
+  document.getElementById('s-semana').textContent = cadSemana;
+
+  // Sidebar counters
+  document.getElementById('cnt-usuarios').textContent = total;
+  document.getElementById('cnt-onb').textContent = completos;
+  document.getElementById('usuariosCount').textContent = `${total} usuária(s) cadastrada(s) · ${completos} com onboarding completo`;
 }
 
 function renderTabela(lista) {
-  const tbody = document.getElementById('tabelaBody');
+  const tb = document.getElementById('tabUsuarios');
   if (!lista.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma aluna encontrada.</td></tr>';
+    tb.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma usuária encontrada.</td></tr>';
     return;
   }
-  tbody.innerHTML = lista.map(a => {
-    const inicial = (a.nome_completo || a.email || '?').charAt(0).toUpperCase();
-    const avatarHtml = a.avatar
-      ? `<img src="${a.avatar}" alt="${a.nome_completo}">`
-      : inicial;
-    const aptTags = (a.aptidoes||[]).slice(0,2).map(t => `<span class="badge b-cinza">${t}</span>`).join('') + (a.aptidoes?.length > 2 ? `<span class="badge b-cinza">+${a.aptidoes.length-2}</span>` : '');
-    const horarios = (a.horarios||[]).join(', ') || '—';
-    const statusCor = a.status === 'Em andamento' ? 'b-verde' : a.status === 'Pendente' ? 'b-gold' : a.status === 'Cancelado' ? 'b-vm' : 'b-cinza';
-    const onbCor = a.onboarding_completo ? 'b-verde' : 'b-cinza';
-    const onbLabel = a.onboarding_completo ? '✓ Completo' : '○ Pendente';
-    const dataFormatada = a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : '—';
+  tb.innerHTML = lista.map(u => {
+    const inic = (u.nome_completo || u.email || '?').charAt(0).toUpperCase();
+    const av = u.avatar_url ? `<img src="${u.avatar_url}">` : inic;
+    const stCor = u.status === 'Em andamento' ? 'b-verde' : u.status === 'Pendente' ? 'b-gold' : u.status === 'Cancelado' ? 'b-vm' : 'b-cinza';
+    const onbCor = u.onboarding_completo ? 'b-verde' : 'b-cinza';
+    const onbLb = u.onboarding_completo ? '✓ Completo' : '○ Pendente';
+    const data = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—';
+    const idiomaMap = {pt:'🇧🇷 PT',en:'🇺🇸 EN',it:'🇮🇹 IT',es:'🇪🇸 ES',fr:'🇫🇷 FR'};
+    const idioma = idiomaMap[u.idioma] || (u.idioma || '—');
 
-    return `<tr onclick="abrirModal('${a.id}')">
-      <td>
-        <div style="display:flex;align-items:center;gap:.8rem">
-          <div class="td-avatar">${avatarHtml}</div>
-          <div>
-            <div class="td-nome">${a.nome_completo || '—'}</div>
-            <div class="td-email">${a.email}</div>
-          </div>
-        </div>
-      </td>
-      <td>${a.telefone || '<span style="color:var(--borda)">—</span>'}</td>
-      <td>${a.pais || '<span style="color:var(--borda)">—</span>'}</td>
-      <td><span class="badge b-azul">${a.produto || 'Gratuito'}</span></td>
-      <td>${aptTags || '<span style="color:var(--borda)">—</span>'}</td>
-      <td style="font-size:.78rem">${horarios}</td>
-      <td><span class="badge ${statusCor}">${a.status || '—'}</span></td>
-      <td><span class="badge ${onbCor}">${onbLabel}</span></td>
-      <td style="font-size:.76rem;color:var(--cinza)">${dataFormatada}</td>
+    return `<tr onclick="abrirModal('${u.id}')">
+      <td><div style="display:flex;align-items:center;gap:.7rem"><div class="td-av">${av}</div><div><div class="td-nm">${u.nome_completo || '—'}</div><div class="td-em">${u.email}</div></div></div></td>
+      <td>${u.telefone || '<span style="color:var(--borda)">—</span>'}</td>
+      <td>${u.pais || '<span style="color:var(--borda)">—</span>'}</td>
+      <td><span class="bdg b-azul">${u.produto || 'Gratuito'}</span></td>
+      <td style="font-size:.78rem">${idioma}</td>
+      <td><span class="bdg ${stCor}">${u.status || '—'}</span></td>
+      <td><span class="bdg ${onbCor}">${onbLb}</span></td>
+      <td style="font-size:.74rem;color:var(--cinza)">${data}</td>
     </tr>`;
   }).join('');
 }
 
-function filtrar() {
-  const busca = document.getElementById('buscaInput').value.toLowerCase();
-  const produto = document.getElementById('filtroProduto').value;
-  const status = document.getElementById('filtroStatus').value;
-  const onb = document.getElementById('filtroOnboarding').value;
+function filtrarUsuarios() {
+  const b = document.getElementById('busca').value.toLowerCase();
+  const p = document.getElementById('fProd').value;
+  const s = document.getElementById('fStatus').value;
+  const pa = document.getElementById('fPais').value;
+  const o = document.getElementById('fOnb').value;
 
-  const filtrado = todosAlunos.filter(a => {
-    const matchBusca = !busca || (a.nome_completo||'').toLowerCase().includes(busca) || (a.email||'').toLowerCase().includes(busca);
-    const matchProduto = !produto || a.produto === produto;
-    const matchStatus = !status || a.status === status;
-    const matchOnb = !onb || (onb === 'sim' ? a.onboarding_completo : !a.onboarding_completo);
-    return matchBusca && matchProduto && matchStatus && matchOnb;
+  const filtrado = TODOS.filter(u => {
+    const mb = !b || (u.nome_completo||'').toLowerCase().includes(b) || (u.email||'').toLowerCase().includes(b) || (u.telefone||'').toLowerCase().includes(b);
+    const mp = !p || u.produto === p;
+    const ms = !s || u.status === s;
+    const mpa = !pa || u.pais === pa;
+    const mo = !o || (o === 'sim' ? u.onboarding_completo : !u.onboarding_completo);
+    return mb && mp && ms && mpa && mo;
   });
   renderTabela(filtrado);
 }
 
+// ============================================
+// DASHBOARD — Cards de análise
+// ============================================
+function renderDashboard() {
+  // Últimos cadastros
+  const ultimos = TODOS.slice(0, 5);
+  document.getElementById('ultimosCadastros').innerHTML = ultimos.length ? ultimos.map(u => {
+    const inic = (u.nome_completo || u.email).charAt(0).toUpperCase();
+    const av = u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%;height:100%;object-fit:cover">` : inic;
+    const data = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '';
+    return `<div style="display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--borda)" onclick="abrirModal('${u.id}')" style="cursor:pointer">
+      <div class="td-av">${av}</div>
+      <div style="flex:1"><div style="font-size:.85rem;font-weight:600">${u.nome_completo || u.email.split('@')[0]}</div><div style="font-size:.72rem;color:var(--cinza)">${u.email}</div></div>
+      <span style="font-size:.7rem;color:var(--cinza)">${data}</span>
+    </div>`;
+  }).join('') : '<p class="empty">Sem cadastros ainda.</p>';
+
+  // Distribuição por país
+  const paises = {};
+  TODOS.forEach(u => { if (u.pais) paises[u.pais] = (paises[u.pais] || 0) + 1; });
+  const paisesOrd = Object.entries(paises).sort((a,b) => b[1]-a[1]).slice(0,6);
+  document.getElementById('distPais').innerHTML = paisesOrd.length ? paisesOrd.map(([p,c]) => {
+    const pct = Math.round((c/TODOS.length)*100);
+    return `<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>${p}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:4px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--vm)"></div></div></div>`;
+  }).join('') : '<p class="empty">Sem dados.</p>';
+
+  // Aptidões em alta
+  const apt = {};
+  TODOS.forEach(u => (u.aptidoes||[]).forEach(a => { apt[a] = (apt[a]||0)+1; }));
+  const aptOrd = Object.entries(apt).sort((a,b) => b[1]-a[1]).slice(0,5);
+  document.getElementById('aptidoesAlta').innerHTML = aptOrd.length ? aptOrd.map(([a,c]) =>
+    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem;font-weight:500">${a}</span><span class="bdg b-vm">${c}</span></div>`
+  ).join('') : '<p class="empty">Aguardando dados.</p>';
+
+  // Produtos
+  const prods = {};
+  TODOS.forEach(u => { if (u.produto) prods[u.produto] = (prods[u.produto]||0)+1; });
+  const prodOrd = Object.entries(prods).sort((a,b) => b[1]-a[1]);
+  document.getElementById('prodTop').innerHTML = prodOrd.length ? prodOrd.map(([p,c]) => {
+    const pct = Math.round((c/TODOS.length)*100);
+    return `<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>${p}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:4px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--gold)"></div></div></div>`;
+  }).join('') : '<p class="empty">Sem dados.</p>';
+}
+
+// ============================================
+// ONBOARDING — Painel analítico
+// ============================================
+function renderOnboarding() {
+  const total = TODOS.length;
+  const completos = TODOS.filter(u => u.onboarding_completo).length;
+  const incompletos = total - completos;
+  const taxa = total ? Math.round((completos/total)*100) : 0;
+
+  document.getElementById('o-completos').textContent = completos;
+  document.getElementById('o-incompletos').textContent = incompletos;
+  document.getElementById('o-taxa').textContent = taxa + '%';
+
+  const objs = {};
+  TODOS.forEach(u => (u.objetivo||[]).forEach(o => { objs[o] = (objs[o]||0)+1; }));
+  document.getElementById('o-objetivos').textContent = Object.keys(objs).length;
+
+  const objOrd = Object.entries(objs).sort((a,b) => b[1]-a[1]).slice(0,5);
+  document.getElementById('objTop').innerHTML = objOrd.length ? objOrd.map(([o,c]) =>
+    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem">${o}</span><span class="bdg b-azul">${c}</span></div>`
+  ).join('') : '<p class="empty">Sem dados.</p>';
+
+  const orig = {};
+  TODOS.forEach(u => { if (u.origem) orig[u.origem] = (orig[u.origem]||0)+1; });
+  const origOrd = Object.entries(orig).sort((a,b) => b[1]-a[1]);
+  document.getElementById('origemTop').innerHTML = origOrd.length ? origOrd.map(([o,c]) =>
+    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem">${o}</span><span class="bdg b-gold">${c}</span></div>`
+  ).join('') : '<p class="empty">Sem dados.</p>';
+
+  const horarios = {Manhã:0,Tarde:0,Noite:0};
+  TODOS.forEach(u => (u.horarios||[]).forEach(h => { if (horarios[h] !== undefined) horarios[h]++; }));
+  document.getElementById('horariosDist').innerHTML = Object.entries(horarios).map(([h,c]) => {
+    const pct = total ? Math.round((c/total)*100) : 0;
+    const icon = h === 'Manhã' ? '🌅' : h === 'Tarde' ? '☀️' : '🌙';
+    return `<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.3rem"><span>${icon} ${h}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:6px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--vm)"></div></div></div>`;
+  }).join('');
+}
+
+// ============================================
+// CONFIG — Lista admins
+// ============================================
+function renderConfig() {
+  const admins = TODOS.filter(u => u.role === 'admin' || u.role === 'mentor');
+  document.getElementById('listaAdmins').innerHTML = admins.length ? admins.map(a =>
+    `<div style="display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--borda)">
+      <div class="td-av">${(a.nome_completo||a.email).charAt(0).toUpperCase()}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.88rem">${a.nome_completo||a.email}</div><div style="font-size:.72rem;color:var(--cinza)">${a.email}</div></div>
+      <span class="bdg b-vm">${a.role}</span>
+    </div>`
+  ).join('') : '<p class="empty">Nenhum admin.</p>';
+}
+
+// ============================================
+// MODAL DETALHE
+// ============================================
 function abrirModal(id) {
-  alunoAtual = todosAlunos.find(a => a.id === id);
-  if (!alunoAtual) return;
-  const a = alunoAtual;
+  usuarioAtual = TODOS.find(u => u.id === id);
+  if (!usuarioAtual) return;
+  const u = usuarioAtual;
 
-  const inicial = (a.nome_completo||'?').charAt(0).toUpperCase();
-  const av = document.getElementById('mAvatar');
-  av.innerHTML = a.avatar ? `<img src="${a.avatar}">` : inicial;
+  const inic = (u.nome_completo||'?').charAt(0).toUpperCase();
+  document.getElementById('mAv').innerHTML = u.avatar_url ? `<img src="${u.avatar_url}">` : inic;
+  document.getElementById('mNome').textContent = u.nome_completo || '—';
+  document.getElementById('mEm').textContent = u.email;
+  document.getElementById('mTel').textContent = u.telefone || '—';
+  document.getElementById('mAniv').textContent = u.aniversario ? new Date(u.aniversario+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  document.getElementById('mPais').textContent = [u.pais, u.cidade].filter(Boolean).join(' · ') || '—';
+  document.getElementById('mFilhos').textContent = u.filhos || '—';
+  document.getElementById('mEtnia').textContent = u.etnia || '—';
+  document.getElementById('mSigno').textContent = u.signo || '—';
+  document.getElementById('mHor').textContent = (u.horarios||[]).join(', ') || '—';
+  document.getElementById('mOrig').textContent = u.origem || '—';
+  document.getElementById('mInsta').textContent = u.instagram || '—';
+  document.getElementById('mYt').textContent = u.youtube || '—';
+  document.getElementById('mTk').textContent = u.tiktok || '—';
+  document.getElementById('mProd').textContent = u.produto || '—';
+  document.getElementById('mObs').textContent = u.observacoes || '—';
+  document.getElementById('mDt').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—';
+  document.getElementById('mStatusSel').value = u.status || 'Em andamento';
+  document.getElementById('mApt').innerHTML = (u.aptidoes||[]).map(t => `<span class="bdg b-cinza">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
+  document.getElementById('mObj').innerHTML = (u.objetivo||[]).map(t => `<span class="bdg b-azul">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
 
-  document.getElementById('mNome').textContent = a.nome_completo || '—';
-  document.getElementById('mEmail').textContent = a.email;
-  document.getElementById('mTel').textContent = a.telefone || '—';
-  document.getElementById('mAniv').textContent = a.aniversario ? new Date(a.aniversario+'T00:00:00').toLocaleDateString('pt-BR') : '—';
-  document.getElementById('mPais').textContent = [a.pais, a.cidade].filter(Boolean).join(' · ') || '—';
-  document.getElementById('mFilhos').textContent = a.filhos || '—';
-  document.getElementById('mEtnia').textContent = a.etnia || '—';
-  document.getElementById('mSigno').textContent = a.signo || '—';
-  document.getElementById('mHorario').textContent = (a.horarios||[]).join(', ') || '—';
-  document.getElementById('mOrigem').textContent = a.origem || '—';
-  document.getElementById('mInsta').textContent = a.instagram || '—';
-  document.getElementById('mYt').textContent = a.youtube || '—';
-  document.getElementById('mTiktok').textContent = a.tiktok || '—';
-  document.getElementById('mProduto').textContent = a.produto || '—';
-  document.getElementById('mObs').textContent = a.observacoes || '—';
-  document.getElementById('mData').textContent = a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : '—';
-
-  // Status
-  document.getElementById('mStatus').value = a.status || 'Em andamento';
-
-  // Aptidões
-  document.getElementById('mAptidoes').innerHTML = (a.aptidoes||[]).map(t => `<span class="badge b-cinza">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
-
-  // Objetivo
-  document.getElementById('mObjetivo').innerHTML = (a.objetivo||[]).map(t => `<span class="badge b-azul">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
-
-  // Notas
-  const notas = localStorage.getItem('iconza_nota_' + id) || '';
-  document.getElementById('mNotas').value = notas;
-
-  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('modal').classList.add('show');
 }
 
-function fecharModal(e) {
-  if (e.target === document.getElementById('modalOverlay')) {
-    document.getElementById('modalOverlay').classList.remove('show');
-  }
+function fechar() {
+  document.getElementById('modal').classList.remove('show');
 }
 
-function salvarNota() {
-  if (!alunoAtual) return;
-  const nota = document.getElementById('mNotas').value;
-  localStorage.setItem('iconza_nota_' + alunoAtual.id, nota);
-  document.getElementById('modalOverlay').classList.remove('show');
+async function salvarStatus() {
+  if (!usuarioAtual) return;
+  const novoStatus = document.getElementById('mStatusSel').value;
+  const { error } = await sb
+    .from('profiles')
+    .update({ status: novoStatus })
+    .eq('id', usuarioAtual.id);
+
+  if (error) { alert('Erro: ' + error.message); return; }
+
+  usuarioAtual.status = novoStatus;
+  const idx = TODOS.findIndex(u => u.id === usuarioAtual.id);
+  if (idx >= 0) TODOS[idx].status = novoStatus;
+  renderTabela(TODOS);
+  fechar();
 }
 
+// ============================================
+// NAVEGAÇÃO ENTRE MÓDULOS
+// ============================================
+function mostrar(modulo, btn) {
+  document.querySelectorAll('.modulo').forEach(m => m.classList.remove('ativo'));
+  document.querySelectorAll('.adm-side-item').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('mod-' + modulo).classList.add('ativo');
+  btn.classList.add('ativo');
+}
+
+// ============================================
+// EXPORTAR CSV
+// ============================================
 function exportarCSV() {
-  const headers = ['Nome','Email','Telefone','Aniversário','País','Cidade','Filhos','Etnia','Signo','Aptidões','Disponibilidade','Instagram','YouTube','TikTok','Produto','Objetivo','Como Conheceu','Status','Onboarding','Data Cadastro'];
-  const linhas = todosAlunos.map(a => [
-    a.nome_completo||'', a.email||'', a.telefone||'', a.aniversario||'',
-    a.pais||'', a.cidade||'', a.filhos||'', a.etnia||'', a.signo||'',
-    (a.aptidoes||[]).join(';'), (a.horarios||[]).join(';'),
-    a.instagram||'', a.youtube||'', a.tiktok||'',
-    a.produto||'', (a.objetivo||[]).join(';'), a.origem||'',
-    a.status||'', a.onboarding_completo?'Sim':'Não',
-    a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : ''
+  const headers = ['Nome','Email','Telefone','Aniversário','País','Cidade','Filhos','Etnia','Signo','Aptidões','Horários','Instagram','YouTube','TikTok','Produto','Objetivo','Origem','Status','Onboarding','Idioma','Cadastro'];
+  const linhas = TODOS.map(u => [
+    u.nome_completo||'', u.email||'', u.telefone||'', u.aniversario||'',
+    u.pais||'', u.cidade||'', u.filhos||'', u.etnia||'', u.signo||'',
+    (u.aptidoes||[]).join(';'), (u.horarios||[]).join(';'),
+    u.instagram||'', u.youtube||'', u.tiktok||'',
+    u.produto||'', (u.objetivo||[]).join(';'), u.origem||'',
+    u.status||'', u.onboarding_completo?'Sim':'Não', u.idioma||'',
+    u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : ''
   ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
 
   const csv = [headers.join(','), ...linhas].join('\n');
@@ -479,12 +899,18 @@ function exportarCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `iconza-crm-${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `iconza-usuarios-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
+async function sair() {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
 init();
 </script>
+<script src="acesso.js"></script>
 </body>
 </html>

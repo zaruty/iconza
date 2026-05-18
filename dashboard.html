@@ -742,9 +742,6 @@ const sb = createClient(
   'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
 );
 
-// Emails com acesso admin
-const ADMINS = ['lizarutyon@gmail.com', 'apoiozaruty@gmail.com'];
-
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
 
@@ -755,14 +752,27 @@ async function init() {
 
   const user = session.user;
 
-  // Se for admin, redireciona para painel de gestão
-  if (ADMINS.includes(user.email)) {
+  // Verifica role no banco de dados
+  const { data: profile } = await sb
+    .from('profiles')
+    .select('role, nome_completo, onboarding_completo')
+    .eq('id', user.id)
+    .single();
+
+  // Se for admin, redireciona para painel
+  if (profile && profile.role === 'admin') {
     window.location.href = 'admin-crm.html';
     return;
   }
 
+  // Se não fez onboarding ainda, manda para o diagnóstico
+  if (profile && !profile.onboarding_completo) {
+    // Opcional: descomente a linha abaixo para forçar onboarding
+    // window.location.href = 'diagnostico.html'; return;
+  }
+
   const meta = user.user_metadata || {};
-  const nome = meta.nome || meta.full_name || user.email.split('@')[0];
+  const nome = (profile && profile.nome_completo) || meta.nome || meta.full_name || user.email.split('@')[0];
   const inicial = nome.charAt(0).toUpperCase();
   const avatarUrl = meta.avatar_url || null;
 

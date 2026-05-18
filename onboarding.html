@@ -418,39 +418,56 @@ async function salvarTudo() {
 
   // Coleta campos de texto
   const perfil = {
+    id: session.user.id,
+    email: session.user.email,
     nome_completo: document.getElementById('f_nome').value.trim(),
     telefone: document.getElementById('f_telefone').value.trim(),
-    aniversario: document.getElementById('f_aniversario').value,
+    aniversario: document.getElementById('f_aniversario').value || null,
     pais: document.getElementById('f_pais').value,
     cidade: document.getElementById('f_cidade').value.trim(),
     filhos: document.getElementById('f_filhos').value,
-    etnia: dados.etnia || (dados.etnia_arr && dados.etnia_arr[0]) || '',
+    etnia: dados.etnia || '',
     signo: dados.signo || '',
-    horarios: dados.horarios,
+    horarios: dados.horarios || [],
     aptidoes: Array.from(document.querySelectorAll('#tags_aptidoes .sel')).map(t=>t.textContent.trim()),
     instagram: document.getElementById('f_instagram').value.trim(),
     youtube: document.getElementById('f_youtube').value.trim(),
     tiktok: document.getElementById('f_tiktok').value.trim(),
-    produto: dados.produto,
+    produto: dados.produto || 'Acesso Gratuito',
     objetivo: Array.from(document.querySelectorAll('#tags_objetivo .sel')).map(t=>t.textContent.trim()),
-    origem: dados.origem,
+    origem: dados.origem || '',
     observacoes: document.getElementById('f_obs').value.trim(),
     status: 'Em andamento',
     onboarding_completo: true,
-    data_cadastro: new Date().toISOString()
+    idioma: localStorage.getItem('iconza_lang') || 'pt'
   };
 
-  // Salva no Supabase user metadata
-  const { error } = await sb.auth.updateUser({ data: perfil });
+  // Remove campos vazios para não sobrescrever
+  Object.keys(perfil).forEach(k => {
+    if (perfil[k] === '' || perfil[k] === null) delete perfil[k];
+  });
+
+  // Salva na tabela profiles do Supabase
+  const { error } = await sb
+    .from('profiles')
+    .upsert(perfil, { onConflict: 'id' });
 
   if (error) {
+    console.error('Erro Supabase:', error);
     const msg = document.getElementById('msgGlobal');
-    msg.textContent = 'Erro ao salvar. Tente novamente.';
+    msg.textContent = 'Erro ao salvar: ' + error.message;
     msg.className = 'msg erro show';
     btn.textContent = 'Entrar no ICONZA 👑';
     btn.disabled = false;
     return;
   }
+
+  // Também salva no user_metadata para acesso rápido em outras páginas
+  await sb.auth.updateUser({ data: {
+    nome_completo: perfil.nome_completo,
+    onboarding_completo: true,
+    role: 'aluno'
+  }});
 
   // Redireciona para dashboard
   window.location.href = 'dashboard.html';
