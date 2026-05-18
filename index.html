@@ -76,14 +76,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .secao{padding:6rem 3.5rem}
 .sec-eyebrow{font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--vm);margin-bottom:.6rem;text-align:center;display:block}
 .sec-titulo{font-family:'DM Sans',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:700;text-align:center;color:var(--preto);margin-bottom:4rem}
-.utensilios{background:var(--off)}
-.grid-8{display:grid;grid-template-columns:repeat(8,1fr);border:1px solid var(--borda);border-right:none;border-bottom:none}
-.ut-card{padding:2rem 1rem;border-right:1px solid var(--borda);border-bottom:1px solid var(--borda);text-align:center;transition:background .3s;position:relative;overflow:hidden}
-.ut-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--vm);opacity:.05;transition:height .3s}
-.ut-card:hover::after{height:100%}
-.ut-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--vm);display:block;margin-bottom:.5rem}
-.ut-nome{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--preto);font-weight:600;display:block;margin-bottom:.6rem}
-.ut-desc{font-size:.7rem;line-height:1.7;color:var(--cinza)}
+.utensilios{background:#fff}
+.grid-8{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.ut-card{padding:2rem .8rem 1.5rem;text-align:center;position:relative;overflow:hidden;border-radius:4px;transition:transform .2s,box-shadow .2s;cursor:default}
+.ut-card:hover{transform:translateY(-6px) scale(1.04);box-shadow:0 12px 32px rgba(0,0,0,.2);z-index:2}
+.ut-card:nth-child(1){background:linear-gradient(160deg,#e63030,#c41a1a)}
+.ut-card:nth-child(2){background:linear-gradient(160deg,#f07020,#d95f10)}
+.ut-card:nth-child(3){background:linear-gradient(160deg,#f0a020,#d98a10)}
+.ut-card:nth-child(4){background:linear-gradient(160deg,#d4c820,#b8ac10)}
+.ut-card:nth-child(5){background:linear-gradient(160deg,#90c030,#74a420)}
+.ut-card:nth-child(6){background:linear-gradient(160deg,#40b840,#289028)}
+.ut-card:nth-child(7){background:linear-gradient(160deg,#20c080,#109060)}
+.ut-card:nth-child(8){background:linear-gradient(160deg,#2090e0,#1070c0)}
+.ut-num{font-family:'DM Sans',sans-serif;font-size:3.5rem;font-weight:900;color:rgba(0,0,0,.2);display:block;margin-bottom:.3rem;line-height:1}
+.ut-nome{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.95);font-weight:700;display:block;margin-bottom:.5rem}
+.ut-desc{font-size:.68rem;line-height:1.6;color:rgba(255,255,255,.75)}
 .ver-todos{text-align:center;margin-top:2.5rem}
 .link-arrow{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:color .2s,gap .2s}
 .link-arrow:hover{color:var(--vm);gap:.9rem}
@@ -267,8 +274,8 @@ footer p{font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
 <div class="sep"><div class="sep-line"></div><span class="sep-text">Universo 1 · Surrealismo Radical · Frida Kahlo</span><div class="sep-line"></div></div>
 
 <section class="secao utensilios" id="fase1">
-  <span class="sec-eyebrow reveal">Aprender os elementos fundamentais</span>
-  <h2 class="sec-titulo reveal">Fase 1 — Utensílios</h2>
+  <span class="sec-eyebrow reveal" style="color:var(--vm)">Aprender os elementos fundamentais</span>
+  <h2 class="sec-titulo reveal" style="color:var(--preto)">Fase 1 — Utensílios</h2>
   <div class="grid-8">
     <div class="ut-card reveal"><span class="ut-num">1.</span><span class="ut-nome">Background</span><p class="ut-desc">Fundos, texturas, atmosfera e contexto visual.</p></div>
     <div class="ut-card reveal"><span class="ut-num">2.</span><span class="ut-nome">Cor</span><p class="ut-desc">Paletas, emoções, extração de cor e harmonia.</p></div>
@@ -279,7 +286,7 @@ footer p{font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
     <div class="ut-card reveal"><span class="ut-num">7.</span><span class="ut-nome">Tipografia</span><p class="ut-desc">Fontes, estilo, leitura e expressão visual.</p></div>
     <div class="ut-card reveal"><span class="ut-num">8.</span><span class="ut-nome">Espaço Negativo</span><p class="ut-desc">Respiro visual, silêncio e foco na narrativa.</p></div>
   </div>
-  <div class="ver-todos reveal"><a href="#" class="link-arrow">Ver todos os módulos da Fase 1 →</a></div>
+  <div class="ver-todos reveal"><a href="#" class="link-arrow" style="color:var(--cinza)">Ver todos os módulos da Fase 1 →</a></div>
 </section>
 
 <section class="secao" id="gastronomia" style="background:var(--branco)">
@@ -305,10 +312,10 @@ footer p{font-size:.65rem;color:rgba(255,255,255,.25);letter-spacing:.05em}
   <span class="sec-eyebrow reveal">Infraestrutura criativa</span>
   <h2 class="sec-titulo reveal">Ferramentas Principais</h2>
   <div class="tools-grid">
-    <div class="tool reveal"><div class="tool-logo tl1">CC</div><div class="tool-info"><h4>CapCut</h4><p>Edição de vídeo e animação</p></div></div>
-    <div class="tool reveal"><div class="tool-logo tl2">Cv</div><div class="tool-info"><h4>Canva</h4><p>Design gráfico e identidade visual</p></div></div>
-    <div class="tool reveal"><div class="tool-logo tl3">GP</div><div class="tool-info"><h4>ChatGPT</h4><p>Geração de ideias e roteiros</p></div></div>
-    <div class="tool reveal"><div class="tool-logo tl4">Cl</div><div class="tool-info"><h4>Claude</h4><p>Pesquisa profunda e estruturação</p></div></div>
+    <div class="tool reveal"><div class="tool-logo" style="background:#000;padding:4px"><img src="capcut-icon.webp" style="width:100%;height:100%;object-fit:contain;border-radius:4px"></div><div class="tool-info"><h4>CapCut</h4><p>Edição de vídeo e animação</p></div></div>
+    <div class="tool reveal"><div class="tool-logo" style="background:#fff;border:1px solid var(--borda);padding:4px"><img src="canva.png" style="width:100%;height:100%;object-fit:contain"></div><div class="tool-info"><h4>Canva</h4><p>Design gráfico e identidade visual</p></div></div>
+    <div class="tool reveal"><div class="tool-logo" style="background:#fff;border:1px solid var(--borda);padding:4px"><img src="gpt.webp" style="width:100%;height:100%;object-fit:contain"></div><div class="tool-info"><h4>ChatGPT</h4><p>Geração de ideias e roteiros</p></div></div>
+    <div class="tool reveal"><div class="tool-logo" style="background:#fff;border:1px solid var(--borda);padding:4px"><img src="claude.png" style="width:100%;height:100%;object-fit:contain"></div><div class="tool-info"><h4>Claude</h4><p>Pesquisa profunda e estruturação</p></div></div>
   </div>
 </section>
 
