@@ -84,7 +84,7 @@ body.modo-escuro .nav-links a{color:rgba(255,255,255,.5) !important}
 body.modo-escuro .nav-links a:hover,body.modo-escuro .nav-links a.active{color:#fff !important}
 body.modo-escuro .topbar-acesso{background:#2a2a2a !important;border-color:#444 !important}
 body.modo-escuro .topbar-acesso-btn{background:#2a2a2a !important;border-color:#444 !important;color:#888 !important}
-body.modo-escuro .topbar-acesso-btn.ativo{background:#3ECF8E !important;color:#0a0a0a !important;border-color:#3ECF8E !important;box-shadow:0 0 10px rgba(62,207,142,.5) !important;font-weight:800 !important}
+body.modo-escuro .topbar-acesso-btn.ativo{background:#D4E600 !important;color:#0a0a0a !important;border-color:#D4E600 !important;box-shadow:0 0 10px rgba(212,230,0,.5) !important;font-weight:800 !important}
 body.modo-escuro .topbar-sep{background:#444 !important}
 body.modo-escuro .form-field input,
 body.modo-escuro .form-field textarea,
@@ -93,4 +93,66 @@ body.modo-escuro .hero{background:#111 !important}
 body.modo-escuro .utensilios{background:#0d0d0d !important}
 body.modo-escuro .ferramentas{background:#1a1a1a !important}
 body.modo-escuro .off{background:#161616 !important}
-body.modo-escuro .acesso-opt.ativo{background:#3ECF8E !important;color:#0a0a0a !important;border-color:#3ECF8E !important;box-shadow:0 0 8px rgba(62,207,142,.4) !important}
+body.modo-escuro .acesso-opt.ativo{background:#D4E600 !important;color:#0a0a0a !important;border-color:#D4E600 !important;box-shadow:0 0 8px rgba(212,230,0,.4) !important}
+
+/* MODO ESCURO — correções adicionais de design */
+
+/* Banner de boas-vindas escuro */
+body.modo-escuro .welcome{background:#1e1e1e !important;border-color:#333 !important;border-left-color:#D4E600 !important}
+body.modo-escuro .welcome-left h1{color:#f0ede8 !important}
+body.modo-escuro .welcome-left h1 span{color:#D4E600 !important}
+body.modo-escuro .welcome-left p{color:#666 !important}
+body.modo-escuro .stat-num{color:#f0ede8 !important}
+
+/* Barra de gamificação escura */
+body.modo-escuro .gamif-bar{background:#1e1e1e !important;border-color:#333 !important}
+body.modo-escuro .nivel-nome{color:#D4E600 !important}
+body.modo-escuro .nivel-badge{border-color:#333 !important}
+body.modo-escuro .xp-bar{background:#333 !important}
+body.modo-escuro .xp-fill{background:#D4E600 !important}
+body.modo-escuro .gamif-pontos{border-left-color:#333 !important}
+body.modo-escuro .pontos-num{color:#f0ede8 !important}
+
+/* Abas escuras */
+body.modo-escuro .abas{border-bottom-color:#333 !important}
+body.modo-escuro .aba{color:#666 !important}
+body.modo-escuro .aba:hover{color:#f0ede8 !important}
+body.modo-escuro .aba.ativa{color:#f0ede8 !important;border-bottom-color:#D4E600 !important}
+
+/* Links ativos — vermelho → neon amarelo no dark */
+body.modo-escuro .nav-item.active{color:#D4E600 !important}
+body.modo-escuro .nav-item.active::before{background:#D4E600 !important}
+body.modo-escuro .vm, body.modo-escuro .card-link{color:#D4E600 !important}
+body.modo-escuro .sec-eyebrow{color:#D4E600 !important}
+body.modo-escuro .nivel-nome{color:#D4E600 !important}
+
+/* Cards de acesso rápido escuros */
+body.modo-escuro .quick-card{background:#1e1e1e !important;border-color:#333 !important}
+body.modo-escuro .quick-card:hover{border-color:#D4E600 !important}
+body.modo-escuro .quick-label{color:#f0ede8 !important}
+body.modo-escuro .quick-desc{color:#666 !important}
+
+/* Cards principais escuros */
+body.modo-escuro .card{background:#1e1e1e !important;border-color:#333 !important}
+body.modo-escuro .card-header{border-bottom-color:#333 !important}
+body.modo-escuro .card-title{color:#888 !important}
+body.modo-escuro .card-link{color:#D4E600 !important}
+body.modo-escuro .empty-text{color:#555 !important}
+
+/* Barra de progresso circular */
+body.modo-escuro .progress-ring circle:first-child{stroke:#333 !important}
+body.modo-escuro #progressCircle{stroke:#D4E600 !important}
+body.modo-escuro .progress-ring-num{color:#f0ede8 !important}
+body.modo-escuro .progress-ring-label{color:#666 !important}
+
+/* Topbar escuro */
+body.modo-escuro .topbar{background:#1e1e1e !important;border-bottom-color:#333 !important}
+body.modo-escuro .topbar-title{color:#888 !important}
+body.modo-escuro .notif-btn{background:#2a2a2a !important;border-color:#444 !important}
+
+/* Botão explorar */
+body.modo-escuro .empty-btn{background:#D4E600 !important;color:#1a1a1a !important}
+body.modo-escuro .empty-btn:hover{background:#bfcc00 !important}
+
+/* Universo card escuro */
+body.modo-escuro .card[style*="background:var(--grafite)"]{background:#111 !important}
