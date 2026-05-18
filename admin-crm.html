@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Admin CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;--branco:#fff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;--verde:#4a8c4a}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh}
+
+nav{background:var(--grafite);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo img{width:26px;height:26px;object-fit:contain}
+.nav-logo-text{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;letter-spacing:.12em;color:#fff}
+.nav-badge{font-size:.6rem;padding:.2rem .6rem;background:var(--vm);color:#fff;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.nav-right{display:flex;gap:1rem;align-items:center}
+.nav-btn{font-size:.7rem;padding:.5rem 1rem;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.nav-btn:hover{border-color:#fff;color:#fff}
+.nav-btn.destaque{background:var(--verde);border-color:var(--verde);color:#fff}
+
+/* STATS TOPO */
+.stats-topo{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--borda);margin-bottom:1.5rem}
+.stat-topo{background:var(--branco);padding:1.2rem 1.5rem}
+.stat-topo-num{font-size:1.8rem;font-weight:700;color:var(--preto);display:block;line-height:1;margin-bottom:.2rem}
+.stat-topo-label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza)}
+.stat-topo-sub{font-size:.72rem;color:var(--verde);margin-top:.2rem}
+
+/* FILTROS */
+.filtros{background:var(--branco);border:1px solid var(--borda);padding:1rem 1.5rem;margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.filtro-input{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:var(--branco);color:var(--preto);transition:border-color .2s;flex:1;min-width:200px}
+.filtro-input:focus{border-color:var(--preto)}
+.filtro-select{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;background:var(--branco);color:var(--preto);cursor:pointer}
+.btn-exportar{padding:.55rem 1.2rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;white-space:nowrap}
+.btn-exportar:hover{background:var(--vm)}
+
+/* TABELA */
+.tabela-wrap{background:var(--branco);border:1px solid var(--borda);overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead tr{background:var(--grafite)}
+th{padding:.75rem 1rem;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:600;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:#fff}
+tbody tr{border-bottom:1px solid var(--borda);transition:background .15s;cursor:pointer}
+tbody tr:hover{background:var(--off)}
+tbody tr:last-child{border-bottom:none}
+td{padding:.85rem 1rem;font-size:.82rem;color:var(--preto);vertical-align:middle}
+.td-avatar{width:32px;height:32px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.td-avatar img{width:100%;height:100%;object-fit:cover}
+.td-nome{font-weight:600}
+.td-email{color:var(--cinza);font-size:.76rem}
+
+/* BADGES */
+.badge{font-size:.58rem;padding:.18rem .55rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:inline-block;margin:.1rem}
+.b-verde{background:rgba(74,140,74,.1);color:var(--verde)}
+.b-vm{background:rgba(193,39,45,.1);color:var(--vm)}
+.b-gold{background:rgba(201,162,39,.12);color:var(--gold)}
+.b-cinza{background:rgba(0,0,0,.05);color:var(--cinza)}
+.b-azul{background:rgba(30,100,200,.08);color:#1e64c8}
+
+/* MODAL DETALHE */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-overlay.show{display:flex}
+.modal{background:var(--branco);width:100%;max-width:680px;position:relative;margin:auto}
+.modal-header{background:var(--grafite);padding:1.5rem 2rem;display:flex;align-items:center;gap:1.2rem}
+.modal-avatar{width:56px;height:56px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.modal-avatar img{width:100%;height:100%;object-fit:cover}
+.modal-nome{font-size:1.1rem;font-weight:700;color:#fff}
+.modal-email{font-size:.78rem;color:rgba(255,255,255,.45)}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;cursor:pointer;padding:.3rem}
+.modal-close:hover{color:#fff}
+.modal-body{padding:1.5rem 2rem}
+.modal-section{margin-bottom:1.5rem}
+.modal-section-title{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--borda)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.modal-campo{display:flex;flex-direction:column;gap:.2rem}
+.modal-campo-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600}
+.modal-campo-valor{font-size:.88rem;color:var(--preto);font-weight:500}
+.modal-campo-valor.vazio{color:var(--borda)}
+.modal-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.modal-footer{padding:1rem 2rem;border-top:1px solid var(--borda);display:flex;gap:.8rem;justify-content:flex-end}
+.btn-modal{padding:.6rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-modal-prim{background:var(--preto);color:#fff;border:none}
+.btn-modal-prim:hover{background:var(--vm)}
+.btn-modal-sec{background:transparent;color:var(--cinza);border:1px solid var(--borda)}
+.btn-modal-sec:hover{border-color:var(--preto);color:var(--preto)}
+
+/* STATUS EDIT */
+.status-select{padding:.4rem .6rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.78rem;outline:none;background:var(--branco)}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
+.loading-overlay.hide{opacity:0;pointer-events:none}
+.spin{width:28px;height:28px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.content{padding:1.5rem 2rem}
+.empty{text-align:center;padding:3rem;color:var(--cinza);font-size:.9rem}
+
+@media(max-width:768px){
+  .stats-topo{grid-template-columns:1fr 1fr}
+  .content{padding:1rem}
+  .modal-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay"><div class="spin"></div></div>
+
+<nav>
+  <a href="dashboard.html" class="nav-logo">
+    <img src="coroa.png" alt="ICONZA">
+    <span class="nav-logo-text">ICONZA</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:.8rem">
+    <span class="nav-badge">Admin</span>
+    <span style="font-size:.72rem;color:rgba(255,255,255,.4)">CRM</span>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn destaque" onclick="exportarCSV()">⬇ Exportar CSV</button>
+    <a href="dashboard.html" class="nav-btn">← Dashboard</a>
+  </div>
+</nav>
+
+<div class="content">
+
+  <!-- STATS -->
+  <div class="stats-topo" id="statsTopo">
+    <div class="stat-topo"><span class="stat-topo-num" id="totalAlunos">—</span><span class="stat-topo-label">Alunas cadastradas</span></div>
+    <div class="stat-topo"><span class="stat-topo-num" id="totalOnboarding">—</span><span class="stat-topo-label">Onboarding completo</span></div>
+    <div class="stat-topo"><span class="stat-topo-num" id="totalPaises">—</span><span class="stat-topo-label">Países</span></div>
+    <div class="stat-topo"><span class="stat-topo-num" id="totalHoje">—</span><span class="stat-topo-label">Cadastros hoje</span></div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <input class="filtro-input" type="text" placeholder="🔍  Buscar por nome ou email..." id="buscaInput" oninput="filtrar()">
+    <select class="filtro-select" id="filtroProduto" onchange="filtrar()">
+      <option value="">Todos os produtos</option>
+      <option>Acesso Gratuito</option>
+      <option>Tronco</option>
+      <option>Tronco VIP</option>
+      <option>Mentoria</option>
+      <option>E-book</option>
+    </select>
+    <select class="filtro-select" id="filtroStatus" onchange="filtrar()">
+      <option value="">Todos os status</option>
+      <option>Em andamento</option>
+      <option>Pendente</option>
+      <option>Concluído</option>
+      <option>Cancelado</option>
+    </select>
+    <select class="filtro-select" id="filtroOnboarding" onchange="filtrar()">
+      <option value="">Onboarding: todos</option>
+      <option value="sim">Completo</option>
+      <option value="nao">Incompleto</option>
+    </select>
+    <button class="btn-exportar" onclick="exportarCSV()">⬇ CSV</button>
+  </div>
+
+  <!-- TABELA -->
+  <div class="tabela-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Aluna</th>
+          <th>Telefone</th>
+          <th>País</th>
+          <th>Produto</th>
+          <th>Aptidões</th>
+          <th>Horário</th>
+          <th>Status</th>
+          <th>Onboarding</th>
+          <th>Cadastro</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaBody">
+        <tr><td colspan="9" class="empty">Carregando alunas...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="modal-overlay" id="modalOverlay" onclick="fecharModal(event)">
+  <div class="modal" id="modalConteudo">
+    <div class="modal-header">
+      <div class="modal-avatar" id="mAvatar">?</div>
+      <div>
+        <div class="modal-nome" id="mNome">—</div>
+        <div class="modal-email" id="mEmail">—</div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-section">
+        <span class="modal-section-title">Dados Pessoais</span>
+        <div class="modal-grid">
+          <div class="modal-campo"><span class="modal-campo-label">Telefone</span><span class="modal-campo-valor" id="mTel">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Aniversário</span><span class="modal-campo-valor" id="mAniv">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">País / Cidade</span><span class="modal-campo-valor" id="mPais">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Filhos</span><span class="modal-campo-valor" id="mFilhos">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Etnia</span><span class="modal-campo-valor" id="mEtnia">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Signo</span><span class="modal-campo-valor" id="mSigno">—</span></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <span class="modal-section-title">Perfil Criativo</span>
+        <div class="modal-campo" style="margin-bottom:.8rem">
+          <span class="modal-campo-label">Aptidões</span>
+          <div class="modal-tags" id="mAptidoes"></div>
+        </div>
+        <div class="modal-grid">
+          <div class="modal-campo"><span class="modal-campo-label">Disponibilidade</span><span class="modal-campo-valor" id="mHorario">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Como conheceu</span><span class="modal-campo-valor" id="mOrigem">—</span></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <span class="modal-section-title">Redes Sociais</span>
+        <div class="modal-grid">
+          <div class="modal-campo"><span class="modal-campo-label">Instagram</span><span class="modal-campo-valor" id="mInsta">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">YouTube</span><span class="modal-campo-valor" id="mYt">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">TikTok</span><span class="modal-campo-valor" id="mTiktok">—</span></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <span class="modal-section-title">Assinatura e Status</span>
+        <div class="modal-grid">
+          <div class="modal-campo"><span class="modal-campo-label">Produto</span><span class="modal-campo-valor" id="mProduto">—</span></div>
+          <div class="modal-campo"><span class="modal-campo-label">Objetivo</span><div class="modal-tags" id="mObjetivo"></div></div>
+          <div class="modal-campo">
+            <span class="modal-campo-label">Status</span>
+            <select class="status-select" id="mStatus">
+              <option>Em andamento</option>
+              <option>Pendente</option>
+              <option>Concluído</option>
+              <option>Cancelado</option>
+            </select>
+          </div>
+          <div class="modal-campo"><span class="modal-campo-label">Data de cadastro</span><span class="modal-campo-valor" id="mData">—</span></div>
+        </div>
+      </div>
+
+      <div class="modal-section" id="mObsSection">
+        <span class="modal-section-title">Observações</span>
+        <p style="font-size:.85rem;color:var(--cinza);line-height:1.7" id="mObs">—</p>
+      </div>
+
+      <div class="modal-section">
+        <span class="modal-section-title">Notas internas (admin)</span>
+        <textarea id="mNotas" style="width:100%;padding:.7rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;min-height:80px;resize:vertical;outline:none" placeholder="Adicionar nota sobre esta aluna..."></textarea>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-modal-sec" onclick="document.getElementById('modalOverlay').classList.remove('show')">Fechar</button>
+      <button class="btn-modal btn-modal-prim" onclick="salvarNota()">Salvar nota</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+let todosAlunos = [];
+let alunoAtual = null;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  // Carrega lista de usuários via admin API (simulado com dados locais por enquanto)
+  // Na versão completa, usar Supabase Admin API ou Edge Function
+  await carregarAlunos();
+  setTimeout(() => document.getElementById('loadingOverlay').classList.add('hide'), 500);
+}
+
+async function carregarAlunos() {
+  // Busca dados do Supabase auth users
+  // Como o plano free não tem admin API direto no browser,
+  // usamos os dados salvos no user_metadata via login atual
+  // + dados de uma tabela 'profiles' que criamos
+
+  const { data: { session } } = await sb.auth.getSession();
+  const user = session?.user;
+
+  if (user) {
+    const meta = user.user_metadata || {};
+    // Simula lista com o usuário atual
+    todosAlunos = [{
+      id: user.id,
+      email: user.email,
+      avatar: meta.avatar_url || null,
+      nome_completo: meta.nome_completo || meta.full_name || meta.nome || user.email.split('@')[0],
+      telefone: meta.telefone || '',
+      aniversario: meta.aniversario || '',
+      pais: meta.pais || '',
+      cidade: meta.cidade || '',
+      filhos: meta.filhos || '',
+      etnia: meta.etnia || '',
+      signo: meta.signo || '',
+      horarios: meta.horarios || [],
+      aptidoes: meta.aptidoes || [],
+      instagram: meta.instagram || '',
+      youtube: meta.youtube || '',
+      tiktok: meta.tiktok || '',
+      produto: meta.produto || 'Acesso Gratuito',
+      objetivo: meta.objetivo || [],
+      origem: meta.origem || '',
+      observacoes: meta.observacoes || '',
+      status: meta.status || 'Em andamento',
+      onboarding_completo: meta.onboarding_completo || false,
+      data_cadastro: meta.data_cadastro || user.created_at
+    }];
+  }
+
+  atualizarStats();
+  renderTabela(todosAlunos);
+}
+
+function atualizarStats() {
+  document.getElementById('totalAlunos').textContent = todosAlunos.length;
+  document.getElementById('totalOnboarding').textContent = todosAlunos.filter(a => a.onboarding_completo).length;
+  const paises = [...new Set(todosAlunos.map(a => a.pais).filter(Boolean))];
+  document.getElementById('totalPaises').textContent = paises.length || '—';
+  const hoje = new Date().toDateString();
+  const cadastrosHoje = todosAlunos.filter(a => new Date(a.data_cadastro).toDateString() === hoje).length;
+  document.getElementById('totalHoje').textContent = cadastrosHoje;
+}
+
+function renderTabela(lista) {
+  const tbody = document.getElementById('tabelaBody');
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma aluna encontrada.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(a => {
+    const inicial = (a.nome_completo || a.email || '?').charAt(0).toUpperCase();
+    const avatarHtml = a.avatar
+      ? `<img src="${a.avatar}" alt="${a.nome_completo}">`
+      : inicial;
+    const aptTags = (a.aptidoes||[]).slice(0,2).map(t => `<span class="badge b-cinza">${t}</span>`).join('') + (a.aptidoes?.length > 2 ? `<span class="badge b-cinza">+${a.aptidoes.length-2}</span>` : '');
+    const horarios = (a.horarios||[]).join(', ') || '—';
+    const statusCor = a.status === 'Em andamento' ? 'b-verde' : a.status === 'Pendente' ? 'b-gold' : a.status === 'Cancelado' ? 'b-vm' : 'b-cinza';
+    const onbCor = a.onboarding_completo ? 'b-verde' : 'b-cinza';
+    const onbLabel = a.onboarding_completo ? '✓ Completo' : '○ Pendente';
+    const dataFormatada = a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : '—';
+
+    return `<tr onclick="abrirModal('${a.id}')">
+      <td>
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div class="td-avatar">${avatarHtml}</div>
+          <div>
+            <div class="td-nome">${a.nome_completo || '—'}</div>
+            <div class="td-email">${a.email}</div>
+          </div>
+        </div>
+      </td>
+      <td>${a.telefone || '<span style="color:var(--borda)">—</span>'}</td>
+      <td>${a.pais || '<span style="color:var(--borda)">—</span>'}</td>
+      <td><span class="badge b-azul">${a.produto || 'Gratuito'}</span></td>
+      <td>${aptTags || '<span style="color:var(--borda)">—</span>'}</td>
+      <td style="font-size:.78rem">${horarios}</td>
+      <td><span class="badge ${statusCor}">${a.status || '—'}</span></td>
+      <td><span class="badge ${onbCor}">${onbLabel}</span></td>
+      <td style="font-size:.76rem;color:var(--cinza)">${dataFormatada}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrar() {
+  const busca = document.getElementById('buscaInput').value.toLowerCase();
+  const produto = document.getElementById('filtroProduto').value;
+  const status = document.getElementById('filtroStatus').value;
+  const onb = document.getElementById('filtroOnboarding').value;
+
+  const filtrado = todosAlunos.filter(a => {
+    const matchBusca = !busca || (a.nome_completo||'').toLowerCase().includes(busca) || (a.email||'').toLowerCase().includes(busca);
+    const matchProduto = !produto || a.produto === produto;
+    const matchStatus = !status || a.status === status;
+    const matchOnb = !onb || (onb === 'sim' ? a.onboarding_completo : !a.onboarding_completo);
+    return matchBusca && matchProduto && matchStatus && matchOnb;
+  });
+  renderTabela(filtrado);
+}
+
+function abrirModal(id) {
+  alunoAtual = todosAlunos.find(a => a.id === id);
+  if (!alunoAtual) return;
+  const a = alunoAtual;
+
+  const inicial = (a.nome_completo||'?').charAt(0).toUpperCase();
+  const av = document.getElementById('mAvatar');
+  av.innerHTML = a.avatar ? `<img src="${a.avatar}">` : inicial;
+
+  document.getElementById('mNome').textContent = a.nome_completo || '—';
+  document.getElementById('mEmail').textContent = a.email;
+  document.getElementById('mTel').textContent = a.telefone || '—';
+  document.getElementById('mAniv').textContent = a.aniversario ? new Date(a.aniversario+'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  document.getElementById('mPais').textContent = [a.pais, a.cidade].filter(Boolean).join(' · ') || '—';
+  document.getElementById('mFilhos').textContent = a.filhos || '—';
+  document.getElementById('mEtnia').textContent = a.etnia || '—';
+  document.getElementById('mSigno').textContent = a.signo || '—';
+  document.getElementById('mHorario').textContent = (a.horarios||[]).join(', ') || '—';
+  document.getElementById('mOrigem').textContent = a.origem || '—';
+  document.getElementById('mInsta').textContent = a.instagram || '—';
+  document.getElementById('mYt').textContent = a.youtube || '—';
+  document.getElementById('mTiktok').textContent = a.tiktok || '—';
+  document.getElementById('mProduto').textContent = a.produto || '—';
+  document.getElementById('mObs').textContent = a.observacoes || '—';
+  document.getElementById('mData').textContent = a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : '—';
+
+  // Status
+  document.getElementById('mStatus').value = a.status || 'Em andamento';
+
+  // Aptidões
+  document.getElementById('mAptidoes').innerHTML = (a.aptidoes||[]).map(t => `<span class="badge b-cinza">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
+
+  // Objetivo
+  document.getElementById('mObjetivo').innerHTML = (a.objetivo||[]).map(t => `<span class="badge b-azul">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
+
+  // Notas
+  const notas = localStorage.getItem('iconza_nota_' + id) || '';
+  document.getElementById('mNotas').value = notas;
+
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function fecharModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('show');
+  }
+}
+
+function salvarNota() {
+  if (!alunoAtual) return;
+  const nota = document.getElementById('mNotas').value;
+  localStorage.setItem('iconza_nota_' + alunoAtual.id, nota);
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function exportarCSV() {
+  const headers = ['Nome','Email','Telefone','Aniversário','País','Cidade','Filhos','Etnia','Signo','Aptidões','Disponibilidade','Instagram','YouTube','TikTok','Produto','Objetivo','Como Conheceu','Status','Onboarding','Data Cadastro'];
+  const linhas = todosAlunos.map(a => [
+    a.nome_completo||'', a.email||'', a.telefone||'', a.aniversario||'',
+    a.pais||'', a.cidade||'', a.filhos||'', a.etnia||'', a.signo||'',
+    (a.aptidoes||[]).join(';'), (a.horarios||[]).join(';'),
+    a.instagram||'', a.youtube||'', a.tiktok||'',
+    a.produto||'', (a.objetivo||[]).join(';'), a.origem||'',
+    a.status||'', a.onboarding_completo?'Sim':'Não',
+    a.data_cadastro ? new Date(a.data_cadastro).toLocaleDateString('pt-BR') : ''
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+
+  const csv = [headers.join(','), ...linhas].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `iconza-crm-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+init();
+</script>
+</body>
+</html>

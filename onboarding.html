@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Bem-vinda</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;--branco:#ffffff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh}
+
+nav{background:var(--grafite);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo img{width:26px;height:26px;object-fit:contain}
+.nav-logo-text{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;letter-spacing:.12em;color:#fff}
+.nav-step{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+
+/* PROGRESS */
+.progress-wrap{background:var(--borda);height:3px}
+.progress-bar{height:100%;background:var(--vm);transition:width .4s ease}
+
+/* STEPS INDICATOR */
+.steps-indicator{display:flex;justify-content:center;gap:2rem;padding:2rem 1rem 0;max-width:600px;margin:0 auto}
+.step-dot{display:flex;flex-direction:column;align-items:center;gap:.4rem;opacity:.4;transition:opacity .3s}
+.step-dot.ativo{opacity:1}
+.step-dot.completo{opacity:.7}
+.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--borda);background:var(--branco);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--cinza);transition:all .3s}
+.step-dot.ativo .step-circle{border-color:var(--vm);background:var(--vm);color:#fff}
+.step-dot.completo .step-circle{border-color:var(--preto);background:var(--preto);color:#fff}
+.step-nome{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);font-weight:600}
+
+/* CONTAINER */
+.wrap{max-width:580px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+/* ETAPA */
+.etapa{display:none}
+.etapa.ativa{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.etapa-header{margin-bottom:2rem;text-align:center}
+.etapa-eyebrow{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--vm);display:block;margin-bottom:.6rem;font-weight:600}
+.etapa-titulo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:var(--preto);margin-bottom:.5rem}
+.etapa-desc{font-size:.9rem;color:var(--cinza);line-height:1.7}
+
+/* FORM */
+.form-card{background:var(--branco);border:1px solid var(--borda);padding:1.8rem;margin-bottom:1rem}
+.form-card-titulo{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid var(--borda)}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);margin-bottom:.4rem;font-weight:600}
+.field input,.field select,.field textarea{width:100%;padding:.75rem 1rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.92rem;color:var(--preto);outline:none;background:var(--branco);transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--preto)}
+.field textarea{min-height:80px;resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem}
+
+/* TAGS SELECIONÁVEIS */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.3rem}
+.tag-opt{font-size:.75rem;padding:.35rem .85rem;border:1px solid var(--borda);background:var(--branco);cursor:pointer;transition:all .2s;font-weight:500;color:var(--cinza);user-select:none}
+.tag-opt:hover{border-color:var(--preto);color:var(--preto)}
+.tag-opt.sel{background:var(--preto);color:#fff;border-color:var(--preto)}
+.tag-opt.sel-vm{background:var(--vm);color:#fff;border-color:var(--vm)}
+
+/* HORÁRIOS */
+.horario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.horario-opt{border:1px solid var(--borda);padding:.7rem;text-align:center;cursor:pointer;transition:all .2s}
+.horario-opt:hover{border-color:var(--preto)}
+.horario-opt.sel{border-color:var(--vm);background:rgba(193,39,45,.04)}
+.horario-icon{font-size:1.2rem;display:block;margin-bottom:.3rem}
+.horario-nome{font-size:.72rem;font-weight:600;color:var(--preto);display:block}
+.horario-hora{font-size:.62rem;color:var(--cinza)}
+
+/* NAVEGAÇÃO */
+.nav-btns{display:flex;align-items:center;justify-content:space-between;margin-top:1.5rem}
+.btn-voltar{background:transparent;border:1px solid var(--borda);color:var(--cinza);padding:.75rem 1.4rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-voltar:hover{border-color:var(--preto);color:var(--preto)}
+.btn-avancar{background:var(--preto);color:#fff;padding:.75rem 2rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-avancar:hover{background:var(--vm)}
+.btn-pular{font-size:.68rem;color:var(--cinza);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+.btn-pular:hover{color:var(--preto)}
+
+/* MSG */
+.msg{padding:.7rem 1rem;font-size:.8rem;margin-bottom:1rem;display:none}
+.msg.show{display:block}
+.msg.erro{background:rgba(193,39,45,.08);border-left:3px solid var(--vm);color:var(--vm)}
+.msg.ok{background:rgba(74,140,74,.08);border-left:3px solid #4a8c4a;color:#4a8c4a}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
+.loading-overlay.hide{opacity:0;pointer-events:none}
+.spin{width:28px;height:28px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+  .field-row,.field-row3{grid-template-columns:1fr}
+  .horario-grid{grid-template-columns:1fr}
+  .steps-indicator{gap:1rem}
+}
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loadingOverlay"><div class="spin"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="coroa.png" alt="ICONZA">
+    <span class="nav-logo-text">ICONZA</span>
+  </a>
+  <span class="nav-step" id="navStep">Etapa 1 de 3</span>
+</nav>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:33%"></div></div>
+
+<div class="steps-indicator">
+  <div class="step-dot ativo" id="dot1"><div class="step-circle">1</div><span class="step-nome">Você</span></div>
+  <div class="step-dot" id="dot2"><div class="step-circle">2</div><span class="step-nome">Rotina</span></div>
+  <div class="step-dot" id="dot3"><div class="step-circle">3</div><span class="step-nome">Objetivos</span></div>
+</div>
+
+<div class="wrap">
+  <div id="msgGlobal" class="msg"></div>
+
+  <!-- ETAPA 1 — DADOS PESSOAIS -->
+  <div class="etapa ativa" id="etapa1">
+    <div class="etapa-header">
+      <span class="etapa-eyebrow">Vamos nos conhecer</span>
+      <h1 class="etapa-titulo">Fale sobre você</h1>
+      <p class="etapa-desc">Estas informações nos ajudam a personalizar sua jornada e entender melhor quem é você.</p>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Dados pessoais</span>
+      <div class="field-row">
+        <div class="field"><label>Nome completo</label><input type="text" id="f_nome" placeholder="Seu nome completo"></div>
+        <div class="field"><label>Telefone / WhatsApp</label><input type="tel" id="f_telefone" placeholder="+55 21 99999-9999"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Data de nascimento</label><input type="date" id="f_aniversario"></div>
+        <div class="field"><label>País</label>
+          <select id="f_pais">
+            <option value="">Selecione</option>
+            <option value="Brasil">🇧🇷 Brasil</option>
+            <option value="Portugal">🇵🇹 Portugal</option>
+            <option value="Italia">🇮🇹 Itália</option>
+            <option value="EUA">🇺🇸 Estados Unidos</option>
+            <option value="Espanha">🇪🇸 Espanha</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Estado / Cidade</label><input type="text" id="f_cidade" placeholder="Rio de Janeiro, RJ"></div>
+        <div class="field"><label>Filhos</label>
+          <select id="f_filhos">
+            <option value="">Selecione</option>
+            <option>Não tenho</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4 ou mais</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Identidade</span>
+      <div class="field">
+        <label>Como você se autodeclara?</label>
+        <div class="tags-wrap" id="tags_etnia">
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Preta</span>
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Parda</span>
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Branca</span>
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Indígena</span>
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Amarela</span>
+          <span class="tag-opt" onclick="toggleTag(this,'etnia')">Prefiro não dizer</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Signo</label>
+        <div class="tags-wrap" id="tags_signo">
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Áries</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Touro</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Gêmeos</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Câncer</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Leão</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Virgem</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Libra</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Escorpião</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Sagitário</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Capricórnio</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Aquário</span>
+          <span class="tag-opt" onclick="toggleTag(this,'signo')">Peixes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-pular" onclick="pular(1)">Preencher depois</button>
+      <button class="btn-avancar" onclick="avancar(1)">Próxima etapa →</button>
+    </div>
+  </div>
+
+  <!-- ETAPA 2 — ROTINA E DISPONIBILIDADE -->
+  <div class="etapa" id="etapa2">
+    <div class="etapa-header">
+      <span class="etapa-eyebrow">Sua rotina</span>
+      <h1 class="etapa-titulo">Como é o seu dia?</h1>
+      <p class="etapa-desc">Entender sua disponibilidade nos ajuda a sugerir o melhor ritmo de aprendizado para você.</p>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Disponibilidade de horário</span>
+      <div class="horario-grid">
+        <div class="horario-opt" onclick="toggleHorario(this,'manha')">
+          <span class="horario-icon">🌅</span>
+          <span class="horario-nome">Manhã</span>
+          <span class="horario-hora">6h às 12h</span>
+        </div>
+        <div class="horario-opt" onclick="toggleHorario(this,'tarde')">
+          <span class="horario-icon">☀️</span>
+          <span class="horario-nome">Tarde</span>
+          <span class="horario-hora">12h às 18h</span>
+        </div>
+        <div class="horario-opt" onclick="toggleHorario(this,'noite')">
+          <span class="horario-icon">🌙</span>
+          <span class="horario-nome">Noite</span>
+          <span class="horario-hora">18h às 23h</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Suas aptidões e interesses</span>
+      <div class="field">
+        <label>O que você já faz ou tem talento para?</label>
+        <div class="tags-wrap" id="tags_aptidoes">
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Gestão</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Escrita</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Design</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Vídeo</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Gastronomia</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Numerologia</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Educação</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Saúde</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Moda</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Arte</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Música</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Fotografia</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Prestação de Serviços</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">Vendas</span>
+          <span class="tag-opt" onclick="toggleTag(this,'aptidoes')">IA</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Redes sociais</span>
+      <div class="field"><label>Instagram</label><input type="text" id="f_instagram" placeholder="@seuinstagram"></div>
+      <div class="field"><label>YouTube</label><input type="text" id="f_youtube" placeholder="https://youtube.com/@canal"></div>
+      <div class="field"><label>TikTok</label><input type="text" id="f_tiktok" placeholder="@seutiktok"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-voltar" onclick="voltar(2)">← Voltar</button>
+      <div style="display:flex;gap:1rem;align-items:center">
+        <button class="btn-pular" onclick="pular(2)">Preencher depois</button>
+        <button class="btn-avancar" onclick="avancar(2)">Próxima etapa →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 3 — OBJETIVOS E PRODUTOS -->
+  <div class="etapa" id="etapa3">
+    <div class="etapa-header">
+      <span class="etapa-eyebrow">Seus objetivos</span>
+      <h1 class="etapa-titulo">O que você busca?</h1>
+      <p class="etapa-desc">Essas informações nos ajudam a acompanhar seu progresso e oferecer o suporte certo.</p>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Nível de assinatura</span>
+      <div class="field">
+        <label>Qual produto você adquiriu?</label>
+        <div class="tags-wrap" id="tags_produto">
+          <span class="tag-opt sel-vm" onclick="toggleTagUnico(this,'produto')">Acesso Gratuito</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'produto')">Tronco</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'produto')">Tronco VIP</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'produto')">Mentoria</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'produto')">E-book</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'produto')">EDA Vídeo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Objetivo principal no ICONZA</span>
+      <div class="field">
+        <div class="tags-wrap" id="tags_objetivo">
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Aprender a criar conteúdo</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Construir identidade visual</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Monetizar com IA</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Repertório cultural</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Empreender online</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Mudar de carreira</span>
+          <span class="tag-opt" onclick="toggleTag(this,'objetivo')">Autonomia financeira</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <span class="form-card-titulo">Como nos conheceu?</span>
+      <div class="field">
+        <div class="tags-wrap" id="tags_origem">
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">YouTube</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">Instagram</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">Indicação</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">Google</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">WhatsApp</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">TikTok</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">Hotmart</span>
+          <span class="tag-opt" onclick="toggleTagUnico(this,'origem')">Outro</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:.8rem">
+        <label>Observações (opcional)</label>
+        <textarea id="f_obs" placeholder="Alguma informação adicional que queira compartilhar..."></textarea>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-voltar" onclick="voltar(3)">← Voltar</button>
+      <button class="btn-avancar" onclick="salvarTudo()" id="btnFinal">Entrar no ICONZA 👑</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+const dados = { horarios:[], aptidoes:[], etnia:'', signo:'', objetivo:[], produto:'Acesso Gratuito', origem:'' };
+let etapaAtual = 1;
+
+// Verifica login
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+  const meta = session.user.user_metadata || {};
+  if (meta.nome) document.getElementById('f_nome').value = meta.nome + ' ' + (meta.sobrenome||'');
+  setTimeout(() => document.getElementById('loadingOverlay').classList.add('hide'), 400);
+}
+
+// Tags múltiplas
+function toggleTag(el, grupo) {
+  el.classList.toggle('sel');
+  coletarTags(grupo);
+}
+
+// Tag única
+function toggleTagUnico(el, grupo) {
+  el.closest('.tags-wrap').querySelectorAll('.tag-opt').forEach(t => t.classList.remove('sel','sel-vm'));
+  el.classList.add('sel-vm');
+  dados[grupo] = el.textContent.trim();
+}
+
+function coletarTags(grupo) {
+  const container = document.getElementById('tags_' + grupo);
+  if (!container) return;
+  dados[grupo] = Array.from(container.querySelectorAll('.sel')).map(t => t.textContent.trim());
+  if (grupo === 'etnia' && dados[grupo].length > 0) dados.etnia = dados[grupo][0];
+  if (grupo === 'signo' && dados[grupo].length > 0) dados.signo = dados[grupo][0];
+}
+
+function toggleHorario(el, h) {
+  el.classList.toggle('sel');
+  dados.horarios = Array.from(document.querySelectorAll('.horario-opt.sel'))
+    .map(e => e.querySelector('.horario-nome').textContent.trim());
+}
+
+// Navegação
+function avancar(n) {
+  irEtapa(n + 1);
+}
+function voltar(n) {
+  irEtapa(n - 1);
+}
+function pular(n) {
+  irEtapa(n + 1);
+}
+
+function irEtapa(n) {
+  document.getElementById('etapa' + etapaAtual).classList.remove('ativa');
+  document.getElementById('dot' + etapaAtual).classList.remove('ativo');
+  document.getElementById('dot' + etapaAtual).classList.add('completo');
+
+  etapaAtual = n;
+  document.getElementById('etapa' + n).classList.add('ativa');
+  document.getElementById('dot' + n).classList.add('ativo');
+  document.getElementById('dot' + n).classList.remove('completo');
+
+  const pct = (n / 3) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('navStep').textContent = `Etapa ${n} de 3`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// SALVAR TUDO
+async function salvarTudo() {
+  const btn = document.getElementById('btnFinal');
+  btn.textContent = 'Salvando...';
+  btn.disabled = true;
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  // Coleta campos de texto
+  const perfil = {
+    nome_completo: document.getElementById('f_nome').value.trim(),
+    telefone: document.getElementById('f_telefone').value.trim(),
+    aniversario: document.getElementById('f_aniversario').value,
+    pais: document.getElementById('f_pais').value,
+    cidade: document.getElementById('f_cidade').value.trim(),
+    filhos: document.getElementById('f_filhos').value,
+    etnia: dados.etnia || (dados.etnia_arr && dados.etnia_arr[0]) || '',
+    signo: dados.signo || '',
+    horarios: dados.horarios,
+    aptidoes: Array.from(document.querySelectorAll('#tags_aptidoes .sel')).map(t=>t.textContent.trim()),
+    instagram: document.getElementById('f_instagram').value.trim(),
+    youtube: document.getElementById('f_youtube').value.trim(),
+    tiktok: document.getElementById('f_tiktok').value.trim(),
+    produto: dados.produto,
+    objetivo: Array.from(document.querySelectorAll('#tags_objetivo .sel')).map(t=>t.textContent.trim()),
+    origem: dados.origem,
+    observacoes: document.getElementById('f_obs').value.trim(),
+    status: 'Em andamento',
+    onboarding_completo: true,
+    data_cadastro: new Date().toISOString()
+  };
+
+  // Salva no Supabase user metadata
+  const { error } = await sb.auth.updateUser({ data: perfil });
+
+  if (error) {
+    const msg = document.getElementById('msgGlobal');
+    msg.textContent = 'Erro ao salvar. Tente novamente.';
+    msg.className = 'msg erro show';
+    btn.textContent = 'Entrar no ICONZA 👑';
+    btn.disabled = false;
+    return;
+  }
+
+  // Redireciona para dashboard
+  window.location.href = 'dashboard.html';
+}
+
+init();
+</script>
+</body>
+</html>

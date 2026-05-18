@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Diagnóstico</title>
+<link rel="stylesheet" href="acesso.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;
+  --branco:#ffffff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;
+  --n1:#8B0000;--n2:#C1272D;--n3:#E85D20;--n4:#F5A623;
+  --n5:#90C030;--n6:#20A860;--n7:#1878C8;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--preto);min-height:100vh}
+
+/* NAV */
+nav{background:var(--grafite);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-logo img{width:26px;height:26px;object-fit:contain}
+.nav-logo-text{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;letter-spacing:.12em;color:#fff}
+
+/* PROGRESS BAR TOPO */
+.quiz-progress{background:rgba(255,255,255,.1);height:3px;position:relative}
+.quiz-progress-fill{height:100%;background:var(--vm);transition:width .4s ease}
+
+/* CONTAINER */
+.quiz-wrap{max-width:700px;margin:0 auto;padding:3rem 1.5rem}
+
+/* INTRO */
+.intro{text-align:center;padding:3rem 1rem}
+.intro-eyebrow{font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--vm);display:block;margin-bottom:1rem}
+.intro-titulo{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--preto);margin-bottom:1rem;line-height:1.2}
+.intro-desc{font-size:.92rem;line-height:1.9;color:var(--cinza);max-width:480px;margin:0 auto 2.5rem}
+.intro-info{display:flex;gap:2rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap}
+.info-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--cinza)}
+.info-icon{font-size:1rem}
+.btn-comecar{display:inline-flex;align-items:center;gap:.8rem;background:var(--preto);color:#fff;padding:1rem 2.2rem;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s,gap .2s}
+.btn-comecar:hover{background:var(--vm);gap:1.2rem}
+
+/* BARRA 7 NÍVEIS — VISUAL */
+.niveis-preview{display:flex;gap:6px;justify-content:center;margin-bottom:2rem;align-items:flex-end}
+.nivel-barra{border-radius:4px;transition:all .3s}
+.nivel-barra:nth-child(1){background:var(--n1);width:28px;height:40px}
+.nivel-barra:nth-child(2){background:var(--n2);width:28px;height:50px}
+.nivel-barra:nth-child(3){background:var(--n3);width:28px;height:60px}
+.nivel-barra:nth-child(4){background:var(--n4);width:28px;height:72px}
+.nivel-barra:nth-child(5){background:var(--n5);width:28px;height:60px}
+.nivel-barra:nth-child(6){background:var(--n6);width:28px;height:50px}
+.nivel-barra:nth-child(7){background:var(--n7);width:28px;height:40px}
+.nivel-barra.ativo{transform:scaleY(1.3);filter:brightness(1.2)}
+
+/* QUESTÃO */
+.questao{display:none;animation:fadeIn .4s ease}
+.questao.ativa{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.q-header{margin-bottom:2rem}
+.q-num{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:.6rem}
+.q-titulo{font-size:1.2rem;font-weight:600;color:var(--preto);line-height:1.4}
+.q-subtitulo{font-size:.85rem;color:var(--cinza);margin-top:.4rem;line-height:1.6}
+
+/* OPÇÕES COM IMAGEM */
+.opcoes-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
+.opcao{border:2px solid var(--borda);background:var(--branco);cursor:pointer;transition:all .25s;position:relative;overflow:hidden;text-align:left}
+.opcao:hover{border-color:var(--preto);transform:translateY(-2px)}
+.opcao.selected{border-color:var(--vm);background:rgba(193,39,45,.03)}
+.opcao.selected::after{content:'✓';position:absolute;top:.6rem;right:.6rem;width:20px;height:20px;background:var(--vm);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
+.opcao-img{width:100%;height:120px;object-fit:cover;display:block;background:var(--off)}
+.opcao-img-placeholder{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--off)}
+.opcao-body{padding:.9rem 1rem}
+.opcao-label{font-size:.82rem;font-weight:600;color:var(--preto);display:block;margin-bottom:.2rem}
+.opcao-desc{font-size:.72rem;color:var(--cinza);line-height:1.5}
+
+/* OPÇÕES TEXTO */
+.opcoes-lista{display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}
+.opcao-texto{border:1px solid var(--borda);background:var(--branco);cursor:pointer;padding:1rem 1.2rem;transition:all .2s;display:flex;align-items:center;gap:1rem}
+.opcao-texto:hover{border-color:var(--preto)}
+.opcao-texto.selected{border-color:var(--vm);background:rgba(193,39,45,.03)}
+.opcao-texto.selected .opcao-check{background:var(--vm);border-color:var(--vm);color:#fff}
+.opcao-check{width:20px;height:20px;border:2px solid var(--borda);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;transition:all .2s}
+.opcao-texto-label{font-size:.88rem;font-weight:500;color:var(--preto)}
+.opcao-texto-desc{font-size:.72rem;color:var(--cinza);margin-top:.1rem}
+
+/* ESCALA */
+.escala-wrap{margin-bottom:2rem}
+.escala-labels{display:flex;justify-content:space-between;margin-bottom.5rem}
+.escala-label{font-size:.65rem;color:var(--cinza);letter-spacing:.05em}
+.escala-btns{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.escala-btn{width:44px;height:44px;border:2px solid var(--borda);background:var(--branco);font-size:.9rem;font-weight:600;color:var(--cinza);cursor:pointer;transition:all .2s;border-radius:4px}
+.escala-btn:hover{border-color:var(--preto);color:var(--preto)}
+.escala-btn.selected{border-color:var(--vm);background:var(--vm);color:#fff}
+
+/* NAVEGAÇÃO */
+.q-nav{display:flex;align-items:center;justify-content:space-between}
+.btn-voltar{background:transparent;border:1px solid var(--borda);color:var(--cinza);padding:.7rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-voltar:hover{border-color:var(--preto);color:var(--preto)}
+.btn-avancar{background:var(--preto);color:#fff;padding:.7rem 1.8rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif}
+.btn-avancar:hover{background:var(--vm)}
+.btn-avancar:disabled{background:#ccc;cursor:not-allowed}
+
+/* RESULTADO */
+.resultado{display:none;text-align:center;padding:2rem 0}
+.resultado.show{display:block;animation:fadeIn .5s ease}
+.result-barra{display:flex;gap:8px;justify-content:center;align-items:flex-end;margin:2rem 0}
+.result-barra-item{border-radius:5px;transition:all .6s ease;width:32px}
+.result-nivel-badge{display:inline-flex;align-items:center;gap:.6rem;padding:.6rem 1.4rem;border-radius:0;margin-bottom:1rem}
+.result-titulo{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--preto);margin-bottom:.5rem}
+.result-subtitulo{font-size:.9rem;color:var(--cinza);line-height:1.8;max-width:480px;margin:0 auto 2rem}
+.result-attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0;text-align:left}
+.attr-card{background:var(--branco);border:1px solid var(--borda);padding:1.2rem}
+.attr-icon{font-size:1.4rem;display:block;margin-bottom:.5rem}
+.attr-nome{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:.3rem}
+.attr-valor{font-size:.88rem;font-weight:600;color:var(--preto)}
+.btn-dashboard{display:inline-flex;align-items:center;gap:.7rem;background:var(--preto);color:#fff;padding:1rem 2rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background .2s,gap .2s;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-dashboard:hover{background:var(--vm);gap:1rem}
+
+@media(max-width:600px){
+  .opcoes-grid{grid-template-columns:1fr}
+  .result-attrs{grid-template-columns:1fr}
+  .niveis-preview .nivel-barra{width:22px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="coroa.png" alt="ICONZA">
+    <span class="nav-logo-text">ICONZA</span>
+  </a>
+  <span style="font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3)">Diagnóstico</span>
+</nav>
+<div class="quiz-progress"><div class="quiz-progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<div class="quiz-wrap">
+
+  <!-- INTRO -->
+  <div class="intro" id="introScreen">
+    <span class="intro-eyebrow">Antes de começar</span>
+    <h1 class="intro-titulo">Qual é o seu<br>nível criativo?</h1>
+    <div class="niveis-preview">
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+      <div class="nivel-barra"></div>
+    </div>
+    <p class="intro-desc">Responda 8 perguntas rápidas para descobrirmos seu perfil digital e cultural. Isso nos ajuda a personalizar sua jornada no ICONZA.</p>
+    <div class="intro-info">
+      <div class="info-item"><span class="info-icon">⏱</span> 3 minutos</div>
+      <div class="info-item"><span class="info-icon">🎯</span> 8 perguntas</div>
+      <div class="info-item"><span class="info-icon">👑</span> Sem resposta errada</div>
+    </div>
+    <button class="btn-comecar" onclick="iniciarQuiz()">Começar diagnóstico →</button>
+  </div>
+
+  <!-- QUESTÕES -->
+
+  <!-- Q1 — Visual/Estética -->
+  <div class="questao" id="q1">
+    <div class="q-header">
+      <span class="q-num">Pergunta 1 de 8 — Estética Visual</span>
+      <h2 class="q-titulo">Qual imagem representa melhor sua linguagem visual atual?</h2>
+      <p class="q-subtitulo">Escolha a que mais ressoa com você hoje — não precisa ser o que você aspira, mas o que você já produz ou consome.</p>
+    </div>
+    <div class="opcoes-grid">
+      <div class="opcao" onclick="selecionarOpcao(this,'q1',1)">
+        <div class="opcao-img-placeholder">📱</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Stories e Reels</span>
+          <span class="opcao-desc">Conteúdo rápido, filtros, tendências do momento</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q1',2)">
+        <div class="opcao-img-placeholder">🎨</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Design gráfico</span>
+          <span class="opcao-desc">Canva, templates, paletas, composição básica</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q1',3)">
+        <div class="opcao-img-placeholder">🎬</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Vídeo editado</span>
+          <span class="opcao-desc">Corte, trilha, texto animado, narrativa visual</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q1',4)">
+        <div class="opcao-img-placeholder">🖼</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Arte conceitual</span>
+          <span class="opcao-desc">Colagem, surrealismo, identidade visual autoral</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <div></div>
+      <button class="btn-avancar" id="btn-q1" onclick="avancar(1)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q2 — Ferramentas digitais -->
+  <div class="questao" id="q2">
+    <div class="q-header">
+      <span class="q-num">Pergunta 2 de 8 — Ferramentas Digitais</span>
+      <h2 class="q-titulo">Quais ferramentas você usa no dia a dia?</h2>
+    </div>
+    <div class="opcoes-lista">
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q2',1)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Só o celular — câmera, WhatsApp, Instagram</div><div class="opcao-texto-desc">Produção básica pelo smartphone</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q2',2)">
+        <div class="opcao-check">✓</div>
+        <div><div class="opcao-texto-label">Canva, CapCut e apps de edição</div><div class="opcao-texto-desc">Ferramentas no-code para criação</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q2',3)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">ChatGPT, Midjourney ou outras IAs</div><div class="opcao-texto-desc">Já uso inteligência artificial na criação</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q2',4)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Photoshop, Premiere, After Effects</div><div class="opcao-texto-desc">Ferramentas profissionais da Adobe</div></div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(2)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q2" onclick="avancar(2)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q3 — Referências culturais -->
+  <div class="questao" id="q3">
+    <div class="q-header">
+      <span class="q-num">Pergunta 3 de 8 — Referências Culturais</span>
+      <h2 class="q-titulo">Qual dessas referências culturais você conhece melhor?</h2>
+      <p class="q-subtitulo">Escolha a que você já estudou, pesquisou ou sente mais familiaridade.</p>
+    </div>
+    <div class="opcoes-grid">
+      <div class="opcao" onclick="selecionarOpcao(this,'q3',1)">
+        <div class="opcao-img-placeholder">🌸</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Frida Kahlo</span>
+          <span class="opcao-desc">Arte, identidade, surrealismo mexicano</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q3',2)">
+        <div class="opcao-img-placeholder">👗</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Coco Chanel</span>
+          <span class="opcao-desc">Moda, elegância, revolução do estilo feminino</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q3',3)">
+        <div class="opcao-img-placeholder">🍽</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Julia Child</span>
+          <span class="opcao-desc">Gastronomia, narrativa culinária, cultura</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q3',4)">
+        <div class="opcao-img-placeholder">🎵</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Nina Simone</span>
+          <span class="opcao-desc">Música, ativismo, identidade negra e cultural</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(3)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q3" onclick="avancar(3)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q4 — Frequência de criação -->
+  <div class="questao" id="q4">
+    <div class="q-header">
+      <span class="q-num">Pergunta 4 de 8 — Frequência Criativa</span>
+      <h2 class="q-titulo">Com que frequência você cria conteúdo digital?</h2>
+    </div>
+    <div class="opcoes-lista">
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q4',1)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Raramente ou nunca</div><div class="opcao-texto-desc">Ainda não comecei ou faço muito esporadicamente</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q4',2)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">1 a 2 vezes por mês</div><div class="opcao-texto-desc">Quando tenho tempo ou inspiração</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q4',3)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Toda semana</div><div class="opcao-texto-desc">Tenho uma rotina de criação estabelecida</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q4',4)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Todo dia</div><div class="opcao-texto-desc">Criação é parte central da minha vida profissional</div></div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(4)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q4" onclick="avancar(4)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q5 — Inteligência Artificial -->
+  <div class="questao" id="q5">
+    <div class="q-header">
+      <span class="q-num">Pergunta 5 de 8 — Relação com IA</span>
+      <h2 class="q-titulo">Como você se relaciona com Inteligência Artificial hoje?</h2>
+    </div>
+    <div class="opcoes-grid">
+      <div class="opcao" onclick="selecionarOpcao(this,'q5',1)">
+        <div class="opcao-img-placeholder">🤔</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Ainda tenho medo</span>
+          <span class="opcao-desc">Ouço falar mas não sei como usar</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q5',2)">
+        <div class="opcao-img-placeholder">🔍</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Estou explorando</span>
+          <span class="opcao-desc">Já testei algumas ferramentas com curiosidade</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q5',3)">
+        <div class="opcao-img-placeholder">⚡</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Uso regularmente</span>
+          <span class="opcao-desc">IA já faz parte da minha rotina criativa</span>
+        </div>
+      </div>
+      <div class="opcao" onclick="selecionarOpcao(this,'q5',4)">
+        <div class="opcao-img-placeholder">🚀</div>
+        <div class="opcao-body">
+          <span class="opcao-label">Sou referência</span>
+          <span class="opcao-desc">Ensino ou oriento outras pessoas sobre IA</span>
+        </div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(5)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q5" onclick="avancar(5)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q6 — Escala autoavaliação digital -->
+  <div class="questao" id="q6">
+    <div class="q-header">
+      <span class="q-num">Pergunta 6 de 8 — Autoavaliação</span>
+      <h2 class="q-titulo">De 1 a 7, qual seu nível de conhecimento digital?</h2>
+      <p class="q-subtitulo">1 = Estou começando do zero · 7 = Sou profissional da área digital</p>
+    </div>
+    <div class="escala-wrap">
+      <div class="escala-btns" id="escala-q6">
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',1)">1</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',2)">2</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',3)">3</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',4)">4</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',5)">5</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',6)">6</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q6',7)">7</button>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(6)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q6" onclick="avancar(6)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q7 — Escala cultural -->
+  <div class="questao" id="q7">
+    <div class="q-header">
+      <span class="q-num">Pergunta 7 de 8 — Repertório Cultural</span>
+      <h2 class="q-titulo">De 1 a 7, qual seu nível de repertório cultural?</h2>
+      <p class="q-subtitulo">1 = Pouco contato com arte, história e gastronomia · 7 = Vivo mergulhada em cultura</p>
+    </div>
+    <div class="escala-wrap">
+      <div class="escala-btns" id="escala-q7">
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',1)">1</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',2)">2</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',3)">3</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',4)">4</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',5)">5</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',6)">6</button>
+        <button class="escala-btn" onclick="selecionarEscala(this,'q7',7)">7</button>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(7)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q7" onclick="avancar(7)" disabled>Próxima →</button>
+    </div>
+  </div>
+
+  <!-- Q8 — Objetivo -->
+  <div class="questao" id="q8">
+    <div class="q-header">
+      <span class="q-num">Pergunta 8 de 8 — Objetivo</span>
+      <h2 class="q-titulo">O que você quer conquistar com o ICONZA?</h2>
+    </div>
+    <div class="opcoes-lista">
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q8',1)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Aprender a criar conteúdo de qualidade</div><div class="opcao-texto-desc">Dominar ferramentas e técnicas visuais</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q8',2)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Construir minha identidade visual autoral</div><div class="opcao-texto-desc">Ter uma linguagem única e reconhecível</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q8',3)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Monetizar minha criatividade com IA</div><div class="opcao-texto-desc">Transformar talento em renda digital</div></div>
+      </div>
+      <div class="opcao-texto" onclick="selecionarTexto(this,'q8',4)">
+        <div class="opcao-check"></div>
+        <div><div class="opcao-texto-label">Aprofundar meu repertório cultural</div><div class="opcao-texto-desc">Arte, história, gastronomia e psicologia</div></div>
+      </div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-voltar" onclick="voltar(8)">← Voltar</button>
+      <button class="btn-avancar" id="btn-q8" onclick="calcularResultado()" disabled>Ver meu resultado →</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="resultado" id="resultado">
+    <span style="font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--vm);display:block;margin-bottom:1rem">Seu diagnóstico ICONZA</span>
+    <div class="result-barra" id="resultBarra"></div>
+    <div class="result-nivel-badge" id="resultBadge"></div>
+    <h2 class="result-titulo" id="resultTitulo"></h2>
+    <p class="result-subtitulo" id="resultDesc"></p>
+    <div class="result-attrs" id="resultAttrs"></div>
+    <button class="btn-dashboard" onclick="irDashboard()">Entrar no ICONZA →</button>
+  </div>
+
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+const respostas = {};
+let questaoAtual = 0;
+const TOTAL = 8;
+
+const NIVEIS = [
+  { id:1, nome:'Faísca', emoji:'🔴', cor:'#8B0000', desc:'Você está acendendo a chama criativa. O ICONZA começa aqui.' },
+  { id:2, nome:'Brasa', emoji:'🔴', cor:'#C1272D', desc:'Curiosidade ativa. Você sente que quer mais mas ainda está construindo a base.' },
+  { id:3, nome:'Chama', emoji:'🟠', cor:'#E85D20', desc:'Já tem ferramentas nas mãos. Falta direção e método.' },
+  { id:4, nome:'Luz', emoji:'🟡', cor:'#F5A623', desc:'Equilíbrio entre técnica e repertório. Pronta para acelerar.' },
+  { id:5, nome:'Brilho', emoji:'🟢', cor:'#90C030', desc:'Criadora com identidade em formação. A linguagem autoral está emergindo.' },
+  { id:6, nome:'Estrela', emoji:'💚', cor:'#20A860', desc:'Alto nível técnico e cultural. Pronta para criar com propósito e impacto.' },
+  { id:7, nome:'Ícone', emoji:'💙', cor:'#1878C8', desc:'Você é referência. O ICONZA vai elevar ainda mais sua narrativa visual.' },
+];
+
+function iniciarQuiz() {
+  document.getElementById('introScreen').style.display = 'none';
+  mostrarQuestao(1);
+  atualizarProgress(1);
+}
+
+function mostrarQuestao(n) {
+  document.querySelectorAll('.questao').forEach(q => q.classList.remove('ativa'));
+  const el = document.getElementById('q' + n);
+  if (el) { el.classList.add('ativa'); questaoAtual = n; }
+}
+
+function atualizarProgress(n) {
+  const pct = ((n-1) / TOTAL) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function selecionarOpcao(el, qId, val) {
+  el.closest('.opcoes-grid').querySelectorAll('.opcao').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  respostas[qId] = val;
+  document.getElementById('btn-' + qId).disabled = false;
+}
+
+function selecionarTexto(el, qId, val) {
+  el.closest('.opcoes-lista').querySelectorAll('.opcao-texto').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  respostas[qId] = val;
+  document.getElementById('btn-' + qId).disabled = false;
+}
+
+function selecionarEscala(el, qId, val) {
+  el.closest('.escala-btns').querySelectorAll('.escala-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  respostas[qId] = val;
+  document.getElementById('btn-' + qId).disabled = false;
+}
+
+function avancar(n) {
+  mostrarQuestao(n + 1);
+  atualizarProgress(n + 1);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function voltar(n) {
+  mostrarQuestao(n - 1);
+  atualizarProgress(n - 1);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function calcularResultado() {
+  // Pontuação: soma ponderada das respostas
+  const digital = (respostas.q2 || 1) + (respostas.q5 || 1) + (respostas.q6 || 1);
+  const cultural = (respostas.q3 || 1) + (respostas.q7 || 1);
+  const frequencia = respostas.q4 || 1;
+  const visual = respostas.q1 || 1;
+
+  const total = digital * 1.5 + cultural * 1.2 + frequencia + visual;
+  const maxPossivel = (4+4+7)*1.5 + (4+7)*1.2 + 4 + 4;
+  const pct = total / maxPossivel;
+
+  let nivelId;
+  if (pct < 0.15) nivelId = 1;
+  else if (pct < 0.28) nivelId = 2;
+  else if (pct < 0.42) nivelId = 3;
+  else if (pct < 0.56) nivelId = 4;
+  else if (pct < 0.70) nivelId = 5;
+  else if (pct < 0.85) nivelId = 6;
+  else nivelId = 7;
+
+  const nivel = NIVEIS[nivelId - 1];
+
+  // Atributos baseados nas respostas
+  const tipoVisual = ['Stories/Reels','Design Gráfico','Vídeo Editado','Arte Conceitual'][( respostas.q1 || 1) - 1];
+  const relacaoIA = ['Explorando','Explorando','Usuária Regular','Referência em IA'][(respostas.q5 || 1) - 1];
+  const objetivo = ['Criação de Conteúdo','Identidade Autoral','Monetização com IA','Repertório Cultural'][(respostas.q8 || 1) - 1];
+
+  // Salva no localStorage
+  const diagnostico = { nivelId, nivelNome: nivel.nome, nivelCor: nivel.cor, digital: respostas.q6 || 1, cultural: respostas.q7 || 1, objetivo, tipoVisual, relacaoIA, data: new Date().toISOString() };
+  localStorage.setItem('iconza_diagnostico', JSON.stringify(diagnostico));
+
+  // Salva no Supabase se logado
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      sb.auth.updateUser({ data: { diagnostico } });
+    }
+  });
+
+  mostrarResultado(nivel, nivelId, tipoVisual, relacaoIA, objetivo);
+}
+
+function mostrarResultado(nivel, nivelId, tipoVisual, relacaoIA, objetivo) {
+  document.querySelectorAll('.questao').forEach(q => q.classList.remove('ativa'));
+  document.getElementById('progressFill').style.width = '100%';
+
+  const resultado = document.getElementById('resultado');
+  resultado.classList.add('show');
+
+  // Barra de 7 níveis animada
+  const cores = ['#8B0000','#C1272D','#E85D20','#F5A623','#90C030','#20A860','#1878C8'];
+  const alturas = [40,50,62,76,62,50,40];
+  const barra = document.getElementById('resultBarra');
+  barra.innerHTML = cores.map((cor, i) => `
+    <div class="result-barra-item" style="background:${cor};height:0;width:32px;border-radius:5px;${i+1===nivelId?'box-shadow:0 0 12px '+cor+';':i+1<nivelId?'':'opacity:.2'}"></div>
+  `).join('');
+
+  setTimeout(() => {
+    barra.querySelectorAll('.result-barra-item').forEach((el, i) => {
+      setTimeout(() => {
+        el.style.transition = 'height .4s ease';
+        el.style.height = alturas[i] + 'px';
+      }, i * 80);
+    });
+  }, 100);
+
+  // Badge de nível
+  const badge = document.getElementById('resultBadge');
+  badge.style.background = nivel.cor + '15';
+  badge.style.border = '1px solid ' + nivel.cor;
+  badge.style.color = nivel.cor;
+  badge.innerHTML = `<span style="font-size:1.2rem">${nivel.emoji}</span> <span style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700">Nível ${nivelId} — ${nivel.nome}</span>`;
+
+  document.getElementById('resultTitulo').textContent = nivel.nome;
+  document.getElementById('resultDesc').textContent = nivel.desc;
+
+  document.getElementById('resultAttrs').innerHTML = `
+    <div class="attr-card"><span class="attr-icon">🎨</span><span class="attr-nome">Linguagem Visual</span><span class="attr-valor">${tipoVisual}</span></div>
+    <div class="attr-card"><span class="attr-icon">🤖</span><span class="attr-nome">Relação com IA</span><span class="attr-valor">${relacaoIA}</span></div>
+    <div class="attr-card"><span class="attr-icon">🎯</span><span class="attr-nome">Objetivo Principal</span><span class="attr-valor">${objetivo}</span></div>
+  `;
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function irDashboard() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { window.location.href = 'onboarding.html'; }
+  else { window.location.href = 'login.html'; }
+}
+</script>
+<script src="acesso.js"></script>
+</body>
+</html>
