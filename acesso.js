@@ -56,9 +56,14 @@ function setFonte(tamanho) {
   document.body.classList.remove('fonte-pequena','fonte-media','fonte-grande');
   document.body.classList.add('fonte-' + tamanho);
   localStorage.setItem('iconza_fonte', tamanho);
-  // Atualiza botões ativos
+  // Painel flutuante
   ['pequena','media','grande'].forEach(t => {
     const el = document.getElementById('opt-' + t);
+    if (el) el.classList.toggle('ativo', t === tamanho);
+  });
+  // Topbar
+  ['pequena','media','grande'].forEach(t => {
+    const el = document.getElementById('tb-' + t);
     if (el) el.classList.toggle('ativo', t === tamanho);
   });
 }
@@ -70,9 +75,14 @@ function setModo(modo) {
     document.body.classList.remove('modo-escuro');
   }
   localStorage.setItem('iconza_modo', modo);
-  // Atualiza botões ativos
+  // Painel flutuante
   ['claro','escuro'].forEach(m => {
     const el = document.getElementById('opt-' + m);
+    if (el) el.classList.toggle('ativo', m === modo);
+  });
+  // Topbar
+  ['claro','escuro'].forEach(m => {
+    const el = document.getElementById('tb-' + m);
     if (el) el.classList.toggle('ativo', m === modo);
   });
 }

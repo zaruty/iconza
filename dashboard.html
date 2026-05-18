@@ -222,6 +222,7 @@ body{font-family:'DM Sans',sans-serif;font-size:15px;background:var(--off);color
 .modal-btn-sec:hover{border-color:var(--preto);color:var(--preto)}
 .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;color:var(--cinza);cursor:pointer}
 
+.topbar-acesso{display:flex;align-items:center;gap:.3rem;padding:.3rem .5rem;background:var(--off);border:1px solid var(--borda)}.topbar-acesso-btn{width:32px;height:28px;border:1px solid var(--borda);background:var(--branco);font-size:.72rem;font-weight:600;color:var(--cinza);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;font-family:"DM Sans",sans-serif}.topbar-acesso-btn:hover{border-color:var(--preto);color:var(--preto)}.topbar-acesso-btn.ativo{background:var(--preto);color:#fff;border-color:var(--preto)}.topbar-sep{width:1px;height:20px;background:var(--borda);margin:0 .2rem}
 /* MOBILE */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}
@@ -315,6 +316,14 @@ body{font-family:'DM Sans',sans-serif;font-size:15px;background:var(--off);color
   <div class="topbar">
     <span class="topbar-title">Dashboard</span>
     <div class="topbar-right">
+      <div class="topbar-acesso">
+        <button class="topbar-acesso-btn" id="tb-pequena" onclick="setFonte('pequena')" title="Fonte pequena">A−</button>
+        <button class="topbar-acesso-btn" id="tb-media" onclick="setFonte('media')" title="Fonte média">A</button>
+        <button class="topbar-acesso-btn" id="tb-grande" onclick="setFonte('grande')" title="Fonte grande">A+</button>
+        <div class="topbar-sep"></div>
+        <button class="topbar-acesso-btn" id="tb-claro" onclick="setModo('claro')" title="Modo claro">☀</button>
+        <button class="topbar-acesso-btn" id="tb-escuro" onclick="setModo('escuro')" title="Modo escuro">☾</button>
+      </div>
       <div class="notif-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cinza)" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
         <span class="notif-dot"></span>
