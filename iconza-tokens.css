@@ -1,0 +1,157 @@
+/* =====================================================
+   ICONZA — DESIGN TOKENS v3.0 (Claude Design Approved)
+   Cinema · Editorial · Premium
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Caveat:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* CANVAS — fundos editoriais quentes */
+  --bg-canvas:      #F6F3EC;
+  --bg-card:        #FBF8F1;
+  --bg-card-soft:   #F1ECE0;
+  --bg-elevated:    #FFFFFF;
+
+  /* INK — hierarquia de texto */
+  --ink:            #16140F;
+  --ink-strong:     #08070A;
+  --ink-muted:      #7A766B;
+  --ink-soft:       #ADA89B;
+
+  /* SIDEBAR — gradiente cinematográfico */
+  --side-from:      #0B0B0B;
+  --side-via:       #161514;
+  --side-to:        #1F1D1A;
+  --side-ink:       #F0EBDF;
+  --side-ink-muted: #8C857A;
+  --side-divider:   rgba(255, 255, 255, 0.06);
+
+  /* BRAND — paleta autoral */
+  --pink:           #F28CA8;
+  --pink-soft:      #F8C7D4;
+  --green:          #1E4D40;
+  --green-deep:     #143A30;
+  --green-soft:     #D6E0DA;
+  --gold:           #B8954A;
+  --gold-soft:      #E8D7AF;
+
+  /* LINHAS · BORDAS */
+  --line:           #E7E1D2;
+  --line-soft:      #ECE7D8;
+  --tech:           #C9C2B1;
+
+  /* 7 NÍVEIS CRIATIVOS */
+  --nivel-1:        #6B1818;
+  --nivel-2:        #8B2818;
+  --nivel-3:        #B85820;
+  --nivel-4:        #B8954A;
+  --nivel-5:        #5C8A4A;
+  --nivel-6:        #2A5A6B;
+  --nivel-7:        #1E4D40;
+
+  /* STATUS */
+  --success:        #5C8A4A;
+  --warning:        #B8954A;
+  --error:          #B23A3A;
+  --info:           #2A5A6B;
+
+  /* RAIOS */
+  --r-xs:           6px;
+  --r-sm:           10px;
+  --r-md:           16px;
+  --r-lg:           22px;
+  --r-xl:           28px;
+  --r-full:         9999px;
+
+  /* SOMBRAS EDITORIAIS */
+  --sh-1:    0 1px 0 rgba(22, 20, 15, 0.04), 0 1px 2px rgba(22, 20, 15, 0.04);
+  --sh-2:    0 1px 0 rgba(22, 20, 15, 0.04), 0 6px 24px -8px rgba(22, 20, 15, 0.10);
+  --sh-3:    0 2px 0 rgba(22, 20, 15, 0.04), 0 18px 50px -16px rgba(22, 20, 15, 0.18);
+  --sh-card-hover: 0 2px 0 rgba(22, 20, 15, 0.04), 0 22px 56px -20px rgba(22, 20, 15, 0.24);
+
+  /* TIPOGRAFIA */
+  --serif:    "Instrument Serif", "Cormorant Garamond", "Times New Roman", serif;
+  --sans:     "Geist", "Manrope", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --mono:     "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --script:   "Caveat", "Homemade Apple", cursive;
+
+  /* ESCALA DE TEXTO */
+  --text-hero:      clamp(3rem, 7vw, 5.5rem);
+  --text-h1:        clamp(2rem, 4vw, 3.25rem);
+  --text-h2:        clamp(1.5rem, 2.8vw, 2.25rem);
+  --text-h3:        1.5rem;
+  --text-h4:        1.25rem;
+  --text-lg:        1.125rem;
+  --text-base:      0.9375rem;
+  --text-sm:        0.875rem;
+  --text-xs:        0.75rem;
+  --text-2xs:       0.6875rem;
+
+  --leading-tight:    1.1;
+  --leading-snug:     1.2;
+  --leading-normal:   1.4;
+  --leading-relaxed:  1.5;
+  --leading-loose:    1.65;
+
+  --tracking-tight:   -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.05em;
+  --tracking-wider:   0.18em;
+  --tracking-widest:  0.32em;
+
+  /* ESPAÇAMENTO */
+  --space-2:  2px;
+  --space-4:  4px;
+  --space-8:  8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-56: 56px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+
+  /* LAYOUT */
+  --sidebar-w:           264px;
+  --sidebar-w-collapsed: 72px;
+  --topbar-h:            64px;
+  --max-w:               1280px;
+  --max-w-content:       1024px;
+
+  /* TRANSIÇÕES */
+  --duration-instant: 0ms;
+  --duration-fast:    150ms;
+  --duration-normal:  250ms;
+  --duration-slow:    400ms;
+  --duration-cinema:  600ms;
+
+  --ease:      cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out:  cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in:   cubic-bezier(0.4, 0.0, 1.0, 1);
+
+  /* Z-INDEX */
+  --z-base:     0;
+  --z-elevated: 10;
+  --z-sticky:   30;
+  --z-overlay:  50;
+  --z-modal:    100;
+  --z-toast:    200;
+  --z-tweaks:   300;
+}
+
+[data-theme="dark"] {
+  --bg-canvas:    #0E0D0C;
+  --bg-card:      #161413;
+  --bg-card-soft: #1A1816;
+  --bg-elevated:  #1F1D1A;
+  --ink:          #F0EBDF;
+  --ink-strong:   #FFFFFF;
+  --ink-muted:    #A8A095;
+  --ink-soft:     #6B655C;
+  --line:         #2A2522;
+  --line-soft:    #221E1B;
+}
