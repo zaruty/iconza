@@ -49,15 +49,15 @@
       <!-- HERO -->
       <section class="dash-hero">
         <div>
-          <div class="dash-hero-eyebrow">Bem-vinda</div>
+          <div class="dash-hero-eyebrow">Online · Bem-vinda</div>
           <h1 class="dash-hero-name">
-            <span id="nomeUsuario">Carregando</span><span class="accent">,</span>
+            <span id="nomeUsuario">Carregando</span><span class="accent">.</span>
           </h1>
           <div class="dash-hero-rule"></div>
           <p class="dash-hero-lead">
-            que bom ter você aqui.<br>
             Este é o seu ponto de partida para construir
-            <span class="accent">universos.</span>
+            <span class="accent">universos criativos</span>
+            com inteligência, narrativa e estética.
           </p>
 
           <ul class="dash-hero-list">
@@ -67,7 +67,7 @@
             </li>
             <li>
               <span class="dash-hero-list-bullet green" id="bulletBook"></span>
-              Cada aula, um passo.
+              Cada aula, um passo intencional.
             </li>
             <li>
               <span class="dash-hero-list-bullet pink" id="bulletHeart"></span>
@@ -75,7 +75,7 @@
             </li>
           </ul>
 
-          <div>
+          <div class="dash-hero-sig-wrap">
             <p class="dash-hero-sig">Lívia Zaruty</p>
             <div class="dash-hero-sig-role">Criadora do ICONZA</div>
           </div>
@@ -88,14 +88,12 @@
       <section>
         <header class="dash-sec-head">
           <div class="dash-sec-title-wrap">
-            <span class="dash-sec-title-spark" id="sparkIcon"></span>
-            <div>
-              <h2 class="dash-sec-title">Seus Universos</h2>
-              <p class="dash-sec-sub">Escolha um universo para começar ou continue de onde parou.</p>
-            </div>
+            <span class="dash-sec-eyebrow">Sua jornada</span>
+            <h2 class="dash-sec-title">Universos</h2>
+            <p class="dash-sec-sub">Escolha um universo para começar ou continue de onde parou.</p>
           </div>
           <a class="dash-sec-action" href="universos.html">
-            Ver todos os universos
+            Ver todos
             <span id="arrowAll"></span>
           </a>
         </header>
@@ -147,46 +145,12 @@
         <div>
           <div class="dash-quote-mark">"</div>
           <p class="dash-quote-text">
-            Você não está aqui<br>para aprender.<br>
-            Está aqui para<br>lembrar quem você é.
+            Você não está aqui para aprender.<br>
+            Está aqui para lembrar quem você é.
           </p>
           <div class="dash-quote-attr">Lívia Zaruty</div>
         </div>
-        <div class="dash-quote-art">
-          <svg viewBox="0 0 360 180" width="100%" height="180" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="qg1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#F2A8B5"/>
-                <stop offset="1" stop-color="#D26A7A"/>
-              </linearGradient>
-              <linearGradient id="qg2" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#7FC1B0"/>
-                <stop offset="1" stop-color="#2D7866"/>
-              </linearGradient>
-            </defs>
-            <circle cx="200" cy="80" r="58" fill="url(#qg1)" opacity="0.85"/>
-            <circle cx="155" cy="85" r="46" fill="url(#qg2)" opacity="0.85"/>
-            <g transform="translate(238,60)">
-              <rect x="0" y="68" width="100" height="22" fill="#E8E0C9" stroke="#1A1A18" stroke-width="0.8"/>
-              <rect x="0" y="46" width="100" height="22" fill="#D8BFA0" stroke="#1A1A18" stroke-width="0.8"/>
-              <rect x="0" y="24" width="100" height="22" fill="#C8A07A" stroke="#1A1A18" stroke-width="0.8"/>
-              <text x="50" y="82" text-anchor="middle" font-family="Instrument Serif" font-size="9" fill="#1A1A18" letter-spacing="2">FRIDA KAHLO</text>
-              <text x="50" y="60" text-anchor="middle" font-family="Instrument Serif" font-size="9" fill="#1A1A18" letter-spacing="2">SCHIAPARELLI</text>
-              <text x="50" y="38" text-anchor="middle" font-family="Instrument Serif" font-size="9" fill="#1A1A18" letter-spacing="2">ICONZA</text>
-            </g>
-            <g transform="translate(40,76)">
-              <path d="M0 60 L0 30 Q10 22 22 30 L22 60 Z" fill="#D9D2C2" stroke="#1A1A18" stroke-width="0.7"/>
-              <circle cx="6" cy="6" r="2.5" fill="#7BAE96"/>
-              <circle cx="16" cy="14" r="3" fill="#7BAE96"/>
-              <circle cx="22" cy="2" r="2" fill="#7BAE96"/>
-            </g>
-            <g transform="translate(82,108)">
-              <rect x="0" y="6" width="22" height="28" fill="#EFE7D3" stroke="#1A1A18" stroke-width="0.7"/>
-              <path d="M11 6 L11 -2" stroke="#1A1A18" stroke-width="1"/>
-              <path d="M11 -2 Q8 -6 10 -8 Q13 -5 11 -2 Z" fill="#E8B85A" stroke="#1A1A18" stroke-width="0.6"/>
-            </g>
-          </svg>
-        </div>
+        <div class="dash-quote-art" id="quoteBrain"></div>
       </section>
 
     </div>
@@ -265,7 +229,6 @@ function renderUI() {
   document.getElementById('bulletStar').innerHTML = window.icon('star', { size: 12, stroke: 1.6 });
   document.getElementById('bulletBook').innerHTML = window.icon('book', { size: 12, stroke: 1.6 });
   document.getElementById('bulletHeart').innerHTML = window.icon('heart', { size: 12, stroke: 1.6 });
-  document.getElementById('sparkIcon').innerHTML = window.icon('spark', { size: 20, stroke: 1.4 });
   document.getElementById('arrowAll').innerHTML = window.icon('arrow-right', { size: 14, stroke: 1.6 });
   document.getElementById('arrowDiag').innerHTML = window.icon('arrow-right', { size: 12, stroke: 1.8 });
   document.getElementById('arrowLeft').innerHTML = window.icon('arrow-left', { size: 18, stroke: 1.6 });
@@ -273,13 +236,19 @@ function renderUI() {
 
   // Cérebros
   window.renderBrain('#heroBrain', {
-    seed: 7, count: 110, width: 620, height: 500,
-    variant: 'hero', showCircle: true, animate: true,
+    seed: 11, count: 90, width: 620, height: 440,
+    variant: 'hero', showCircle: false, animate: true, theme: 'light',
   });
 
   window.renderBrain('#cerebroBrain', {
-    seed: 3, count: 70, width: 520, height: 260,
-    variant: 'compact', showCircle: false, animate: true,
+    seed: 3, count: 60, width: 520, height: 240,
+    variant: 'compact', showCircle: false, animate: true, theme: 'light',
+  });
+
+  // Cérebro decorativo da quote
+  window.renderBrain('#quoteBrain', {
+    seed: 19, count: 50, width: 360, height: 200,
+    variant: 'compact', showCircle: false, animate: false, theme: 'light',
   });
 
   renderUniversos();

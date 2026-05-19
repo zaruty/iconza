@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICONZA — Design System Preview</title>
+<title>ICONZA — Design System v4.0</title>
 <link rel="stylesheet" href="iconza-tokens.css">
 <link rel="stylesheet" href="iconza-base.css">
 <link rel="stylesheet" href="iconza-sidebar.css">
@@ -15,15 +15,12 @@
 
 <div class="iconza-app">
 
-  <!-- SIDEBAR (gerada via JS) -->
   <div id="iconza-sidebar"></div>
 
-  <!-- MAIN -->
   <main class="iconza-main" id="mainContent">
 
-    <!-- TOPBAR -->
     <header class="iconza-topbar">
-      <div class="iconza-topbar-date">18 DE MAIO DE 2026</div>
+      <div class="iconza-topbar-date">18 MAI 2026</div>
       <button class="iconza-topbar-icon" aria-label="Notificações">
         <span class="dot"></span>
         <span id="bellIcon"></span>
@@ -35,119 +32,109 @@
 
     <div class="iconza-page">
 
-      <!-- HEADER DE PREVIEW -->
-      <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line);margin-bottom:var(--space-48)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-12)">Design System v3.0</div>
-        <h1 class="t-h1" style="margin-bottom:var(--space-16)">ICONZA — Componentes</h1>
-        <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:640px;line-height:var(--leading-relaxed)">
-          Preview do design system. Cada componente abaixo é reutilizável em qualquer página da plataforma.
+      <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line-soft);margin-bottom:var(--space-40)">
+        <span class="t-eyebrow">Design System v4.0 · Premium SaaS</span>
+        <h1 class="t-h1" style="margin-top:var(--space-12);margin-bottom:var(--space-12)">Componentes ICONZA</h1>
+        <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:580px;line-height:var(--leading-relaxed)">
+          Refinamento completo para visual contemporâneo. Apple · Linear · Notion premium.
         </p>
       </div>
 
-      <!-- SEÇÃO TIPOGRAFIA -->
+      <!-- TIPOGRAFIA -->
       <section style="margin-bottom:var(--space-64)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-24)">Tipografia</div>
+        <span class="t-eyebrow" style="margin-bottom:var(--space-16);display:block">Tipografia</span>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-32)">
           <div>
-            <p class="t-mono" style="margin-bottom:var(--space-8)">SERIF — Instrument Serif</p>
-            <h1 class="t-hero" style="font-size:3rem;margin-bottom:var(--space-12)">Lívia,</h1>
-            <h2 class="t-h2" style="margin-bottom:var(--space-12)">Construa universos.</h2>
-            <p class="t-italic" style="font-size:var(--text-h3);color:var(--ink-muted)">
-              que bom ter você aqui.
-            </p>
+            <p class="t-mono" style="margin-bottom:var(--space-12)">INTER · SaaS Premium</p>
+            <h1 class="t-h1" style="margin-bottom:var(--space-12)">Olá, Lívia.</h1>
+            <h2 class="t-h2" style="margin-bottom:var(--space-12)">Universos criativos</h2>
+            <p class="t-body" style="margin-bottom:var(--space-8)">Texto principal em Inter 14px, leading 1.55.</p>
+            <p class="t-mono">monospace · JetBrains Mono</p>
           </div>
           <div>
-            <p class="t-mono" style="margin-bottom:var(--space-8)">SANS — Geist</p>
-            <p class="t-body" style="margin-bottom:var(--space-12)">
-              Cada universo é uma possibilidade. Cada aula, um passo. Cada criação, um reflexo da sua alma.
-            </p>
-            <p class="t-mono" style="margin-top:var(--space-24);margin-bottom:var(--space-8)">SCRIPT — Caveat</p>
-            <p class="t-script" style="font-size:2rem;color:var(--green)">Lívia Zaruty</p>
-            <p style="font-size:var(--text-xs);color:var(--ink-muted);letter-spacing:var(--tracking-wider);text-transform:uppercase;margin-top:var(--space-4)">
-              Criadora do ICONZA
+            <p class="t-mono" style="margin-bottom:var(--space-12)">INSTRUMENT SERIF · Apenas headlines</p>
+            <h1 class="t-hero" style="margin-bottom:var(--space-12);font-size:3rem">Construa universos.</h1>
+            <p class="t-italic" style="font-size:1.25rem;color:var(--ink-muted)">
+              criar, narrar, com IA.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- SEÇÃO PALETA -->
+      <!-- PALETA -->
       <section style="margin-bottom:var(--space-64)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-24)">Paleta</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-16)">
+        <span class="t-eyebrow" style="margin-bottom:var(--space-16);display:block">Paleta v4</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-12)">
           <div>
-            <div style="height:80px;background:var(--bg-canvas);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">CANVAS · #F6F3EC</p>
+            <div style="height:64px;background:var(--bg-canvas);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">CANVAS · #FFFFFF</p>
           </div>
           <div>
-            <div style="height:80px;background:var(--bg-card);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">CARD · #FBF8F1</p>
+            <div style="height:64px;background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">SOFT · #F8F9FB</p>
           </div>
           <div>
-            <div style="height:80px;background:var(--ink);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">INK · #16140F</p>
+            <div style="height:64px;background:var(--bg-muted);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">MUTED · #F3F4F6</p>
           </div>
           <div>
-            <div style="height:80px;background:var(--pink);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">ROSA · #F28CA8</p>
+            <div style="height:64px;background:var(--ink-strong);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">INK · #000000</p>
           </div>
           <div>
-            <div style="height:80px;background:var(--green);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">VERDE · #1E4D40</p>
+            <div style="height:64px;background:var(--side-from);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">SIDEBAR · #0E1013</p>
           </div>
           <div>
-            <div style="height:80px;background:var(--gold);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
-            <p class="t-mono">DOURADO · #B8954A</p>
+            <div style="height:64px;background:var(--accent);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">ACCENT · #5B6CFF</p>
+          </div>
+          <div>
+            <div style="height:64px;background:var(--green);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">GREEN · #1E4D40</p>
+          </div>
+          <div>
+            <div style="height:64px;background:var(--gold);border-radius:var(--r-md);margin-bottom:var(--space-8)"></div>
+            <p class="t-mono">GOLD · #B89968</p>
           </div>
         </div>
       </section>
 
-      <!-- SEÇÃO BOTÕES -->
+      <!-- BOTÕES -->
       <section style="margin-bottom:var(--space-64)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-24)">Botões</div>
-        <div style="display:flex;gap:var(--space-16);flex-wrap:wrap;align-items:center">
+        <span class="t-eyebrow" style="margin-bottom:var(--space-16);display:block">Botões</span>
+        <div style="display:flex;gap:var(--space-12);flex-wrap:wrap;align-items:center">
           <button class="iconza-btn iconza-btn--primary">
             Iniciar diagnóstico
             <span class="arrow" id="arrowPrim"></span>
           </button>
           <button class="iconza-btn iconza-btn--secondary">Ver detalhes</button>
-          <button class="iconza-btn iconza-btn--gold">Apoiar ICONZA</button>
+          <button class="iconza-btn iconza-btn--accent">Continuar</button>
           <button class="iconza-btn iconza-btn--ghost">Cancelar</button>
+          <button class="iconza-btn iconza-btn--sm iconza-btn--secondary">Small</button>
+          <button class="iconza-btn iconza-btn--lg iconza-btn--primary">Large CTA</button>
         </div>
       </section>
 
-      <!-- SEÇÃO CÉREBRO -->
+      <!-- CÉREBRO -->
       <section style="margin-bottom:var(--space-64)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-24)">Cérebro Criativo Procedural</div>
-        <div style="background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:var(--space-32);overflow:hidden">
-          <div id="brainPreview" style="max-width:620px;margin:0 auto"></div>
-          <div style="text-align:center;margin-top:var(--space-24);display:flex;gap:var(--space-12);justify-content:center;flex-wrap:wrap">
-            <button class="iconza-btn iconza-btn--secondary" onclick="changeBrain(3)">Seed 3</button>
-            <button class="iconza-btn iconza-btn--secondary" onclick="changeBrain(7)">Seed 7</button>
-            <button class="iconza-btn iconza-btn--secondary" onclick="changeBrain(11)">Seed 11</button>
-            <button class="iconza-btn iconza-btn--secondary" onclick="changeBrain(19)">Seed 19</button>
-            <button class="iconza-btn iconza-btn--secondary" onclick="changeBrain(23)">Seed 23</button>
+        <span class="t-eyebrow" style="margin-bottom:var(--space-16);display:block">Cérebro Neural Premium</span>
+        <div style="background:var(--bg-elevated);border:1px solid var(--line);border-radius:var(--r-xl);padding:var(--space-32);overflow:hidden">
+          <div id="brainPreview" style="max-width:680px;margin:0 auto;height:400px"></div>
+          <div style="text-align:center;margin-top:var(--space-20);display:flex;gap:var(--space-8);justify-content:center;flex-wrap:wrap">
+            <button class="iconza-btn iconza-btn--sm iconza-btn--secondary" onclick="changeBrain(3)">Seed 3</button>
+            <button class="iconza-btn iconza-btn--sm iconza-btn--secondary" onclick="changeBrain(7)">Seed 7</button>
+            <button class="iconza-btn iconza-btn--sm iconza-btn--secondary" onclick="changeBrain(11)">Seed 11</button>
+            <button class="iconza-btn iconza-btn--sm iconza-btn--secondary" onclick="changeBrain(19)">Seed 19</button>
+            <button class="iconza-btn iconza-btn--sm iconza-btn--secondary" onclick="changeBrain(23)">Seed 23</button>
           </div>
         </div>
       </section>
 
-      <!-- SEÇÃO ÍCONES -->
+      <!-- ÍCONES -->
       <section style="margin-bottom:var(--space-64)">
-        <div class="t-eyebrow" style="margin-bottom:var(--space-24)">Ícones</div>
-        <div id="iconGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:var(--space-16)"></div>
-      </section>
-
-      <!-- INSTRUÇÕES -->
-      <section style="background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:var(--space-32);margin-bottom:var(--space-64)">
-        <h3 class="t-h3" style="margin-bottom:var(--space-16)">Próximos passos</h3>
-        <p style="color:var(--ink-muted);margin-bottom:var(--space-16);line-height:var(--leading-relaxed)">
-          Este é o design system base. Quando você validar visualmente, vou usar esses arquivos como fundação para refatorar:
-        </p>
-        <ul style="color:var(--ink-muted);margin-left:var(--space-24);line-height:var(--leading-loose)">
-          <li><strong>dashboard.html</strong> — Boas-vindas + hero + universos + cérebro</li>
-          <li><strong>universos.html</strong> — Catálogo completo de universos</li>
-          <li><strong>cerebro.html</strong> — Visualização do cérebro pessoal</li>
-          <li>E todas as outras páginas da plataforma</li>
-        </ul>
+        <span class="t-eyebrow" style="margin-bottom:var(--space-16);display:block">Ícones</span>
+        <div id="iconGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:var(--space-12)"></div>
       </section>
 
     </div>
@@ -155,50 +142,32 @@
 </div>
 
 <script>
-// ============================================
-// Inicialização do preview
-// ============================================
-
-// Sidebar — simulando uma aluna logada
 IconzaSidebar.render({
   target: '#iconza-sidebar',
   activeId: 'boas-vindas',
-  user: {
-    nome: 'Lívia Zaruty',
-    role: 'founder', // testa modo admin
-    avatar_url: null,
-  },
+  user: { nome: 'Lívia Zaruty', role: 'founder', avatar_url: null },
 });
 
-// Ícones da topbar
-document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 18, stroke: 1.6 });
-document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 18, stroke: 1.6 });
-document.getElementById('arrowPrim').innerHTML = window.icon('arrow-right', { size: 12, stroke: 1.8 });
+document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 16, stroke: 1.6 });
+document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 16, stroke: 1.6 });
+document.getElementById('arrowPrim').innerHTML = window.icon('arrow-right', { size: 14, stroke: 1.8 });
 
-// Cérebro
 function changeBrain(seed) {
   window.renderBrain('#brainPreview', {
-    seed,
-    count: 110,
-    width: 620,
-    height: 400,
-    variant: 'hero',
-    showCircle: true,
-    animate: true,
+    seed, count: 90, width: 680, height: 400,
+    variant: 'hero', showCircle: false, animate: true, theme: 'light',
   });
 }
-changeBrain(7);
+changeBrain(11);
 
-// Grid de ícones
 const iconNames = Object.keys(window.IconzaIcons);
 document.getElementById('iconGrid').innerHTML = iconNames.map(name => `
-  <div style="background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:var(--space-16);text-align:center;transition:all .25s ease" onmouseenter="this.style.borderColor='var(--pink)';this.style.color='var(--pink)'" onmouseleave="this.style.borderColor='var(--line-soft)';this.style.color='var(--ink)'">
-    <div style="display:flex;justify-content:center;margin-bottom:var(--space-8)">${window.icon(name, { size: 22, stroke: 1.5 })}</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--ink-muted);letter-spacing:0.05em">${name}</div>
+  <div style="background:var(--bg-elevated);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--space-14);text-align:center;transition:all .15s ease;cursor:default" onmouseenter="this.style.borderColor='var(--ink-strong)';this.style.color='var(--ink-strong)'" onmouseleave="this.style.borderColor='var(--line)';this.style.color='var(--ink)'">
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-8);color:var(--ink-2)">${window.icon(name, { size: 20, stroke: 1.5 })}</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:0.02em">${name}</div>
   </div>
 `).join('');
 
-// Scroll listener para topbar
 const main = document.getElementById('mainContent');
 const topbar = document.querySelector('.iconza-topbar');
 main.addEventListener('scroll', () => {

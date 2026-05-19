@@ -1,13 +1,13 @@
 /* =====================================================
-   ICONZA — CÉREBRO CRIATIVO PROCEDURAL
-   Vanilla JS · SVG · Determinístico por seed
-   Port direto do BrainNetwork.jsx do Claude Design
+   ICONZA — CÉREBRO NEURAL v4.0
+   Premium · Elegante · Refinado · Cinematográfico
+   Linhas finas · Glow sutil · Paleta cool
    ===================================================== */
 
 (function() {
   'use strict';
 
-  // PRNG determinístico (mesma seed = mesmo resultado)
+  // PRNG determinístico
   function mulberry32(a) {
     return function() {
       let t = (a += 0x6d2b79f5);
@@ -27,27 +27,33 @@
     for (let i = 0; i < count; i++) {
       let x, y;
       if (i < count * 0.55) {
-        // Lobo cerebral esquerdo (denso)
         const a = rand() * Math.PI * 2;
         const rr = rMax * (0.10 + Math.pow(rand(), 0.6) * 0.60);
         x = cx - rMax * 0.22 + Math.cos(a) * rr * 0.55;
         y = cy + Math.sin(a) * rr * 0.88;
       } else {
-        // Rede direita (expansiva)
         const a = (rand() - 0.5) * Math.PI * 1.6;
         const rr = rMax * (0.45 + rand() * 0.65);
         x = cx + Math.abs(Math.cos(a)) * rr * 0.95;
         y = cy + Math.sin(a) * rr * 0.95;
       }
-      pts.push({ x, y, r: 1.2 + rand() * 1.4, hi: false, color: null });
+      // Pontos menores e mais elegantes
+      pts.push({ x, y, r: 0.8 + rand() * 1.0, hi: false, color: null });
     }
 
-    // Nós destacados (cores ICONZA)
+    // Paleta refinada premium (frio + sofisticado)
     const palette = [
-      '#F28CA8', '#1E4D40', '#B8954A', '#3F7DCB',
-      '#D9B23A', '#E25A6A', '#46A98B', '#5E8CC4', '#C8651F'
+      '#5B6CFF', // índigo accent
+      '#3A6B7C', // azul oceano profundo
+      '#B89968', // dourado frio
+      '#1E4D40', // verde profundo
+      '#5C8A6B', // sálvia
+      '#8B4A6B', // bordô discreto
+      '#2A4356', // azul noite
+      '#A8A29E', // taupe neutro
     ];
-    const hiCount = 18;
+
+    const hiCount = 14; // menos nós destacados, mais elegante
     const indexed = pts
       .map((p, i) => ({ i, p }))
       .filter(({ p }) => p.x > cx - rMax * 0.1)
@@ -56,7 +62,7 @@
     for (let k = 0; k < hiCount && k < indexed.length; k++) {
       const idx = indexed[Math.floor(rand() * Math.min(indexed.length, 60))].i;
       pts[idx].hi = true;
-      pts[idx].r = 4 + rand() * 5;
+      pts[idx].r = 3 + rand() * 3; // nós destacados menores
       pts[idx].color = palette[k % palette.length];
     }
     return pts;
@@ -86,99 +92,67 @@
     return edges;
   }
 
-  function genMassBlobs(seed, w, h) {
-    const rand = mulberry32(seed + 1);
-    const cx = w * 0.42;
-    const cy = h * 0.5;
-    const blobs = [];
-    for (let i = 0; i < 26; i++) {
-      const a = rand() * Math.PI * 2;
-      const rr = Math.min(w, h) * (0.10 + rand() * 0.22);
-      const ox = Math.cos(a) * rr * 0.5;
-      const oy = Math.sin(a) * rr * 0.7;
-      blobs.push({
-        cx: cx + ox,
-        cy: cy + oy,
-        rx: 38 + rand() * 50,
-        ry: 38 + rand() * 50,
-        op: 0.35 + rand() * 0.35,
-      });
-    }
-    return blobs;
-  }
-
   /**
-   * Renderiza um Cérebro Criativo SVG
-   * @param {object} opts
-   * @param {number} opts.seed - Seed determinística
-   * @param {number} opts.count - Quantidade de pontos
-   * @param {number} opts.width - Largura
-   * @param {number} opts.height - Altura
-   * @param {string} opts.variant - 'hero' | 'compact'
-   * @param {boolean} opts.showCircle - Mostra círculo de fundo
-   * @param {boolean} opts.animate - Anima os nós destacados
-   * @returns {string} SVG markup
+   * Renderiza Cérebro Neural Premium
    */
   window.IconzaBrain = function(opts = {}) {
     const {
       seed = 7,
-      count = 110,
+      count = 90,
       width = 620,
-      height = 560,
+      height = 500,
       variant = 'hero',
-      showCircle = true,
+      showCircle = false,
       animate = true,
+      theme = 'light', // 'light' | 'dark'
     } = opts;
 
     const pts = genBrainPoints(seed, count, width, height);
     const edges = genBrainEdges(pts, 3, width * 0.13);
-    const blobs = variant === 'hero' ? genMassBlobs(seed, width, height) : [];
 
-    const massEllipses = blobs.map((b, i) =>
-      `<ellipse cx="${b.cx}" cy="${b.cy}" rx="${b.rx}" ry="${b.ry}" fill="url(#brainMass-${seed})" opacity="${b.op}"/>`
-    ).join('');
+    // Cores baseadas no tema
+    const isDark = theme === 'dark';
+    const edgeColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(11, 13, 15, 0.12)';
+    const baseNodeColor = isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(11, 13, 15, 0.35)';
+    const massColor = isDark ? 'rgba(91, 108, 255, 0.06)' : 'rgba(91, 108, 255, 0.04)';
 
-    const mainMass = variant === 'hero' ? `
-      <ellipse cx="${width * 0.42}" cy="${height * 0.5}" rx="${width * 0.28}" ry="${height * 0.42}"
-               fill="url(#brainMass-${seed})" opacity="0.85"/>
-      <ellipse cx="${width * 0.42}" cy="${height * 0.5}" rx="${width * 0.28}" ry="${height * 0.42}"
-               fill="transparent" filter="url(#grain-${seed})"/>
+    // Massa cerebral (apenas hero, gradient sutil)
+    const massBlob = variant === 'hero' ? `
+      <defs>
+        <radialGradient id="mass-${seed}" cx="42%" cy="50%" r="40%">
+          <stop offset="0%" stop-color="${isDark ? 'rgba(91, 108, 255, 0.08)' : 'rgba(91, 108, 255, 0.06)'}"/>
+          <stop offset="60%" stop-color="${massColor}"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="${width * 0.42}" cy="${height * 0.5}"
+               rx="${width * 0.32}" ry="${height * 0.42}"
+               fill="url(#mass-${seed})"/>
     ` : '';
 
+    // Edges (linhas finas premium)
     const edgeLines = edges.map(([i, j]) =>
       `<line x1="${pts[i].x}" y1="${pts[i].y}" x2="${pts[j].x}" y2="${pts[j].y}"/>`
     ).join('');
 
+    // Halos sutis em torno dos nós destacados
     const halos = pts.map((p, i) =>
-      p.hi ? `<circle cx="${p.x}" cy="${p.y}" r="${p.r + 6}" fill="${p.color}" opacity="0.18"/>` : ''
+      p.hi ? `<circle cx="${p.x}" cy="${p.y}" r="${p.r + 4}" fill="${p.color}" opacity="0.12"/>` : ''
     ).join('');
 
+    // Nós
     const dots = pts.map((p, i) => {
       if (p.hi) {
         const delay = animate ? `style="animation-delay:${(i % 7) * 0.4}s"` : '';
         const cls = animate ? 'class="brain-node-anim"' : '';
         return `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${p.color}" ${cls} ${delay}/>`;
       }
-      return `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="#2A2823" opacity="0.7"/>`;
+      return `<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${baseNodeColor}"/>`;
     }).join('');
 
     return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block">
-      <defs>
-        <radialGradient id="brainMass-${seed}" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#F4EDDD"/>
-          <stop offset="55%" stop-color="#E9DFC9"/>
-          <stop offset="100%" stop-color="#D9CCB0" stop-opacity="0"/>
-        </radialGradient>
-        <filter id="grain-${seed}">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
-          <feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.5  0 0 0 0 0.4  0 0 0 0.12 0"/>
-          <feComposite in2="SourceGraphic" operator="in"/>
-        </filter>
-      </defs>
-      ${showCircle ? `<circle cx="${width * 0.55}" cy="${height * 0.5}" r="${Math.min(width, height) * 0.46}" fill="rgba(214, 224, 218, 0.35)"/>` : ''}
-      ${massEllipses}
-      ${mainMass}
-      <g stroke="rgba(22, 20, 15, 0.18)" stroke-width="0.6" fill="none">
+      ${massBlob}
+      <g stroke="${edgeColor}" stroke-width="0.5" fill="none">
         ${edgeLines}
       </g>
       ${halos}
@@ -186,11 +160,6 @@
     </svg>`;
   };
 
-  /**
-   * Insere um cérebro em um container
-   * @param {HTMLElement|string} target - elemento ou selector
-   * @param {object} opts
-   */
   window.renderBrain = function(target, opts = {}) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
     if (!el) return;

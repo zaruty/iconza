@@ -83,15 +83,19 @@
       el.innerHTML = `
         <aside class="iconza-side">
           <a href="${isAdmin ? 'admin-crm.html' : 'dashboard.html'}" class="iconza-side-brand">
-            ${window.icon('crown', { size: 32, stroke: 1.4, className: 'iconza-side-crown' })}
-            <div class="iconza-side-wordmark">ICONZA</div>
-            <div class="iconza-side-sub">${isAdmin ? 'Painel Administrativo' : 'Plataforma Educacional'}</div>
+            ${window.icon('crown', { size: 22, stroke: 1.5, className: 'iconza-side-crown' })}
+            <div class="iconza-side-brand-text">
+              <div class="iconza-side-wordmark">ICONZA</div>
+              <div class="iconza-side-sub">${isAdmin ? 'Admin' : 'Plataforma'}</div>
+            </div>
           </a>
 
           <div class="iconza-side-user">
             <div class="iconza-side-avatar">${avatarContent}</div>
-            <div class="iconza-side-name">${user.nome || 'Aluna'}</div>
-            <div class="iconza-side-role">${roleLabel}</div>
+            <div class="iconza-side-user-info">
+              <div class="iconza-side-name">${user.nome || 'Aluna'}</div>
+              <div class="iconza-side-role">${roleLabel}</div>
+            </div>
           </div>
 
           <nav class="iconza-side-nav">
@@ -105,7 +109,7 @@
                 Apoie o ICONZA
               </div>
               <p class="iconza-side-support-copy">
-                Sua doação mantém este universo vivo e acessível para todas as mentes criativas.
+                Sua doação mantém este universo vivo e acessível.
               </p>
               <button class="iconza-side-support-btn" onclick="window.location.href='apoiar.html'">
                 Quero apoiar
@@ -113,13 +117,13 @@
               </button>
             </div>
           ` : `
-            <div class="iconza-side-support" style="background:linear-gradient(135deg,rgba(184,149,74,0.08),rgba(30,77,64,0.06));border-color:rgba(184,149,74,0.15)">
-              <div class="iconza-side-support-title" style="color:var(--gold)">
+            <div class="iconza-side-support">
+              <div class="iconza-side-support-title">
                 ${window.icon('users', { size: 12, stroke: 1.6 })}
                 Modo Teste
               </div>
               <p class="iconza-side-support-copy">
-                Trocar de conta para testar a plataforma como outra usuária.
+                Trocar de conta para testar como aluna.
               </p>
               <button class="iconza-side-support-btn" onclick="iconzaTrocarConta()">
                 Trocar de conta
@@ -129,7 +133,7 @@
           `}
 
           <button class="iconza-side-logout" onclick="iconzaLogout()">
-            ${window.icon('logout', { size: 18, stroke: 1.5 })}
+            ${window.icon('logout', { size: 14, stroke: 1.5 })}
             <span>Sair da conta</span>
           </button>
         </aside>

@@ -1,157 +1,208 @@
 /* =====================================================
-   ICONZA — DESIGN TOKENS v3.0 (Claude Design Approved)
-   Cinema · Editorial · Premium
+   ICONZA — DESIGN TOKENS v4.0
+   Premium SaaS · Cinematográfico · Contemporâneo
+   Apple · Linear · Arc · Notion premium
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Caveat:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* CANVAS — fundos editoriais quentes */
-  --bg-canvas:      #F6F3EC;
-  --bg-card:        #FBF8F1;
-  --bg-card-soft:   #F1ECE0;
-  --bg-elevated:    #FFFFFF;
+  /* ============================================
+     CANVAS — Fundos limpos e luminosos
+     ============================================ */
+  --bg-canvas:      #FFFFFF;        /* fundo principal */
+  --bg-soft:        #F8F9FB;        /* hover, áreas secundárias */
+  --bg-muted:       #F3F4F6;        /* áreas terciárias */
+  --bg-elevated:    #FFFFFF;        /* cards e modais */
 
-  /* INK — hierarquia de texto */
-  --ink:            #16140F;
-  --ink-strong:     #08070A;
-  --ink-muted:      #7A766B;
-  --ink-soft:       #ADA89B;
+  /* ============================================
+     INK — Hierarquia de texto fria e nítida
+     ============================================ */
+  --ink:            #0B0D0F;        /* texto principal */
+  --ink-strong:     #000000;        /* títulos fortes */
+  --ink-2:          #1F2328;        /* texto secundário */
+  --ink-muted:      #6B7280;        /* texto auxiliar */
+  --ink-soft:       #9CA3AF;        /* texto terciário */
+  --ink-faint:      #D1D5DB;        /* placeholders */
 
-  /* SIDEBAR — gradiente cinematográfico */
-  --side-from:      #0B0B0B;
-  --side-via:       #161514;
-  --side-to:        #1F1D1A;
-  --side-ink:       #F0EBDF;
-  --side-ink-muted: #8C857A;
+  /* ============================================
+     SIDEBAR — Grafite premium frio
+     ============================================ */
+  --side-from:      #0E1013;
+  --side-via:       #111315;
+  --side-to:        #17191C;
+  --side-elevated:  #1E2227;        /* hover de item ativo */
+  --side-ink:       #E5E7EB;        /* texto principal */
+  --side-ink-muted: #6B7280;        /* texto secundário */
+  --side-ink-soft:  #4B5563;        /* texto terciário */
   --side-divider:   rgba(255, 255, 255, 0.06);
+  --side-ring:      rgba(255, 255, 255, 0.08);
 
-  /* BRAND — paleta autoral */
-  --pink:           #F28CA8;
-  --pink-soft:      #F8C7D4;
-  --green:          #1E4D40;
-  --green-deep:     #143A30;
-  --green-soft:     #D6E0DA;
-  --gold:           #B8954A;
-  --gold-soft:      #E8D7AF;
+  /* ============================================
+     BRAND — Acentos sutis e contemporâneos
+     ============================================ */
+  --accent:         #5B6CFF;        /* índigo sofisticado (substitui rosa quente) */
+  --accent-soft:    rgba(91, 108, 255, 0.08);
+  --accent-hover:   #4F5DE0;
 
-  /* LINHAS · BORDAS */
-  --line:           #E7E1D2;
-  --line-soft:      #ECE7D8;
-  --tech:           #C9C2B1;
+  --green:          #1E4D40;        /* verde profundo mantido */
+  --green-soft:     rgba(30, 77, 64, 0.08);
 
-  /* 7 NÍVEIS CRIATIVOS */
-  --nivel-1:        #6B1818;
-  --nivel-2:        #8B2818;
-  --nivel-3:        #B85820;
-  --nivel-4:        #B8954A;
-  --nivel-5:        #5C8A4A;
-  --nivel-6:        #2A5A6B;
-  --nivel-7:        #1E4D40;
+  --gold:           #B89968;        /* dourado mais frio, menos saturado */
+  --gold-soft:      rgba(184, 153, 104, 0.10);
 
-  /* STATUS */
-  --success:        #5C8A4A;
-  --warning:        #B8954A;
-  --error:          #B23A3A;
-  --info:           #2A5A6B;
+  --pink:           #E879A9;        /* rosa apenas como detalhe pontual */
 
-  /* RAIOS */
-  --r-xs:           6px;
-  --r-sm:           10px;
-  --r-md:           16px;
-  --r-lg:           22px;
-  --r-xl:           28px;
+  /* ============================================
+     LINHAS · BORDAS — Frias e nítidas
+     ============================================ */
+  --line:           #E5E7EB;        /* bordas padrão */
+  --line-soft:      #F1F3F5;        /* bordas sutis */
+  --line-strong:    #D1D5DB;        /* bordas marcadas */
+
+  /* ============================================
+     7 NÍVEIS CRIATIVOS — Recalibrados premium
+     ============================================ */
+  --nivel-1:        #8B4444;
+  --nivel-2:        #B86847;
+  --nivel-3:        #C8954A;
+  --nivel-4:        #B89968;
+  --nivel-5:        #5C8A6B;
+  --nivel-6:        #3A6B7C;
+  --nivel-7:        #2A4356;
+
+  /* ============================================
+     STATUS — Cores funcionais SaaS
+     ============================================ */
+  --success:        #10B981;
+  --warning:        #F59E0B;
+  --error:          #EF4444;
+  --info:           #3B82F6;
+
+  /* ============================================
+     RAIOS — Premium SaaS
+     ============================================ */
+  --r-xs:           4px;
+  --r-sm:           6px;
+  --r-md:           8px;
+  --r-lg:           12px;
+  --r-xl:           16px;
+  --r-2xl:          20px;
   --r-full:         9999px;
 
-  /* SOMBRAS EDITORIAIS */
-  --sh-1:    0 1px 0 rgba(22, 20, 15, 0.04), 0 1px 2px rgba(22, 20, 15, 0.04);
-  --sh-2:    0 1px 0 rgba(22, 20, 15, 0.04), 0 6px 24px -8px rgba(22, 20, 15, 0.10);
-  --sh-3:    0 2px 0 rgba(22, 20, 15, 0.04), 0 18px 50px -16px rgba(22, 20, 15, 0.18);
-  --sh-card-hover: 0 2px 0 rgba(22, 20, 15, 0.04), 0 22px 56px -20px rgba(22, 20, 15, 0.24);
+  /* ============================================
+     SOMBRAS — Premium contemporâneas
+     ============================================ */
+  --sh-xs:    0 1px 2px rgba(0, 0, 0, 0.04);
+  --sh-sm:    0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --sh-md:    0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --sh-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --sh-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --sh-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.12);
 
-  /* TIPOGRAFIA */
-  --serif:    "Instrument Serif", "Cormorant Garamond", "Times New Roman", serif;
-  --sans:     "Geist", "Manrope", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --mono:     "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
-  --script:   "Caveat", "Homemade Apple", cursive;
+  /* ============================================
+     TIPOGRAFIA — Premium SaaS moderno
+     ============================================ */
+  --sans:           "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  --serif:          "Instrument Serif", "Cormorant Garamond", "Times New Roman", serif;
+  --mono:           "JetBrains Mono", "SF Mono", ui-monospace, monospace;
 
-  /* ESCALA DE TEXTO */
-  --text-hero:      clamp(3rem, 7vw, 5.5rem);
-  --text-h1:        clamp(2rem, 4vw, 3.25rem);
-  --text-h2:        clamp(1.5rem, 2.8vw, 2.25rem);
-  --text-h3:        1.5rem;
-  --text-h4:        1.25rem;
-  --text-lg:        1.125rem;
-  --text-base:      0.9375rem;
-  --text-sm:        0.875rem;
-  --text-xs:        0.75rem;
-  --text-2xs:       0.6875rem;
+  /* ============================================
+     ESCALA DE TEXTO — Refinada
+     ============================================ */
+  --text-hero:      clamp(2.5rem, 5vw, 4rem);
+  --text-h1:        clamp(1.875rem, 3vw, 2.5rem);
+  --text-h2:        clamp(1.375rem, 2.2vw, 1.75rem);
+  --text-h3:        1.25rem;
+  --text-h4:        1.125rem;
+  --text-lg:        1rem;
+  --text-base:      0.875rem;       /* 14px (SaaS premium standard) */
+  --text-sm:        0.8125rem;      /* 13px */
+  --text-xs:        0.75rem;        /* 12px */
+  --text-2xs:       0.6875rem;      /* 11px */
 
-  --leading-tight:    1.1;
-  --leading-snug:     1.2;
-  --leading-normal:   1.4;
-  --leading-relaxed:  1.5;
-  --leading-loose:    1.65;
+  --leading-none:     1;
+  --leading-tight:    1.15;
+  --leading-snug:     1.3;
+  --leading-normal:   1.45;
+  --leading-relaxed:  1.55;
+  --leading-loose:    1.7;
 
-  --tracking-tight:   -0.02em;
+  --tracking-tighter: -0.03em;
+  --tracking-tight:   -0.015em;
   --tracking-normal:  0;
-  --tracking-wide:    0.05em;
-  --tracking-wider:   0.18em;
-  --tracking-widest:  0.32em;
+  --tracking-wide:    0.025em;
+  --tracking-wider:   0.08em;
+  --tracking-widest:  0.18em;
 
-  /* ESPAÇAMENTO */
-  --space-2:  2px;
-  --space-4:  4px;
-  --space-8:  8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-  --space-40: 40px;
-  --space-48: 48px;
-  --space-56: 56px;
-  --space-64: 64px;
-  --space-80: 80px;
-  --space-96: 96px;
+  /* ============================================
+     ESPAÇAMENTO — Mais denso e equilibrado
+     ============================================ */
+  --space-px:       1px;
+  --space-2:        2px;
+  --space-4:        4px;
+  --space-6:        6px;
+  --space-8:        8px;
+  --space-10:       10px;
+  --space-12:       12px;
+  --space-14:       14px;
+  --space-16:       16px;
+  --space-20:       20px;
+  --space-24:       24px;
+  --space-28:       28px;
+  --space-32:       32px;
+  --space-40:       40px;
+  --space-48:       48px;
+  --space-56:       56px;
+  --space-64:       64px;
+  --space-80:       80px;
 
-  /* LAYOUT */
-  --sidebar-w:           264px;
-  --sidebar-w-collapsed: 72px;
-  --topbar-h:            64px;
-  --max-w:               1280px;
-  --max-w-content:       1024px;
+  /* ============================================
+     LAYOUT — Compacto e premium
+     ============================================ */
+  --sidebar-w:             248px;
+  --sidebar-w-collapsed:   64px;
+  --topbar-h:              56px;
+  --max-w:                 1400px;
+  --max-w-content:         1180px;
 
-  /* TRANSIÇÕES */
-  --duration-instant: 0ms;
-  --duration-fast:    150ms;
-  --duration-normal:  250ms;
-  --duration-slow:    400ms;
-  --duration-cinema:  600ms;
+  /* ============================================
+     TRANSIÇÕES — SaaS Premium
+     ============================================ */
+  --duration-instant:  0ms;
+  --duration-fast:     120ms;
+  --duration-normal:   180ms;
+  --duration-slow:     280ms;
+  --duration-cinema:   500ms;
 
-  --ease:      cubic-bezier(0.2, 0.7, 0.2, 1);
-  --ease-out:  cubic-bezier(0.0, 0.0, 0.2, 1);
-  --ease-in:   cubic-bezier(0.4, 0.0, 1.0, 1);
+  --ease:              cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:          cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in:           cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-inout:        cubic-bezier(0.4, 0.0, 0.2, 1);
 
-  /* Z-INDEX */
+  /* ============================================
+     Z-INDEX
+     ============================================ */
   --z-base:     0;
   --z-elevated: 10;
   --z-sticky:   30;
   --z-overlay:  50;
   --z-modal:    100;
   --z-toast:    200;
-  --z-tweaks:   300;
 }
 
 [data-theme="dark"] {
-  --bg-canvas:    #0E0D0C;
-  --bg-card:      #161413;
-  --bg-card-soft: #1A1816;
-  --bg-elevated:  #1F1D1A;
-  --ink:          #F0EBDF;
+  --bg-canvas:    #0B0D0F;
+  --bg-soft:      #111315;
+  --bg-muted:     #17191C;
+  --bg-elevated:  #1E2227;
+  --ink:          #F3F4F6;
   --ink-strong:   #FFFFFF;
-  --ink-muted:    #A8A095;
-  --ink-soft:     #6B655C;
-  --line:         #2A2522;
-  --line-soft:    #221E1B;
+  --ink-2:        #E5E7EB;
+  --ink-muted:    #9CA3AF;
+  --ink-soft:     #6B7280;
+  --ink-faint:    #4B5563;
+  --line:         #2A2E33;
+  --line-soft:    #1F2328;
+  --line-strong:  #3A3E44;
 }
