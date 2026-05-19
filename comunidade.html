@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Comunidade</title>
+
+<link rel="stylesheet" href="iconza-tokens.css">
+<link rel="stylesheet" href="iconza-base.css">
+<link rel="stylesheet" href="iconza-sidebar.css">
+<link rel="stylesheet" href="iconza-comunidade.css">
+<link rel="stylesheet" href="acesso.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="iconza-icons.js"></script>
+<script src="iconza-sidebar.js"></script>
+<script src="iconza-card.js"></script>
+<script src="iconza-feed.js"></script>
+</head>
+<body>
+
+<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease">
+  <div style="width:32px;height:32px;border:2px solid var(--line);border-top-color:var(--ink-strong);border-radius:50%;animation:spin .8s linear infinite"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}#loadingOverlay.hide{opacity:0;pointer-events:none}</style>
+
+<div class="iconza-app">
+
+  <div id="iconza-sidebar"></div>
+
+  <main class="iconza-main" id="mainContent">
+
+    <header class="iconza-topbar" id="topbar">
+      <div class="iconza-topbar-date" id="dataHoje"></div>
+      <button class="iconza-topbar-icon" aria-label="Notificações" onclick="abrirNotificacoes()">
+        <span class="dot" id="notifDot" style="display:none"></span>
+        <span id="bellIcon"></span>
+      </button>
+      <button class="iconza-topbar-icon" aria-label="Menu" onclick="IconzaSidebar.toggle()">
+        <span id="menuIcon"></span>
+      </button>
+    </header>
+
+    <div class="iconza-page">
+
+      <!-- HEADER -->
+      <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line-soft);margin-bottom:var(--space-32)">
+        <span class="t-eyebrow">Conexões criativas</span>
+        <h1 class="t-h1" style="margin-top:var(--space-12);margin-bottom:var(--space-12)">Comunidade</h1>
+        <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:580px;line-height:var(--leading-relaxed)">
+          Compartilhe processo, descobertas e referências. Cada post alimenta o cérebro criativo coletivo.
+        </p>
+      </div>
+
+      <div class="iz-comunidade">
+
+        <!-- COLUNA FEED -->
+        <div class="iz-comunidade-feed">
+
+          <!-- COMPOSER -->
+          <div class="iz-composer">
+            <div class="iz-composer-top">
+              <div id="composerAvatar"></div>
+              <textarea
+                class="iz-composer-input"
+                id="composerInput"
+                placeholder="O que você está descobrindo hoje?"
+                maxlength="2000"
+                oninput="atualizarComposer()"></textarea>
+            </div>
+            <div class="iz-composer-actions">
+              <div style="display:flex;align-items:center;gap:var(--space-12)">
+                <select class="iz-composer-tipo-select" id="composerTipo">
+                  <option value="texto">Reflexão</option>
+                  <option value="projeto">Projeto</option>
+                  <option value="pergunta">Pergunta</option>
+                  <option value="marco">Marco</option>
+                </select>
+                <span class="iz-composer-counter" id="composerCounter">0 / 2000</span>
+              </div>
+              <button class="iconza-btn iconza-btn--primary iconza-btn--sm" id="composerSubmit" onclick="publicarPost()" disabled>
+                Publicar
+              </button>
+            </div>
+          </div>
+
+          <!-- FEED -->
+          <div id="feedContainer">
+            <div style="text-align:center;padding:var(--space-48);color:var(--ink-soft);font-size:var(--text-sm)">
+              Carregando comunidade...
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUNA LATERAL -->
+        <aside class="iz-comunidade-side">
+          <div class="iz-widget">
+            <div class="iz-widget-title">A comunidade</div>
+            <div class="iz-widget-stat">
+              <span class="iz-widget-stat-num" id="statTotal">—</span>
+              <span class="iz-widget-stat-label">criadoras conectadas</span>
+            </div>
+            <div class="iz-widget-stat">
+              <span class="iz-widget-stat-num" id="statPosts">—</span>
+              <span class="iz-widget-stat-label">posts publicados</span>
+            </div>
+          </div>
+
+          <div class="iz-widget">
+            <div class="iz-widget-title">Diretrizes</div>
+            <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed);margin-bottom:var(--space-12)">
+              Aqui celebramos processo, não perfeição.
+            </p>
+            <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed)">
+              Respeite cada jornada. Inspire com sua autenticidade.
+            </p>
+          </div>
+
+          <div class="iz-widget">
+            <div class="iz-widget-title">Em alta</div>
+            <p style="font-size:var(--text-xs);color:var(--ink-soft)">
+              Tags e tópicos em destaque aparecerão aqui em breve.
+            </p>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const sb = supabase.createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+window.sb = sb;
+
+let perfilUsuario = null;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const { data: profile } = await sb
+    .from('profiles')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+  perfilUsuario = profile || { id: session.user.id, email: session.user.email, role: 'aluno', nome_completo: null };
+
+  renderUI();
+
+  await IconzaFeed.init({
+    sb,
+    container: '#feedContainer',
+    usuario: perfilUsuario
+  });
+
+  await carregarStats();
+  await verificarNotificacoes();
+
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hide');
+  }, 300);
+}
+
+function renderUI() {
+  const nome = perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0];
+  const primeiroNome = nome.split(' ')[0];
+
+  IconzaSidebar.render({
+    target: '#iconza-sidebar',
+    activeId: 'comunidade',
+    user: {
+      nome: primeiroNome,
+      role: perfilUsuario.role,
+      avatar_url: perfilUsuario.avatar_url || null,
+    },
+  });
+
+  document.getElementById('dataHoje').textContent = formatarData();
+  document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 16, stroke: 1.6 });
+  document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 16, stroke: 1.6 });
+
+  // Avatar no composer
+  document.getElementById('composerAvatar').innerHTML = window.iconzaRenderAvatar(perfilUsuario, 40);
+}
+
+async function carregarStats() {
+  const { count: totalUsuarios } = await sb
+    .from('profiles')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: totalPosts } = await sb
+    .from('posts')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'publicado');
+
+  document.getElementById('statTotal').textContent = totalUsuarios || 0;
+  document.getElementById('statPosts').textContent = totalPosts || 0;
+}
+
+async function verificarNotificacoes() {
+  const { count } = await sb
+    .from('notificacoes')
+    .select('*', { count: 'exact', head: true })
+    .eq('destinatario_id', perfilUsuario.id)
+    .eq('lida', false);
+
+  if (count > 0) {
+    document.getElementById('notifDot').style.display = 'block';
+  }
+}
+
+function abrirNotificacoes() {
+  // Placeholder - será implementado em sprint dedicado
+  IconzaFeed.mostrarToast('Notificações em desenvolvimento');
+}
+
+function atualizarComposer() {
+  const input = document.getElementById('composerInput');
+  const counter = document.getElementById('composerCounter');
+  const btn = document.getElementById('composerSubmit');
+  const len = input.value.length;
+
+  counter.textContent = `${len} / 2000`;
+  counter.classList.toggle('is-warning', len > 1500);
+  counter.classList.toggle('is-error', len > 1900);
+
+  btn.disabled = len === 0 || len > 2000;
+}
+
+async function publicarPost() {
+  const input = document.getElementById('composerInput');
+  const tipo = document.getElementById('composerTipo').value;
+  const conteudo = input.value.trim();
+  if (!conteudo) return;
+
+  const btn = document.getElementById('composerSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Publicando...';
+
+  const { error } = await IconzaFeed.criarPost(conteudo, tipo);
+
+  if (error) {
+    alert('Erro: ' + error);
+  } else {
+    input.value = '';
+    document.getElementById('composerTipo').value = 'texto';
+    atualizarComposer();
+  }
+
+  btn.textContent = 'Publicar';
+}
+
+function formatarData() {
+  const d = new Date();
+  const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+  return `${d.getDate()} DE ${meses[d.getMonth()]} DE ${d.getFullYear()}`;
+}
+
+const main = document.getElementById('mainContent');
+const topbar = document.getElementById('topbar');
+main.addEventListener('scroll', () => {
+  topbar.classList.toggle('is-scrolled', main.scrollTop > 6);
+});
+
+// Atalho: Cmd/Ctrl+Enter publica
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if (document.activeElement?.id === 'composerInput') {
+      publicarPost();
+    }
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  IconzaFeed.desconectar();
+});
+
+init();
+</script>
+<script src="acesso.js"></script>
+</body>
+</html>
