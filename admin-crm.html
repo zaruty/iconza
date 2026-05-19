@@ -435,8 +435,56 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       <div class="placeholder"><span class="ph-icon">⭐</span><h2 class="ph-tit">Sistema de Fases</h2><p class="ph-desc">Descoberta · Linguagem · Criação · Comunicação · Projeto · Legado</p><span class="ph-bdg">Em breve</span></div>
     </section>
     <section class="modulo" id="mod-cursos">
-      <div class="mod-header"><div><h1 class="mod-titulo">Cursos</h1><p class="mod-sub">Gestão de cursos da plataforma</p></div></div>
-      <div class="placeholder"><span class="ph-icon">📚</span><h2 class="ph-tit">Gestão de Cursos</h2><p class="ph-desc">Cadastre módulos, aulas, PDFs, quizzes e desafios.</p><span class="ph-bdg">Em breve</span></div>
+      <div class="mod-header">
+        <div>
+          <h1 class="mod-titulo">Universos Criativos</h1>
+          <p class="mod-sub">Seus cursos como portais para o universo ICONZA</p>
+        </div>
+        <button class="btn-prim" onclick="abrirCursoNovo()">+ Novo Universo</button>
+      </div>
+
+      <!-- VISÃO DA CRIADORA -->
+      <div class="card" style="background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);color:#fff;border:none;margin-bottom:1.5rem;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-1rem;top:50%;transform:translateY(-50%);font-family:'Playfair Display',serif;font-size:7rem;font-weight:900;color:rgba(255,255,255,.03);pointer-events:none;user-select:none">ICONZA</div>
+        <div style="display:flex;align-items:center;gap:1.2rem;position:relative">
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.15)" id="criadoraAv">L</div>
+          <div style="flex:1">
+            <span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600">Criadora · Fundadora</span>
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fff;margin:.2rem 0">Lívia Zaruty</h2>
+            <p style="font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6">Você é o rosto do ICONZA. Cada curso aqui é uma extensão da sua narrativa criativa.</p>
+          </div>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:flex-end">
+            <a href="u.html" target="_blank" style="font-size:.65rem;padding:.5rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;font-weight:600">↗ Perfil público</a>
+            <button onclick="mostrar('config',document.querySelector('[data-mod=config]'))" style="font-size:.65rem;padding:.5rem 1rem;background:var(--vm);border:none;color:#fff;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:600;font-family:'DM Sans',sans-serif">⚙ Configurar Pagamentos</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS DE CURSOS -->
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-c"><div class="stat-c-icon">📚</div><span class="stat-c-num" id="c-total">—</span><span class="stat-c-label">Universos criados</span></div>
+        <div class="stat-c"><div class="stat-c-icon">✓</div><span class="stat-c-num" id="c-pub">—</span><span class="stat-c-label">Publicados</span></div>
+        <div class="stat-c"><div class="stat-c-icon">🎓</div><span class="stat-c-num" id="c-mat">—</span><span class="stat-c-label">Total de matrículas</span></div>
+        <div class="stat-c"><div class="stat-c-icon">💰</div><span class="stat-c-num" id="c-receita">R$ 0</span><span class="stat-c-label">Receita gerada</span></div>
+      </div>
+
+      <!-- GRID DE CURSOS -->
+      <div id="cursosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-top:1.5rem">
+        <p class="empty">Carregando universos...</p>
+      </div>
+
+      <!-- CARD DE DOAÇÃO INTEGRADO -->
+      <div style="margin-top:2rem;background:var(--branco);border:1px solid var(--borda);padding:1.5rem;position:relative;overflow:hidden">
+        <div style="display:flex;align-items:flex-start;gap:1.2rem">
+          <div style="font-size:2rem">🌱</div>
+          <div style="flex:1">
+            <span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700">Apoio ao ICONZA</span>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin:.3rem 0">Permita que mais mulheres acessem o universo criativo</h3>
+            <p style="font-size:.82rem;color:var(--cinza);line-height:1.7;margin-bottom:1rem">Doações voluntárias sustentam bolsas de estudo, traduções multilíngues e mantém os primeiros módulos gratuitos para sempre.</p>
+            <button class="btn-prim" onclick="abrirProjetoDoacao()" style="background:var(--gold);color:#1a1a1a">+ Criar projeto de apoio</button>
+          </div>
+        </div>
+      </div>
     </section>
     <section class="modulo" id="mod-aulas">
       <div class="mod-header"><div><h1 class="mod-titulo">Aulas</h1></div></div>
@@ -562,10 +610,519 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
   </div>
 </div>
 
+<!-- MODAL CURSO -->
+<div class="mov" id="modalCurso" onclick="if(event.target===this)fecharCurso()">
+  <div class="mod" style="max-width:780px">
+    <div class="mod-h">
+      <div style="width:48px;height:48px;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">📖</div>
+      <div>
+        <div class="mod-h-nome" id="mcTituloHeader">Novo Universo Criativo</div>
+        <div class="mod-h-em">Construa um portal de aprendizado autoral</div>
+      </div>
+      <button class="mod-cl" onclick="fecharCurso()">✕</button>
+    </div>
+    <div class="mod-b">
+
+      <div class="mod-sec">
+        <span class="mod-sec-t">Narrativa do Universo</span>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Título principal</label>
+          <input class="f-input" type="text" id="mc_titulo" placeholder="Ex: Universo 1 — Surrealismo Radical" style="width:100%">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Subtítulo (trio referencial)</label>
+          <input class="f-input" type="text" id="mc_subtitulo" placeholder="Frida Kahlo · Schiaparelli · Massimo Bottura" style="width:100%">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Manifesto · Descrição emocional</label>
+          <textarea class="f-input" id="mc_descricao" placeholder="O que essa aluna vai descobrir sobre si mesma? Como esse universo transforma a identidade criativa dela?" style="width:100%;min-height:100px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+        </div>
+      </div>
+
+      <div class="mod-sec">
+        <span class="mod-sec-t">Identidade Visual</span>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">URL da capa</label>
+          <input class="f-input" type="url" id="mc_capa" placeholder="https://..." style="width:100%">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Trailer (YouTube/Vimeo)</label>
+          <input class="f-input" type="url" id="mc_trailer" placeholder="https://youtube.com/..." style="width:100%">
+        </div>
+      </div>
+
+      <div class="mod-sec">
+        <span class="mod-sec-t">Classificação</span>
+        <div class="mod-gr">
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Fase</label>
+            <select class="f-select" id="mc_fase" style="width:100%">
+              <option value="1">Fase 1 — Descoberta</option>
+              <option value="2">Fase 2 — Linguagem</option>
+              <option value="3">Fase 3 — Criação</option>
+              <option value="4">Fase 4 — Comunicação</option>
+              <option value="5">Fase 5 — Projeto</option>
+              <option value="6">Fase 6 — Legado</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Nível</label>
+            <select class="f-select" id="mc_nivel" style="width:100%">
+              <option value="iniciante">Iniciante</option>
+              <option value="intermediario">Intermediário</option>
+              <option value="avancado">Avançado</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Idioma</label>
+            <select class="f-select" id="mc_idioma" style="width:100%">
+              <option value="pt">🇧🇷 Português</option>
+              <option value="en">🇺🇸 English</option>
+              <option value="it">🇮🇹 Italiano</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="fr">🇫🇷 Français</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Status</label>
+            <select class="f-select" id="mc_status" style="width:100%">
+              <option value="rascunho">Rascunho</option>
+              <option value="publicado">Publicado</option>
+              <option value="arquivado">Arquivado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod-sec">
+        <span class="mod-sec-t">Acesso e Monetização</span>
+        <div class="mod-gr">
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Modelo</label>
+            <select class="f-select" id="mc_tipo" style="width:100%">
+              <option value="gratuito">Gratuito</option>
+              <option value="pago" selected>Pago (com 3 módulos grátis)</option>
+              <option value="assinatura">Assinatura</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Preço (R$)</label>
+            <input class="f-input" type="number" id="mc_preco" placeholder="297.00" step="0.01" min="0" style="width:100%">
+          </div>
+          <div>
+            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Módulos grátis</label>
+            <input class="f-input" type="number" id="mc_gratis" value="3" min="0" max="10" style="width:100%">
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="mc_id">
+    </div>
+    <div class="mod-f">
+      <button class="btn-m btn-m-s" onclick="fecharCurso()">Cancelar</button>
+      <button class="btn-m btn-m-p" onclick="salvarCurso()">Salvar Universo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AULAS DO CURSO -->
+<div class="mov" id="modalAulas" onclick="if(event.target===this)fecharAulas()">
+  <div class="mod" style="max-width:780px">
+    <div class="mod-h">
+      <div style="width:48px;height:48px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🎬</div>
+      <div>
+        <div class="mod-h-nome" id="maTitulo">Aulas do Universo</div>
+        <div class="mod-h-em" id="maSub">—</div>
+      </div>
+      <button class="mod-cl" onclick="fecharAulas()">✕</button>
+    </div>
+    <div class="mod-b">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+        <button class="btn-prim" onclick="adicionarAula()">+ Nova Aula</button>
+      </div>
+      <div id="listaAulas">
+        <p class="empty">Carregando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVA AULA -->
+<div class="mov" id="modalAula" onclick="if(event.target===this)fecharAula()" style="z-index:300">
+  <div class="mod" style="max-width:580px">
+    <div class="mod-h">
+      <div style="width:48px;height:48px;background:var(--preto);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;color:#fff">▶</div>
+      <div>
+        <div class="mod-h-nome">Nova Aula</div>
+        <div class="mod-h-em">Construa um momento do universo</div>
+      </div>
+      <button class="mod-cl" onclick="fecharAula()">✕</button>
+    </div>
+    <div class="mod-b">
+      <div style="margin-bottom:1rem">
+        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Título da aula</label>
+        <input class="f-input" type="text" id="ma_titulo" placeholder="Ex: A dor como linguagem visual" style="width:100%">
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Descrição</label>
+        <textarea class="f-input" id="ma_descricao" placeholder="O que essa aula transmite?" style="width:100%;min-height:60px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+      </div>
+      <div class="mod-gr">
+        <div>
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Tipo</label>
+          <select class="f-select" id="ma_tipo" style="width:100%">
+            <option value="video">Vídeo</option>
+            <option value="texto">Texto</option>
+            <option value="quiz">Quiz</option>
+            <option value="desafio">Desafio</option>
+            <option value="pdf">PDF</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Duração (min)</label>
+          <input class="f-input" type="number" id="ma_duracao" placeholder="10" min="0" style="width:100%">
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">URL do vídeo (YouTube/Vimeo)</label>
+        <input class="f-input" type="url" id="ma_video" placeholder="https://youtube.com/watch?v=..." style="width:100%">
+      </div>
+      <div style="margin-top:1rem;display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" id="ma_gratuita">
+        <label for="ma_gratuita" style="font-size:.82rem;cursor:pointer">Aula gratuita (acesso liberado para todas)</label>
+      </div>
+      <input type="hidden" id="ma_id">
+    </div>
+    <div class="mod-f">
+      <button class="btn-m btn-m-s" onclick="fecharAula()">Cancelar</button>
+      <button class="btn-m btn-m-p" onclick="salvarAula()">Salvar Aula</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================
-// ICONZA ADMIN — Arquitetura Modular
+// MÓDULO CURSOS — Gestão completa
 // ============================================
+let TODOS_CURSOS = [];
+let cursoAtual = null;
+
+async function carregarCursos() {
+  const { data, error } = await sb
+    .from('cursos')
+    .select('*')
+    .order('ordem', { ascending: true })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erro cursos:', error);
+    document.getElementById('cursosGrid').innerHTML = `<p class="empty">Erro: ${error.message}</p>`;
+    return;
+  }
+
+  TODOS_CURSOS = data || [];
+  renderCursos();
+  atualizarStatsCursos();
+}
+
+function atualizarStatsCursos() {
+  const total = TODOS_CURSOS.length;
+  const publicados = TODOS_CURSOS.filter(c => c.status === 'publicado').length;
+  const matriculas = TODOS_CURSOS.reduce((s, c) => s + (c.total_matriculas || 0), 0);
+
+  document.getElementById('c-total').textContent = total;
+  document.getElementById('c-pub').textContent = publicados;
+  document.getElementById('c-mat').textContent = matriculas;
+  // Receita virá das transações pagas — placeholder por agora
+  document.getElementById('c-receita').textContent = 'R$ 0';
+}
+
+function renderCursos() {
+  const grid = document.getElementById('cursosGrid');
+  if (!TODOS_CURSOS.length) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;background:var(--branco);border:2px dashed var(--borda);padding:3rem;text-align:center">
+        <div style="font-size:2.5rem;margin-bottom:1rem">📖</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.5rem">Nenhum universo criado ainda</h3>
+        <p style="font-size:.85rem;color:var(--cinza);margin-bottom:1.2rem">Comece criando seu primeiro portal criativo</p>
+        <button class="btn-prim" onclick="abrirCursoNovo()">+ Criar primeiro universo</button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = TODOS_CURSOS.map(c => {
+    const stCor = c.status === 'publicado' ? 'b-verde' : c.status === 'rascunho' ? 'b-gold' : 'b-cinza';
+    const tipoLb = c.tipo === 'pago' ? `R$ ${Number(c.preco || 0).toFixed(2)}` : c.tipo === 'assinatura' ? 'Assinatura' : 'Gratuito';
+    const tipoCor = c.tipo === 'pago' ? 'b-vm' : c.tipo === 'assinatura' ? 'b-gold' : 'b-verde';
+    const capa = c.capa_url
+      ? `<img src="${c.capa_url}" style="width:100%;height:160px;object-fit:cover">`
+      : `<div style="width:100%;height:160px;background:linear-gradient(135deg,#1a0808,#2d1010);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-family:'Playfair Display',serif;font-size:3rem;font-weight:900">${(c.titulo||'').charAt(0).toUpperCase()}</div>`;
+
+    return `<div style="background:var(--branco);border:1px solid var(--borda);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,border-color .2s;cursor:pointer" onmouseenter="this.style.borderColor='var(--preto)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--borda)';this.style.transform='translateY(0)'">
+      ${capa}
+      <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap">
+          <span class="bdg ${stCor}">${c.status}</span>
+          <span class="bdg ${tipoCor}">${tipoLb}</span>
+          ${c.fase ? `<span class="bdg b-azul">Fase ${c.fase}</span>` : ''}
+        </div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--preto);margin-bottom:.3rem;line-height:1.3">${c.titulo}</h3>
+        ${c.subtitulo ? `<p style="font-size:.78rem;color:var(--gold);font-style:italic;margin-bottom:.6rem">${c.subtitulo}</p>` : ''}
+        <p style="font-size:.78rem;color:var(--cinza);line-height:1.6;margin-bottom:1rem;flex:1">${(c.descricao||'').substring(0,120)}${(c.descricao||'').length>120?'...':''}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:.8rem;border-top:1px solid var(--borda);font-size:.7rem;color:var(--cinza)">
+          <span>${c.total_aulas || 0} aulas · ${c.total_matriculas || 0} alunas</span>
+        </div>
+        <div style="display:flex;gap:.5rem;margin-top:.8rem">
+          <button onclick="abrirAulasCurso('${c.id}')" class="btn-m btn-m-s" style="flex:1;font-size:.65rem">📚 Aulas</button>
+          <button onclick="editarCurso('${c.id}')" class="btn-m btn-m-p" style="flex:1;font-size:.65rem">✎ Editar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirCursoNovo() {
+  cursoAtual = null;
+  document.getElementById('mcTituloHeader').textContent = 'Novo Universo Criativo';
+  document.getElementById('mc_id').value = '';
+  document.getElementById('mc_titulo').value = '';
+  document.getElementById('mc_subtitulo').value = '';
+  document.getElementById('mc_descricao').value = '';
+  document.getElementById('mc_capa').value = '';
+  document.getElementById('mc_trailer').value = '';
+  document.getElementById('mc_fase').value = '1';
+  document.getElementById('mc_nivel').value = 'iniciante';
+  document.getElementById('mc_idioma').value = 'pt';
+  document.getElementById('mc_status').value = 'rascunho';
+  document.getElementById('mc_tipo').value = 'pago';
+  document.getElementById('mc_preco').value = '297.00';
+  document.getElementById('mc_gratis').value = '3';
+  document.getElementById('modalCurso').classList.add('show');
+}
+
+function editarCurso(id) {
+  const c = TODOS_CURSOS.find(x => x.id === id);
+  if (!c) return;
+  cursoAtual = c;
+  document.getElementById('mcTituloHeader').textContent = 'Editar ' + c.titulo;
+  document.getElementById('mc_id').value = c.id;
+  document.getElementById('mc_titulo').value = c.titulo || '';
+  document.getElementById('mc_subtitulo').value = c.subtitulo || '';
+  document.getElementById('mc_descricao').value = c.descricao || '';
+  document.getElementById('mc_capa').value = c.capa_url || '';
+  document.getElementById('mc_trailer').value = c.trailer_url || '';
+  document.getElementById('mc_fase').value = c.fase || 1;
+  document.getElementById('mc_nivel').value = c.nivel || 'iniciante';
+  document.getElementById('mc_idioma').value = c.idioma || 'pt';
+  document.getElementById('mc_status').value = c.status || 'rascunho';
+  document.getElementById('mc_tipo').value = c.tipo || 'gratuito';
+  document.getElementById('mc_preco').value = c.preco || 0;
+  document.getElementById('mc_gratis').value = c.modulos_gratis || 3;
+  document.getElementById('modalCurso').classList.add('show');
+}
+
+function fecharCurso() {
+  document.getElementById('modalCurso').classList.remove('show');
+}
+
+function slugify(text) {
+  return (text||'').toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+async function salvarCurso() {
+  const titulo = document.getElementById('mc_titulo').value.trim();
+  if (!titulo) { alert('Digite o título do universo.'); return; }
+
+  const id = document.getElementById('mc_id').value;
+  const dados = {
+    titulo,
+    slug: cursoAtual?.slug || slugify(titulo) + '-' + Date.now().toString(36),
+    subtitulo: document.getElementById('mc_subtitulo').value.trim() || null,
+    descricao: document.getElementById('mc_descricao').value.trim() || null,
+    capa_url: document.getElementById('mc_capa').value.trim() || null,
+    trailer_url: document.getElementById('mc_trailer').value.trim() || null,
+    fase: parseInt(document.getElementById('mc_fase').value),
+    nivel: document.getElementById('mc_nivel').value,
+    idioma: document.getElementById('mc_idioma').value,
+    status: document.getElementById('mc_status').value,
+    tipo: document.getElementById('mc_tipo').value,
+    preco: parseFloat(document.getElementById('mc_preco').value) || 0,
+    modulos_gratis: parseInt(document.getElementById('mc_gratis').value) || 3,
+    criador_id: perfilAdmin.id,
+    updated_at: new Date().toISOString()
+  };
+
+  let result;
+  if (id) {
+    result = await sb.from('cursos').update(dados).eq('id', id).select().single();
+  } else {
+    result = await sb.from('cursos').insert(dados).select().single();
+  }
+
+  if (result.error) {
+    alert('Erro ao salvar: ' + result.error.message);
+    return;
+  }
+
+  fecharCurso();
+  await carregarCursos();
+}
+
+// ============================================
+// AULAS DO CURSO
+// ============================================
+let AULAS_CURSO = [];
+let cursoAulasId = null;
+
+async function abrirAulasCurso(cursoId) {
+  cursoAulasId = cursoId;
+  const c = TODOS_CURSOS.find(x => x.id === cursoId);
+  if (!c) return;
+
+  document.getElementById('maTitulo').textContent = c.titulo;
+  document.getElementById('maSub').textContent = c.subtitulo || 'Gerencie as aulas deste universo';
+  document.getElementById('modalAulas').classList.add('show');
+
+  const { data, error } = await sb
+    .from('aulas')
+    .select('*')
+    .eq('curso_id', cursoId)
+    .order('ordem', { ascending: true });
+
+  if (error) {
+    document.getElementById('listaAulas').innerHTML = `<p class="empty">Erro: ${error.message}</p>`;
+    return;
+  }
+
+  AULAS_CURSO = data || [];
+  renderAulas();
+}
+
+function renderAulas() {
+  const lista = document.getElementById('listaAulas');
+  if (!AULAS_CURSO.length) {
+    lista.innerHTML = `<div style="padding:2rem;text-align:center;background:var(--off)">
+      <div style="font-size:2rem;margin-bottom:.5rem">🎬</div>
+      <p style="font-size:.85rem;color:var(--cinza)">Nenhuma aula ainda. Comece adicionando a primeira.</p>
+    </div>`;
+    return;
+  }
+  lista.innerHTML = AULAS_CURSO.map((a, i) => `
+    <div style="display:flex;align-items:center;gap:.8rem;padding:.8rem;border:1px solid var(--borda);margin-bottom:.5rem;background:var(--branco)">
+      <div style="width:32px;height:32px;background:var(--off);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--cinza);font-size:.85rem">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.88rem">${a.titulo}</div>
+        <div style="font-size:.7rem;color:var(--cinza);margin-top:.2rem">
+          <span class="bdg ${a.gratuita ? 'b-verde' : 'b-cinza'}">${a.gratuita ? 'Grátis' : 'Premium'}</span>
+          ${a.tipo} · ${a.duracao_min || 0} min
+        </div>
+      </div>
+      <button onclick="editarAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.65rem">Editar</button>
+      <button onclick="excluirAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.65rem;color:var(--vm);border-color:var(--vm)">✕</button>
+    </div>
+  `).join('');
+}
+
+function adicionarAula() {
+  document.getElementById('ma_id').value = '';
+  document.getElementById('ma_titulo').value = '';
+  document.getElementById('ma_descricao').value = '';
+  document.getElementById('ma_tipo').value = 'video';
+  document.getElementById('ma_duracao').value = '';
+  document.getElementById('ma_video').value = '';
+  document.getElementById('ma_gratuita').checked = AULAS_CURSO.length < 3; // 3 primeiras grátis por padrão
+  document.getElementById('modalAula').classList.add('show');
+}
+
+function editarAula(id) {
+  const a = AULAS_CURSO.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('ma_id').value = a.id;
+  document.getElementById('ma_titulo').value = a.titulo || '';
+  document.getElementById('ma_descricao').value = a.descricao || '';
+  document.getElementById('ma_tipo').value = a.tipo || 'video';
+  document.getElementById('ma_duracao').value = a.duracao_min || 0;
+  document.getElementById('ma_video').value = a.video_url || '';
+  document.getElementById('ma_gratuita').checked = a.gratuita || false;
+  document.getElementById('modalAula').classList.add('show');
+}
+
+function fecharAula() {
+  document.getElementById('modalAula').classList.remove('show');
+}
+
+function fecharAulas() {
+  document.getElementById('modalAulas').classList.remove('show');
+  carregarCursos(); // Atualiza contadores
+}
+
+async function salvarAula() {
+  const titulo = document.getElementById('ma_titulo').value.trim();
+  if (!titulo) { alert('Digite o título da aula.'); return; }
+
+  const id = document.getElementById('ma_id').value;
+  const videoUrl = document.getElementById('ma_video').value.trim();
+
+  // Detecta provider
+  let provider = null;
+  if (videoUrl) {
+    if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) provider = 'youtube';
+    else if (videoUrl.includes('vimeo')) provider = 'vimeo';
+    else provider = 'external';
+  }
+
+  const dados = {
+    curso_id: cursoAulasId,
+    titulo,
+    descricao: document.getElementById('ma_descricao').value.trim() || null,
+    tipo: document.getElementById('ma_tipo').value,
+    duracao_min: parseInt(document.getElementById('ma_duracao').value) || 0,
+    video_url: videoUrl || null,
+    video_provider: provider,
+    gratuita: document.getElementById('ma_gratuita').checked,
+    ordem: id ? undefined : AULAS_CURSO.length,
+    publicada: true,
+    updated_at: new Date().toISOString()
+  };
+
+  let result;
+  if (id) {
+    delete dados.ordem;
+    result = await sb.from('aulas').update(dados).eq('id', id).select().single();
+  } else {
+    result = await sb.from('aulas').insert(dados).select().single();
+  }
+
+  if (result.error) { alert('Erro: ' + result.error.message); return; }
+
+  // Atualiza contadores no curso
+  await sb.from('cursos').update({
+    total_aulas: AULAS_CURSO.length + (id ? 0 : 1),
+    duracao_total_min: AULAS_CURSO.reduce((s,a) => s + (a.duracao_min||0), 0) + dados.duracao_min
+  }).eq('id', cursoAulasId);
+
+  fecharAula();
+  abrirAulasCurso(cursoAulasId);
+}
+
+async function excluirAula(id) {
+  if (!confirm('Excluir esta aula?')) return;
+  const { error } = await sb.from('aulas').delete().eq('id', id);
+  if (error) { alert('Erro: ' + error.message); return; }
+  abrirAulasCurso(cursoAulasId);
+}
+
+// ============================================
+// PROJETO DE DOAÇÃO
+// ============================================
+function abrirProjetoDoacao() {
+  alert('Sistema de doações: estrutura no banco pronta. Interface visual será construída na próxima etapa.');
+}
+
+
 const { createClient } = supabase;
 const sb = createClient(
   'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
@@ -601,6 +1158,7 @@ async function init() {
 
   // Carrega dados em paralelo
   await carregarUsuarios();
+  await carregarCursos();
 
   document.getElementById('agoraData').textContent = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
   setTimeout(() => document.getElementById('load').classList.add('hide'), 400);
