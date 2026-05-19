@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Saindo...</title>
+<link rel="stylesheet" href="iconza-tokens.css">
+<link rel="stylesheet" href="iconza-base.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  background:var(--bg-canvas);
+}
+.sair-card{
+  max-width:440px;
+  text-align:center;
+  padding:var(--space-48) var(--space-32);
+}
+.sair-icon{
+  width:64px;
+  height:64px;
+  margin:0 auto var(--space-32);
+  border-radius:50%;
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--ink-muted);
+}
+.sair-spin{
+  width:24px;
+  height:24px;
+  border:2px solid var(--line);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:sairSpin .8s linear infinite;
+  margin:0 auto var(--space-24);
+}
+@keyframes sairSpin{to{transform:rotate(360deg)}}
+.sair-titulo{
+  font-family:var(--serif);
+  font-size:2rem;
+  color:var(--ink-strong);
+  margin-bottom:var(--space-12);
+  line-height:1.2;
+}
+.sair-sub{
+  color:var(--ink-muted);
+  font-size:var(--text-base);
+  margin-bottom:var(--space-32);
+  line-height:var(--leading-relaxed);
+}
+.sair-status{
+  font-family:var(--mono);
+  font-size:var(--text-xs);
+  color:var(--ink-soft);
+  letter-spacing:var(--tracking-wide);
+  margin-bottom:var(--space-24);
+}
+</style>
+</head>
+<body>
+
+<div class="sair-card">
+  <div class="sair-spin" id="loader"></div>
+  <h1 class="sair-titulo" id="titulo">Saindo da sua conta...</h1>
+  <p class="sair-sub" id="subtitulo">Limpando sessão de forma segura.</p>
+  <p class="sair-status" id="status">Encerrando autenticação...</p>
+</div>
+
+<script>
+const sb = supabase.createClient(
+  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
+  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
+);
+
+async function sairCompletamente() {
+  const status = document.getElementById('status');
+  const loader = document.getElementById('loader');
+  const titulo = document.getElementById('titulo');
+  const subtitulo = document.getElementById('subtitulo');
+
+  try {
+    // 1) Logout Supabase (global - encerra em todos os dispositivos)
+    status.textContent = 'Encerrando sessão no servidor...';
+    await sb.auth.signOut({ scope: 'global' });
+
+    // 2) Limpa localStorage TOTAL
+    status.textContent = 'Limpando dados locais...';
+    try {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') || key.startsWith('supabase') || key.startsWith('iconza_')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      console.warn('localStorage limpo parcialmente:', e);
+    }
+
+    // 3) Limpa sessionStorage
+    try { sessionStorage.clear(); } catch (e) {}
+
+    // 4) Limpa cookies do Supabase
+    document.cookie.split(';').forEach(c => {
+      const eqPos = c.indexOf('=');
+      const name = eqPos > -1 ? c.substring(0, eqPos).trim() : c.trim();
+      if (name.startsWith('sb-') || name.startsWith('supabase')) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      }
+    });
+
+    // 5) Confirma sucesso
+    status.textContent = 'Sessão encerrada com sucesso.';
+    loader.style.display = 'none';
+    titulo.textContent = 'Até logo!';
+    subtitulo.innerHTML = 'Você saiu da sua conta com segurança.<br>Redirecionando...';
+
+    // 6) Detecta intenção: trocar de conta ou sair definitivo
+    const params = new URLSearchParams(window.location.search);
+    const trocar = params.get('trocar') === '1';
+
+    setTimeout(() => {
+      if (trocar) {
+        window.location.href = 'login.html?trocar=1';
+      } else {
+        window.location.href = 'index.html';
+      }
+    }, 1200);
+
+  } catch (error) {
+    console.error('Erro ao sair:', error);
+    status.textContent = 'Erro ao sair. Forçando saída...';
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1500);
+  }
+}
+
+sairCompletamente();
+</script>
+</body>
+</html>

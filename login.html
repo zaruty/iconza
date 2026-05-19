@@ -131,6 +131,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 <div class="form-side">
   <div class="form-box">
 
+    <!-- BANNER de troca de conta (oculto por padrão) -->
+    <div id="bannerTrocou" style="display:none;background:rgba(74,140,74,.1);border:1px solid rgba(74,140,74,.3);padding:.8rem 1rem;margin-bottom:1.5rem;font-size:.8rem;color:#3d7a3d;line-height:1.5">
+      ✓ <strong>Sessão anterior encerrada.</strong> Entre com outra conta para continuar.
+    </div>
+
     <h1 class="form-titulo" id="formTitulo">Bem-vinda de volta</h1>
     <p class="form-subtitulo" id="formSubtitulo">
       Não tem conta? <a href="#" onclick="mudarTab('cadastro');return false;">Criar conta gratuita</a>
@@ -214,6 +219,17 @@ const sb = createClient(
   'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
   'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
 );
+
+// Detecta modo "troca de conta"
+(function detectarTroca() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('trocar') === '1') {
+    const banner = document.getElementById('bannerTrocou');
+    if (banner) banner.style.display = 'block';
+    // Limpa o parâmetro da URL para não persistir
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+})();
 
 // TABS
 function mudarTab(tab) {
@@ -306,6 +322,7 @@ async function fazerCadastro() {
     btn.textContent = 'Criar conta gratuita';
   } else {
     mostrarMsg('Conta criada! Verifique seu e-mail para confirmar o cadastro.', 'sucesso');
+    setTimeout(() => { window.location.href = 'diagnostico.html'; }, 2000);
     btn.textContent = 'Conta criada ✓';
   }
 }

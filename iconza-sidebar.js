@@ -112,11 +112,25 @@
                 ${window.icon('arrow-right', { size: 12, stroke: 1.6 })}
               </button>
             </div>
-          ` : ''}
+          ` : `
+            <div class="iconza-side-support" style="background:linear-gradient(135deg,rgba(184,149,74,0.08),rgba(30,77,64,0.06));border-color:rgba(184,149,74,0.15)">
+              <div class="iconza-side-support-title" style="color:var(--gold)">
+                ${window.icon('users', { size: 12, stroke: 1.6 })}
+                Modo Teste
+              </div>
+              <p class="iconza-side-support-copy">
+                Trocar de conta para testar a plataforma como outra usuária.
+              </p>
+              <button class="iconza-side-support-btn" onclick="iconzaTrocarConta()">
+                Trocar de conta
+                ${window.icon('arrow-right', { size: 12, stroke: 1.6 })}
+              </button>
+            </div>
+          `}
 
           <button class="iconza-side-logout" onclick="iconzaLogout()">
             ${window.icon('logout', { size: 18, stroke: 1.5 })}
-            <span>Sair</span>
+            <span>Sair da conta</span>
           </button>
         </aside>
       `;
@@ -173,10 +187,14 @@
   };
 
   // Helper global de logout (chamado pelo botão)
-  window.iconzaLogout = async function() {
-    if (window.sb && window.sb.auth) {
-      await window.sb.auth.signOut();
+  window.iconzaLogout = function() {
+    window.location.href = 'sair.html';
+  };
+
+  // Helper para trocar de conta (modo teste)
+  window.iconzaTrocarConta = function() {
+    if (confirm('Sair desta conta e fazer login com outro email?\n\nSua sessão atual será encerrada.')) {
+      window.location.href = 'sair.html?trocar=1';
     }
-    window.location.href = 'login.html';
   };
 })();
