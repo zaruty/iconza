@@ -83,7 +83,7 @@
       el.innerHTML = `
         <aside class="iconza-side">
           <a href="${isAdmin ? 'admin-crm.html' : 'dashboard.html'}" class="iconza-side-brand">
-            ${window.icon('crown', { size: 22, stroke: 1.5, className: 'iconza-side-crown' })}
+            <img src="coroa.png" alt="ICONZA" class="iconza-side-crown">
             <div class="iconza-side-brand-text">
               <div class="iconza-side-wordmark">ICONZA</div>
               <div class="iconza-side-sub">${isAdmin ? 'Admin' : 'Plataforma'}</div>
