@@ -12,8 +12,13 @@
 <link rel="stylesheet" href="iconza-dashboard.css">
 <link rel="stylesheet" href="acesso.css">
 
-<!-- Supabase -->
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- CORE — Lógica compartilhada (ORDEM IMPORTA: supabase → auth → utils) -->
+<script src="core-supabase.js"></script>
+<script src="core-auth.js"></script>
+<script src="core-utils.js"></script>
 
 <!-- Componentes ICONZA -->
 <script src="iconza-icons.js"></script>
@@ -158,12 +163,11 @@
 </div>
 
 <script>
+// ============================================
 // ICONZA DASHBOARD — Boas-vindas
-const sb = supabase.createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
-window.sb = sb;
+// Refatorado v2: usa /core/auth.js e /core/utils.js
+// ============================================
+// Note: sb, IconzaAuth e IconzaUtils são carregados pelos scripts /core/
 
 const UNIVERSOS = [
   { id: 1, name: "Surrealismo\nRadical", phase: "Fase 1 · Iniciante", tone: "linear-gradient(160deg, #E9D8B6, #C9A86A)", progress: 20, state: "active", photoTag: "RETRATO EDITORIAL" },
@@ -181,19 +185,8 @@ const CARROSSEL_VISIBLE = 5;
 const CARROSSEL_MAX = Math.max(0, UNIVERSOS.length - CARROSSEL_VISIBLE);
 
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  const { data: profile } = await sb
-    .from('profiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-  perfilUsuario = profile || { email: session.user.email, role: 'aluno', nome_completo: null };
+  // ANTES: 8 linhas. AGORA: 1 linha. Redireciona automaticamente se não logada.
+  perfilUsuario = await IconzaAuth.requireUser();
 
   renderUI();
 
@@ -203,13 +196,15 @@ async function init() {
 }
 
 function renderUI() {
-  const nome = perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0];
-  const primeiroNome = nome.split(' ')[0];
+  // ANTES: 2 linhas para pegar primeiro nome. AGORA: 1.
+  const primeiroNome = IconzaUtils.primeiroNome(
+    perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0]
+  );
 
-  // Sidebar
+  // Sidebar — activeId detectado automaticamente pela URL
   IconzaSidebar.render({
     target: '#iconza-sidebar',
-    activeId: 'boas-vindas',
+    activeId: IconzaUtils.getCurrentPage(),
     user: {
       nome: primeiroNome,
       role: perfilUsuario.role,
@@ -220,8 +215,8 @@ function renderUI() {
   // Hero
   document.getElementById('nomeUsuario').textContent = primeiroNome;
 
-  // Topbar
-  document.getElementById('dataHoje').textContent = formatarData();
+  // Topbar — data formatada pelo IconzaUtils
+  document.getElementById('dataHoje').textContent = IconzaUtils.formatarDataLonga();
   document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 18, stroke: 1.6 });
   document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 18, stroke: 1.6 });
 
@@ -323,9 +318,8 @@ function atualizarProgresso(respondidas, total) {
 }
 
 function formatarData() {
-  const d = new Date();
-  const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
-  return `${d.getDate()} DE ${meses[d.getMonth()]} DE ${d.getFullYear()}`;
+  // Mantida apenas para retrocompatibilidade. Use IconzaUtils.formatarDataLonga() em código novo.
+  return IconzaUtils.formatarDataLonga();
 }
 
 const main = document.getElementById('mainContent');
