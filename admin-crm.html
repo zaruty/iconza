@@ -7,6 +7,12 @@
 <link rel="stylesheet" href="acesso.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- CORE — Lógica compartilhada -->
+<script src="core-supabase.js"></script>
+<script src="core-auth.js"></script>
+<script src="core-utils.js"></script>
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -1123,11 +1129,8 @@ function abrirProjetoDoacao() {
 }
 
 
-const { createClient } = supabase;
-const sb = createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
+// CLIENTE SUPABASE: vem de core-supabase.js (window.sb)
+// AUTH: usa IconzaAuth para proteção de rota e cache de perfil
 
 let TODOS = [];
 let usuarioAtual = null;
@@ -1137,36 +1140,23 @@ let perfilAdmin = null;
 // AUTH + AUTORIZAÇÃO
 // ============================================
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
+  // requireAdmin já redireciona se não for admin/founder
+  // ANTES: 16 linhas. AGORA: 1.
+  perfilAdmin = await IconzaAuth.requireAdmin();
 
-  // Busca perfil do usuário logado
-  const { data: profile, error } = await sb
-    .from('profiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-  if (error || !profile || profile.role !== 'admin') {
-    alert('Acesso restrito. Apenas administradores.');
-    window.location.href = 'dashboard.html';
-    return;
-  }
-
-  perfilAdmin = profile;
-  renderAdminUI(profile);
+  renderAdminUI(perfilAdmin);
 
   // Carrega dados em paralelo
   await carregarUsuarios();
   await carregarCursos();
 
-  document.getElementById('agoraData').textContent = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('agoraData').textContent = IconzaUtils.formatarDataLonga();
   setTimeout(() => document.getElementById('load').classList.add('hide'), 400);
 }
 
 function renderAdminUI(p) {
   const nome = p.nome_completo || p.email.split('@')[0];
-  const inicial = nome.charAt(0).toUpperCase();
+  const inicial = IconzaUtils.inicial(nome);
 
   document.getElementById('adm-nome').textContent = nome;
   document.getElementById('adm-nome-top').textContent = '👑 ' + nome;
@@ -1462,9 +1452,9 @@ function exportarCSV() {
   URL.revokeObjectURL(url);
 }
 
-async function sair() {
-  await sb.auth.signOut();
-  window.location.href = 'login.html';
+function sair() {
+  // Agora usa logout centralizado (vai pra sair.html que limpa tudo)
+  IconzaAuth.logout();
 }
 
 init();

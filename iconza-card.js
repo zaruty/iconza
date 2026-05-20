@@ -6,30 +6,10 @@
 (function() {
   'use strict';
 
-  /**
-   * Formata tempo relativo (há 5 min, há 2 horas, etc)
-   */
-  function tempoRelativo(timestamp) {
-    const agora = new Date();
-    const data = new Date(timestamp);
-    const seg = Math.floor((agora - data) / 1000);
-
-    if (seg < 60) return 'agora';
-    if (seg < 3600) return `há ${Math.floor(seg / 60)} min`;
-    if (seg < 86400) return `há ${Math.floor(seg / 3600)} h`;
-    if (seg < 604800) return `há ${Math.floor(seg / 86400)} d`;
-    return data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-  }
-
-  /**
-   * Avatar com fallback para inicial
-   */
-  function renderAvatar(user, size = 36) {
-    const inicial = (user.nome_completo || user.email || '?').charAt(0).toUpperCase();
-    const url = user.avatar_url;
-    const style = `width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-weight:600;font-size:${size * 0.4}px;color:white;background:linear-gradient(135deg,#5B6CFF,#1E4D40);overflow:hidden;flex-shrink:0`;
-    if (url) return `<div style="${style}"><img src="${url}" style="width:100%;height:100%;object-fit:cover" alt="${user.nome_completo || ''}"></div>`;
-    return `<div style="${style}">${inicial}</div>`;
+  // Verifica se IconzaUtils foi carregado primeiro
+  if (!window.IconzaUtils) {
+    console.error('⚠ IconzaCard precisa de core-utils.js carregado primeiro');
+    return;
   }
 
   /**
@@ -61,7 +41,7 @@
         <article class="iz-post" data-post-id="${post.id}">
           ${fixado}
           <div class="iz-post-header">
-            ${renderAvatar(autor, 40)}
+            ${IconzaUtils.renderAvatar(autor, 40)}
             <div class="iz-post-meta">
               <div class="iz-post-author">
                 <span class="iz-post-author-name">${autor.nome_completo || 'Aluna ICONZA'}</span>
@@ -69,7 +49,7 @@
                 ${autor.role === 'admin' ? '<span class="iz-post-badge-role">Equipe</span>' : ''}
               </div>
               <div class="iz-post-time">
-                <span>${tempoRelativo(post.created_at)}</span>
+                <span>${IconzaUtils.tempoRelativo(post.created_at)}</span>
                 ${tipoBadge}
               </div>
             </div>
@@ -81,7 +61,7 @@
           </div>
 
           <div class="iz-post-content">
-            <p class="iz-post-text">${escapeHtml(post.conteudo).replace(/\n/g, '<br>')}</p>
+            <p class="iz-post-text">${IconzaUtils.escapeHtml(post.conteudo).replace(/\n/g, '<br>')}</p>
             ${post.imagem_url ? `<img src="${post.imagem_url}" class="iz-post-image" alt="">` : ''}
             ${post.link_url ? `<a href="${post.link_url}" target="_blank" class="iz-post-link">${post.link_url}</a>` : ''}
           </div>
@@ -118,7 +98,7 @@
           <div class="iz-card-body">
             ${curso.subtitulo ? `<p class="iz-card-eyebrow">${curso.subtitulo}</p>` : ''}
             <h3 class="iz-card-title">${curso.titulo}</h3>
-            ${curso.descricao ? `<p class="iz-card-desc">${curso.descricao.substring(0, 100)}${curso.descricao.length > 100 ? '...' : ''}</p>` : ''}
+            ${curso.descricao ? `<p class="iz-card-desc">${IconzaUtils.truncar(curso.descricao, 100)}</p>` : ''}
             ${matriculada ? `
               <div class="iz-card-progress">
                 <div class="iz-card-progress-bar"><span style="width:${progresso}%"></span></div>
@@ -127,7 +107,7 @@
             ` : `
               <div class="iz-card-footer">
                 <span class="iz-card-meta">${curso.total_aulas || 0} aulas</span>
-                <span class="iz-card-price">${curso.tipo === 'gratuito' ? 'Gratuito' : `R$ ${Number(curso.preco || 0).toFixed(2)}`}</span>
+                <span class="iz-card-price">${curso.tipo === 'gratuito' ? 'Gratuito' : IconzaUtils.formatarPreco(curso.preco)}</span>
               </div>
             `}
           </div>
@@ -144,18 +124,4 @@
       }
     }
   };
-
-  /**
-   * Helper: escape HTML para prevenir XSS
-   */
-  function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  window.iconzaEscapeHtml = escapeHtml;
-  window.iconzaTempoRelativo = tempoRelativo;
-  window.iconzaRenderAvatar = renderAvatar;
 })();

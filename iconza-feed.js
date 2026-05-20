@@ -278,13 +278,13 @@
 
       const comentariosHtml = (comentarios || []).map(c => `
         <div class="iz-comment">
-          ${window.iconzaRenderAvatar(c.autor || {}, 32)}
+          ${IconzaUtils.renderAvatar(c.autor || {}, 32)}
           <div class="iz-comment-body">
             <div class="iz-comment-header">
               <strong class="iz-comment-author">${c.autor?.nome_completo || 'Aluna'}</strong>
-              <span class="iz-comment-time">${window.iconzaTempoRelativo(c.created_at)}</span>
+              <span class="iz-comment-time">${IconzaUtils.tempoRelativo(c.created_at)}</span>
             </div>
-            <p class="iz-comment-text">${window.iconzaEscapeHtml(c.conteudo)}</p>
+            <p class="iz-comment-text">${IconzaUtils.escapeHtml(c.conteudo)}</p>
           </div>
         </div>
       `).join('');
@@ -332,18 +332,10 @@
     },
 
     /**
-     * Toast simples
+     * Toast — agora usa IconzaUtils.toast() centralizado
      */
     mostrarToast(msg, tipo = 'sucesso') {
-      const toast = document.createElement('div');
-      toast.className = `iz-toast iz-toast--${tipo}`;
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      requestAnimationFrame(() => toast.classList.add('is-visible'));
-      setTimeout(() => {
-        toast.classList.remove('is-visible');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      IconzaUtils.toast(msg, tipo);
     },
 
     /**

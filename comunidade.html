@@ -12,6 +12,13 @@
 <link rel="stylesheet" href="acesso.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- CORE — Lógica compartilhada (ORDEM IMPORTA) -->
+<script src="core-supabase.js"></script>
+<script src="core-auth.js"></script>
+<script src="core-utils.js"></script>
+
+<!-- Componentes -->
 <script src="iconza-icons.js"></script>
 <script src="iconza-sidebar.js"></script>
 <script src="iconza-card.js"></script>
@@ -132,28 +139,16 @@
 </div>
 
 <script>
-const sb = supabase.createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
-window.sb = sb;
+// ============================================
+// ICONZA COMUNIDADE — Refatorado v2
+// sb, IconzaAuth, IconzaUtils vêm dos /core/
+// ============================================
 
 let perfilUsuario = null;
 
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  const { data: profile } = await sb
-    .from('profiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-  perfilUsuario = profile || { id: session.user.id, email: session.user.email, role: 'aluno', nome_completo: null };
+  // Auth centralizada — redireciona automaticamente se não logada
+  perfilUsuario = await IconzaAuth.requireUser();
 
   renderUI();
 
@@ -172,12 +167,14 @@ async function init() {
 }
 
 function renderUI() {
-  const nome = perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0];
-  const primeiroNome = nome.split(' ')[0];
+  const primeiroNome = IconzaUtils.primeiroNome(
+    perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0]
+  );
 
+  // Sidebar — activeId detectado automaticamente pela URL
   IconzaSidebar.render({
     target: '#iconza-sidebar',
-    activeId: 'comunidade',
+    activeId: IconzaUtils.getCurrentPage(),
     user: {
       nome: primeiroNome,
       role: perfilUsuario.role,
@@ -185,12 +182,12 @@ function renderUI() {
     },
   });
 
-  document.getElementById('dataHoje').textContent = formatarData();
+  document.getElementById('dataHoje').textContent = IconzaUtils.formatarDataLonga();
   document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 16, stroke: 1.6 });
   document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 16, stroke: 1.6 });
 
-  // Avatar no composer
-  document.getElementById('composerAvatar').innerHTML = window.iconzaRenderAvatar(perfilUsuario, 40);
+  // Avatar no composer — usa helper do IconzaUtils
+  document.getElementById('composerAvatar').innerHTML = IconzaUtils.renderAvatar(perfilUsuario, 40);
 }
 
 async function carregarStats() {
@@ -220,8 +217,7 @@ async function verificarNotificacoes() {
 }
 
 function abrirNotificacoes() {
-  // Placeholder - será implementado em sprint dedicado
-  IconzaFeed.mostrarToast('Notificações em desenvolvimento');
+  IconzaUtils.toast('Notificações em desenvolvimento');
 }
 
 function atualizarComposer() {
@@ -260,11 +256,7 @@ async function publicarPost() {
   btn.textContent = 'Publicar';
 }
 
-function formatarData() {
-  const d = new Date();
-  const meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
-  return `${d.getDate()} DE ${meses[d.getMonth()]} DE ${d.getFullYear()}`;
-}
+// formatarData() removida — agora usa IconzaUtils.formatarDataLonga()
 
 const main = document.getElementById('mainContent');
 const topbar = document.getElementById('topbar');
