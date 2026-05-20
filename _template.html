@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════
+  ICONZA — TEMPLATE BASE DE PÁGINA INTERNA
+  ═══════════════════════════════════════════════════
+
+  USE este arquivo como ponto de partida para qualquer
+  nova página da plataforma (logada).
+
+  Como usar:
+    1. Copie este arquivo: cp _template.html minha-pagina.html
+    2. Mude o <title>
+    3. Coloque seu conteúdo dentro de <main id="iconza-content">
+    4. Ajuste o IconzaLayout.app({ activeId: 'sua-sessao' })
+
+  O QUE O LAYOUT FAZ AUTOMATICAMENTE:
+    ✅ Verifica login (redireciona se não logada)
+    ✅ Monta sidebar com role correto
+    ✅ Topbar com data + sininho + menu mobile
+    ✅ Esconde loading
+    ✅ Detecta página ativa na sidebar pela URL
+    ✅ Marca notificações não lidas no sininho
+
+  VOCÊ SÓ CUIDA DO CONTEÚDO.
+  ═══════════════════════════════════════════════════
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICONZA — Página</title>
+
+<!-- Design System -->
+<link rel="stylesheet" href="iconza-tokens.css">
+<link rel="stylesheet" href="iconza-base.css">
+<link rel="stylesheet" href="iconza-sidebar.css">
+<link rel="stylesheet" href="acesso.css">
+
+<!-- Supabase + Core -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="core-supabase.js"></script>
+<script src="core-auth.js"></script>
+<script src="core-utils.js"></script>
+
+<!-- Componentes -->
+<script src="iconza-icons.js"></script>
+<script src="iconza-sidebar.js"></script>
+<script src="iconza-layout.js"></script>
+
+<!--
+  ADICIONE AQUI seus componentes específicos:
+  <script src="iconza-feed.js"></script>
+  <script src="iconza-card.js"></script>
+  etc.
+-->
+
+</head>
+<body>
+
+<!-- Loading overlay (será escondido pelo IconzaLayout) -->
+<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease">
+  <div style="width:32px;height:32px;border:2px solid var(--line);border-top-color:var(--ink-strong);border-radius:50%;animation:spin .8s linear infinite"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}#loadingOverlay.hide{opacity:0;pointer-events:none}</style>
+
+<!--
+  ÚNICO LUGAR ONDE VOCÊ MEXE:
+  Coloque o conteúdo da sua página dentro deste <main>.
+  O IconzaLayout vai envelopar com sidebar + topbar automaticamente.
+-->
+<main id="iconza-content">
+
+  <!-- HEADER DA PÁGINA -->
+  <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line-soft);margin-bottom:var(--space-32)">
+    <span class="t-eyebrow">Seção</span>
+    <h1 class="t-h1" style="margin-top:var(--space-12);margin-bottom:var(--space-12)">Título da Página</h1>
+    <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:580px;line-height:var(--leading-relaxed)">
+      Subtítulo ou descrição da página vai aqui.
+    </p>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <section>
+    <p>Coloque aqui seu conteúdo único.</p>
+  </section>
+
+</main>
+
+<script>
+// ============================================
+// INICIALIZAÇÃO — apenas 3 linhas!
+// ============================================
+IconzaLayout.app({
+  // activeId: 'comunidade',  // descomente se quiser forçar a aba ativa
+  onReady: async (user) => {
+    // Aqui você inicializa lógica específica da sua página
+    // Ex: carregar dados, conectar realtime, montar UI extra
+    console.log('Página pronta para:', user.nome_completo);
+  }
+});
+</script>
+<script src="acesso.js"></script>
+</body>
+</html>

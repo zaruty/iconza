@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICONZA — Comunidade</title>
 
+<!-- Design System -->
 <link rel="stylesheet" href="iconza-tokens.css">
 <link rel="stylesheet" href="iconza-base.css">
 <link rel="stylesheet" href="iconza-sidebar.css">
 <link rel="stylesheet" href="iconza-comunidade.css">
 <link rel="stylesheet" href="acesso.css">
 
+<!-- Supabase + Core -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- CORE — Lógica compartilhada (ORDEM IMPORTA) -->
 <script src="core-supabase.js"></script>
 <script src="core-auth.js"></script>
 <script src="core-utils.js"></script>
@@ -21,174 +21,134 @@
 <!-- Componentes -->
 <script src="iconza-icons.js"></script>
 <script src="iconza-sidebar.js"></script>
+<script src="iconza-layout.js"></script>
 <script src="iconza-card.js"></script>
 <script src="iconza-feed.js"></script>
 </head>
 <body>
 
+<!-- Loading overlay -->
 <div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease">
   <div style="width:32px;height:32px;border:2px solid var(--line);border-top-color:var(--ink-strong);border-radius:50%;animation:spin .8s linear infinite"></div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}#loadingOverlay.hide{opacity:0;pointer-events:none}</style>
 
-<div class="iconza-app">
+<!-- CONTEÚDO ÚNICO DA PÁGINA -->
+<main id="iconza-content">
 
-  <div id="iconza-sidebar"></div>
+  <!-- HEADER -->
+  <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line-soft);margin-bottom:var(--space-32)">
+    <span class="t-eyebrow">Conexões criativas</span>
+    <h1 class="t-h1" style="margin-top:var(--space-12);margin-bottom:var(--space-12)">Comunidade</h1>
+    <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:580px;line-height:var(--leading-relaxed)">
+      Compartilhe processo, descobertas e referências. Cada post alimenta o cérebro criativo coletivo.
+    </p>
+  </div>
 
-  <main class="iconza-main" id="mainContent">
+  <div class="iz-comunidade">
 
-    <header class="iconza-topbar" id="topbar">
-      <div class="iconza-topbar-date" id="dataHoje"></div>
-      <button class="iconza-topbar-icon" aria-label="Notificações" onclick="abrirNotificacoes()">
-        <span class="dot" id="notifDot" style="display:none"></span>
-        <span id="bellIcon"></span>
-      </button>
-      <button class="iconza-topbar-icon" aria-label="Menu" onclick="IconzaSidebar.toggle()">
-        <span id="menuIcon"></span>
-      </button>
-    </header>
+    <!-- COLUNA FEED -->
+    <div class="iz-comunidade-feed">
 
-    <div class="iconza-page">
-
-      <!-- HEADER -->
-      <div style="padding-bottom:var(--space-32);border-bottom:1px solid var(--line-soft);margin-bottom:var(--space-32)">
-        <span class="t-eyebrow">Conexões criativas</span>
-        <h1 class="t-h1" style="margin-top:var(--space-12);margin-bottom:var(--space-12)">Comunidade</h1>
-        <p style="font-size:var(--text-lg);color:var(--ink-muted);max-width:580px;line-height:var(--leading-relaxed)">
-          Compartilhe processo, descobertas e referências. Cada post alimenta o cérebro criativo coletivo.
-        </p>
+      <!-- COMPOSER -->
+      <div class="iz-composer">
+        <div class="iz-composer-top">
+          <div id="composerAvatar"></div>
+          <textarea
+            class="iz-composer-input"
+            id="composerInput"
+            placeholder="O que você está descobrindo hoje?"
+            maxlength="2000"
+            oninput="atualizarComposer()"></textarea>
+        </div>
+        <div class="iz-composer-actions">
+          <div style="display:flex;align-items:center;gap:var(--space-12)">
+            <select class="iz-composer-tipo-select" id="composerTipo">
+              <option value="texto">Reflexão</option>
+              <option value="projeto">Projeto</option>
+              <option value="pergunta">Pergunta</option>
+              <option value="marco">Marco</option>
+            </select>
+            <span class="iz-composer-counter" id="composerCounter">0 / 2000</span>
+          </div>
+          <button class="iconza-btn iconza-btn--primary iconza-btn--sm" id="composerSubmit" onclick="publicarPost()" disabled>
+            Publicar
+          </button>
+        </div>
       </div>
 
-      <div class="iz-comunidade">
-
-        <!-- COLUNA FEED -->
-        <div class="iz-comunidade-feed">
-
-          <!-- COMPOSER -->
-          <div class="iz-composer">
-            <div class="iz-composer-top">
-              <div id="composerAvatar"></div>
-              <textarea
-                class="iz-composer-input"
-                id="composerInput"
-                placeholder="O que você está descobrindo hoje?"
-                maxlength="2000"
-                oninput="atualizarComposer()"></textarea>
-            </div>
-            <div class="iz-composer-actions">
-              <div style="display:flex;align-items:center;gap:var(--space-12)">
-                <select class="iz-composer-tipo-select" id="composerTipo">
-                  <option value="texto">Reflexão</option>
-                  <option value="projeto">Projeto</option>
-                  <option value="pergunta">Pergunta</option>
-                  <option value="marco">Marco</option>
-                </select>
-                <span class="iz-composer-counter" id="composerCounter">0 / 2000</span>
-              </div>
-              <button class="iconza-btn iconza-btn--primary iconza-btn--sm" id="composerSubmit" onclick="publicarPost()" disabled>
-                Publicar
-              </button>
-            </div>
-          </div>
-
-          <!-- FEED -->
-          <div id="feedContainer">
-            <div style="text-align:center;padding:var(--space-48);color:var(--ink-soft);font-size:var(--text-sm)">
-              Carregando comunidade...
-            </div>
-          </div>
-
+      <!-- FEED -->
+      <div id="feedContainer">
+        <div style="text-align:center;padding:var(--space-48);color:var(--ink-soft);font-size:var(--text-sm)">
+          Carregando comunidade...
         </div>
-
-        <!-- COLUNA LATERAL -->
-        <aside class="iz-comunidade-side">
-          <div class="iz-widget">
-            <div class="iz-widget-title">A comunidade</div>
-            <div class="iz-widget-stat">
-              <span class="iz-widget-stat-num" id="statTotal">—</span>
-              <span class="iz-widget-stat-label">criadoras conectadas</span>
-            </div>
-            <div class="iz-widget-stat">
-              <span class="iz-widget-stat-num" id="statPosts">—</span>
-              <span class="iz-widget-stat-label">posts publicados</span>
-            </div>
-          </div>
-
-          <div class="iz-widget">
-            <div class="iz-widget-title">Diretrizes</div>
-            <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed);margin-bottom:var(--space-12)">
-              Aqui celebramos processo, não perfeição.
-            </p>
-            <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed)">
-              Respeite cada jornada. Inspire com sua autenticidade.
-            </p>
-          </div>
-
-          <div class="iz-widget">
-            <div class="iz-widget-title">Em alta</div>
-            <p style="font-size:var(--text-xs);color:var(--ink-soft)">
-              Tags e tópicos em destaque aparecerão aqui em breve.
-            </p>
-          </div>
-        </aside>
-
       </div>
 
     </div>
-  </main>
-</div>
+
+    <!-- COLUNA LATERAL -->
+    <aside class="iz-comunidade-side">
+      <div class="iz-widget">
+        <div class="iz-widget-title">A comunidade</div>
+        <div class="iz-widget-stat">
+          <span class="iz-widget-stat-num" id="statTotal">—</span>
+          <span class="iz-widget-stat-label">criadoras conectadas</span>
+        </div>
+        <div class="iz-widget-stat">
+          <span class="iz-widget-stat-num" id="statPosts">—</span>
+          <span class="iz-widget-stat-label">posts publicados</span>
+        </div>
+      </div>
+
+      <div class="iz-widget">
+        <div class="iz-widget-title">Diretrizes</div>
+        <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed);margin-bottom:var(--space-12)">
+          Aqui celebramos processo, não perfeição.
+        </p>
+        <p style="font-size:var(--text-sm);color:var(--ink-muted);line-height:var(--leading-relaxed)">
+          Respeite cada jornada. Inspire com sua autenticidade.
+        </p>
+      </div>
+
+      <div class="iz-widget">
+        <div class="iz-widget-title">Em alta</div>
+        <p style="font-size:var(--text-xs);color:var(--ink-soft)">
+          Tags e tópicos em destaque aparecerão aqui em breve.
+        </p>
+      </div>
+    </aside>
+
+  </div>
+
+</main>
 
 <script>
 // ============================================
-// ICONZA COMUNIDADE — Refatorado v2
-// sb, IconzaAuth, IconzaUtils vêm dos /core/
+// COMUNIDADE — Lógica específica desta página
+// Layout, auth, sidebar, topbar: TUDO automático via IconzaLayout
 // ============================================
 
 let perfilUsuario = null;
 
-async function init() {
-  // Auth centralizada — redireciona automaticamente se não logada
-  perfilUsuario = await IconzaAuth.requireUser();
+IconzaLayout.app({
+  onReady: async (user) => {
+    perfilUsuario = user;
 
-  renderUI();
+    // Inicializa feed
+    await IconzaFeed.init({
+      sb,
+      container: '#feedContainer',
+      usuario: perfilUsuario
+    });
 
-  await IconzaFeed.init({
-    sb,
-    container: '#feedContainer',
-    usuario: perfilUsuario
-  });
+    // Avatar no composer
+    document.getElementById('composerAvatar').innerHTML =
+      IconzaUtils.renderAvatar(perfilUsuario, 40);
 
-  await carregarStats();
-  await verificarNotificacoes();
-
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').classList.add('hide');
-  }, 300);
-}
-
-function renderUI() {
-  const primeiroNome = IconzaUtils.primeiroNome(
-    perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0]
-  );
-
-  // Sidebar — activeId detectado automaticamente pela URL
-  IconzaSidebar.render({
-    target: '#iconza-sidebar',
-    activeId: IconzaUtils.getCurrentPage(),
-    user: {
-      nome: primeiroNome,
-      role: perfilUsuario.role,
-      avatar_url: perfilUsuario.avatar_url || null,
-    },
-  });
-
-  document.getElementById('dataHoje').textContent = IconzaUtils.formatarDataLonga();
-  document.getElementById('bellIcon').innerHTML = window.icon('bell', { size: 16, stroke: 1.6 });
-  document.getElementById('menuIcon').innerHTML = window.icon('menu', { size: 16, stroke: 1.6 });
-
-  // Avatar no composer — usa helper do IconzaUtils
-  document.getElementById('composerAvatar').innerHTML = IconzaUtils.renderAvatar(perfilUsuario, 40);
-}
+    // Estatísticas
+    await carregarStats();
+  }
+});
 
 async function carregarStats() {
   const { count: totalUsuarios } = await sb
@@ -202,22 +162,6 @@ async function carregarStats() {
 
   document.getElementById('statTotal').textContent = totalUsuarios || 0;
   document.getElementById('statPosts').textContent = totalPosts || 0;
-}
-
-async function verificarNotificacoes() {
-  const { count } = await sb
-    .from('notificacoes')
-    .select('*', { count: 'exact', head: true })
-    .eq('destinatario_id', perfilUsuario.id)
-    .eq('lida', false);
-
-  if (count > 0) {
-    document.getElementById('notifDot').style.display = 'block';
-  }
-}
-
-function abrirNotificacoes() {
-  IconzaUtils.toast('Notificações em desenvolvimento');
 }
 
 function atualizarComposer() {
@@ -256,14 +200,6 @@ async function publicarPost() {
   btn.textContent = 'Publicar';
 }
 
-// formatarData() removida — agora usa IconzaUtils.formatarDataLonga()
-
-const main = document.getElementById('mainContent');
-const topbar = document.getElementById('topbar');
-main.addEventListener('scroll', () => {
-  topbar.classList.toggle('is-scrolled', main.scrollTop > 6);
-});
-
 // Atalho: Cmd/Ctrl+Enter publica
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -276,8 +212,6 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('beforeunload', () => {
   IconzaFeed.desconectar();
 });
-
-init();
 </script>
 <script src="acesso.js"></script>
 </body>
