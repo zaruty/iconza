@@ -171,10 +171,10 @@ body{
         </div>
       </div>
       <div class="sessao-body">
-        <span class="sessao-label">Sessão ativa encontrada</span>
+        <span class="sessao-label" id="sessaoLabel">Sessão ativa encontrada</span>
         <div class="sessao-actions">
           <button class="btn-continuar" id="btnContinuar" onclick="continuarSessao()">
-            Continuar como esta conta <span>→</span>
+            Continuar como esta conta →
           </button>
           <div class="sessao-divider">ou</div>
           <button class="btn-outra" onclick="usarOutraConta()">
@@ -269,6 +269,9 @@ body{
 // ── ESTADO ───────────────────────────────────────────
 let _sessaoAtiva = null;
 let _sessionCheckDone = false;
+// Guard: true quando verificarSessaoExistente já processou a sessão atual
+// Impede que onAuthStateChange duplique o processamento
+let _sessaoOAuthAtiva = false;
 
 // ── INTENT COM TTL (localStorage, não sessionStorage) ─
 function salvarIntent(intent) {
@@ -332,29 +335,69 @@ async function verificarSessaoExistente() {
   const { data } = await window.sb.auth.getSession();
   _sessionCheckDone = true;
 
-  if (!data.session) return; // sem sessão: mostra formulário
+  if (!data.session) return; // sem sessão: mostra formulário normal
 
+  // CRÍTICO: marca ANTES de qualquer await
+  // onAuthStateChange pode disparar enquanto buscamos o perfil
+  // Esta flag precisa estar true antes do profiles fetch
+  _sessaoOAuthAtiva = true;
   _sessaoAtiva = data.session;
   const user = data.session.user;
 
-  // Preenche card
-  const nome = user.user_metadata?.nome_completo ||
-               user.user_metadata?.full_name ||
-               user.email.split('@')[0];
+  // Verifica estado real do perfil na tabela profiles
+  const { data: perfil } = await window.sb
+    .from('profiles')
+    .select('id, role, onboarding_completo, nome_completo')
+    .eq('id', user.id)
+    .maybeSingle();
 
+  // Determina estado do usuário
+  const isNovo = !perfil;
+  const semOnboarding = perfil && !perfil.onboarding_completo;
+  const completo = perfil && perfil.onboarding_completo;
+
+  // Nome: prefere o salvo no perfil, depois metadados Google
+  const nomeDb = perfil?.nome_completo;
+  const nomeMeta = user.user_metadata?.nome_completo ||
+                   user.user_metadata?.full_name ||
+                   user.email.split('@')[0];
+  const nome = nomeDb || nomeMeta;
+
+  // Preenche card com foto/nome
   document.getElementById('sessaoNome').textContent = nome;
   document.getElementById('sessaoEmail').textContent = user.email;
   const avEl = document.getElementById('sessaoAv');
   const avatar = user.user_metadata?.avatar_url;
-  avEl.innerHTML = avatar ? `<img src="${avatar}" alt="${nome}">` : nome.charAt(0).toUpperCase();
+  avEl.innerHTML = avatar
+    ? `<img src="${avatar}" alt="${nome}">`
+    : nome.charAt(0).toUpperCase();
 
-  // Mostra card, esconde formulário de login/cadastro
+  // Título e label do card baseados no estado real
+  let titulo, labelCard, labelBtn;
+  if (isNovo) {
+    titulo = 'Bem-vinda ao ICONZA';
+    labelCard = 'Nova conta detectada';
+    labelBtn = 'Começar diagnóstico criativo →';
+  } else if (semOnboarding) {
+    titulo = 'Continue seu cadastro';
+    labelCard = 'Perfil incompleto';
+    labelBtn = 'Continuar diagnóstico →';
+  } else {
+    titulo = 'Bem-vinda de volta';
+    labelCard = 'Sessão ativa encontrada';
+    labelBtn = 'Continuar como esta conta →';
+  }
+
+  document.getElementById('formTitulo').textContent = titulo;
+  document.getElementById('sessaoLabel').textContent = labelCard;
+  document.getElementById('btnContinuar').innerHTML = labelBtn;
+
+  // Mostra card, esconde formulários
   document.getElementById('sessaoCard').classList.add('show');
   document.getElementById('formLogin').style.display = 'none';
   document.getElementById('formCadastro').style.display = 'none';
   document.getElementById('formTabs').style.display = 'none';
   document.getElementById('formSubtitulo').style.display = 'none';
-  document.getElementById('formTitulo').textContent = 'Bem-vinda de volta';
 }
 
 async function continuarSessao() {
@@ -529,7 +572,13 @@ window.sb.auth.onAuthStateChange(async (event, session) => {
   if (event !== 'SIGNED_IN' || !session) return;
 
   const hasOAuthHash = window.location.hash.includes('access_token');
-  if (!hasOAuthHash && !_sessionCheckDone) return;
+
+  // Se não tem hash OAuth na URL e a sessão já foi tratada pelo card
+  // (verificarSessaoExistente), não processa de novo
+  if (!hasOAuthHash) {
+    if (!_sessionCheckDone) return;
+    if (_sessaoOAuthAtiva) return; // já tratado pelo card de sessão
+  }
 
   if (hasOAuthHash) {
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -541,14 +590,28 @@ window.sb.auth.onAuthStateChange(async (event, session) => {
 
   mostrarMsg('Verificando cadastro...', 'info');
 
-  // Verifica existência do perfil
-  const { data: perfil } = await window.sb
-    .from('profiles')
-    .select('id, role, onboarding_completo')
-    .eq('id', session.user.id)
-    .maybeSingle();
+  // Timeout de segurança: se travar por mais de 8s, mostra erro
+  const _verificacaoTimeout = setTimeout(() => {
+    mostrarMsg('Tempo esgotado. <a href="javascript:location.reload()" style="color:var(--vm);font-weight:600">→ Tentar novamente</a>', 'erro');
+  }, 8000);
+
+  let perfil = null;
+  try {
+    const { data: _perfil } = await window.sb
+      .from('profiles')
+      .select('id, role, onboarding_completo')
+      .eq('id', session.user.id)
+      .maybeSingle();
+    perfil = _perfil;
+  } catch(e) {
+    clearTimeout(_verificacaoTimeout);
+    mostrarMsg('Erro de conexão. <a href="javascript:location.reload()" style="color:var(--vm);font-weight:600">→ Tentar novamente</a>', 'erro');
+    return;
+  }
+  clearTimeout(_verificacaoTimeout);
 
   const perfilExiste = !!perfil;
+  limparMsg(); // limpa "Verificando cadastro..."
 
   // ── USUÁRIO NOVO (perfil não existe) ──────────────────
   if (!perfilExiste) {
