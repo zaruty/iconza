@@ -372,6 +372,10 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   position:relative;
   background:#ffffff;
 }
+/* Jornada bridges dark→white */
+#arte{
+  background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,.5) 30%, rgba(255,255,255,.9) 65%, #ffffff 100%);
+}
 
 /* ── EYEBROW / TÍTULO GLOBAL ── */
 .sec-eyebrow{
@@ -533,7 +537,7 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .fase-seta{
   display:flex;align-items:center;justify-content:center;
   padding:0 1rem;padding-top:6rem;
-  color:rgba(199,139,190,.3);font-size:.85rem;
+  color:rgba(199,139,190,.4);font-size:.85rem;
 }
 
 /* ── CITAÇÃO (volta para escuro) ── */
@@ -855,9 +859,9 @@ footer{
   </div>
 </section>
 
-<section class="secao-escura" id="arte" style="padding-top:0">
-  <span class="sec-eyebrow reveal" style="color:var(--g1)">Jornada de aprendizado</span>
-  <h2 class="sec-titulo reveal" style="color:var(--t1)">O Caminho Completo.</h2>
+<section class="secao-clara" id="arte" style="padding-top:0">
+  <span class="sec-eyebrow reveal eyebrow-escuro">Jornada de aprendizado</span>
+  <h2 class="sec-titulo reveal titulo-escuro">O Caminho Completo.</h2>
   <div class="fases-row">
     <div class="fase ativa reveal">
       <span class="fase-tag">Fase 1</span>
@@ -1173,7 +1177,7 @@ window.addEventListener('scroll', () => {
 (function calibrateAtmos() {
   function set() {
     const bg = document.getElementById('atmos-bg');
-    const transicao = document.getElementById('gastronomia');
+    const transicao = document.getElementById('recursos');
     const footer = document.querySelector('footer');
     if (!bg || !transicao || !footer) return;
 
