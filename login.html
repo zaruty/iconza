@@ -2,10 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>ICONZA — Entrar</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@1,300&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="core-supabase.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -15,15 +20,23 @@
   --branco:#f5f2ee;
   --cinza:#b0a89a;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+html{height:100%}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--preto);
+  min-height:100vh;
+  min-height:100dvh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
 
-/* LADO ESQUERDO — visual */
+/* ── LADO ESQUERDO — visual ── */
 .visual{position:relative;background:var(--preto);display:flex;flex-direction:column;justify-content:space-between;padding:3rem;overflow:hidden}
 .visual-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,rgba(193,39,45,.12) 0%,transparent 60%)}
 .visual-nome{font-family:'Playfair Display',serif;font-size:6rem;font-weight:900;color:rgba(255,255,255,.04);position:absolute;bottom:8rem;left:2rem;line-height:1;pointer-events:none}
 .logo{display:flex;align-items:center;gap:.8rem;z-index:1}
 .logo-crown{width:40px;height:40px;background:transparent;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center}
-.logo-crown svg{width:20px;height:20px;fill:var(--gold)}
 .logo-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;letter-spacing:.15em;color:var(--branco)}
 .logo-tag{font-size:.55rem;letter-spacing:.25em;color:rgba(255,255,255,.3);text-transform:uppercase;display:block;margin-top:-2px}
 .visual-content{z-index:1;margin-top:auto;margin-bottom:4rem}
@@ -32,7 +45,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 .visual-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:rgba(255,255,255,.45);line-height:1.6}
 .visual-footer{z-index:1;font-size:.65rem;letter-spacing:.15em;color:rgba(255,255,255,.2);text-transform:uppercase}
 
-/* ÍCONES FLUTUANTES */
+/* ── ÍCONES FLUTUANTES ── */
 .fi{position:absolute;pointer-events:none;animation:float 6s ease-in-out infinite;opacity:.5}
 .fi1{top:15%;left:20%;font-size:1.8rem;animation-delay:0s}
 .fi2{top:30%;right:15%;font-size:1.4rem;animation-delay:1s}
@@ -41,59 +54,111 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 .fi5{bottom:40%;left:30%;font-size:1.2rem;animation-delay:1.5s}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
-/* LADO DIREITO — formulário */
-.form-side{background:var(--branco);display:flex;align-items:center;justify-content:center;padding:3rem}
+/* ── LADO DIREITO — formulário ── */
+.form-side{
+  background:var(--branco);
+  display:flex;align-items:center;justify-content:center;
+  padding:3rem;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
 .form-box{width:100%;max-width:400px}
 .form-titulo{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--preto);margin-bottom:.4rem}
 .form-subtitulo{font-size:.85rem;color:var(--cinza);margin-bottom:2.5rem;line-height:1.6}
 .form-subtitulo a{color:var(--vm);text-decoration:none;font-weight:500}
 
-/* TABS */
+/* ── TABS ── */
 .tabs{display:flex;gap:0;margin-bottom:2rem;border-bottom:1px solid #e0dbd4}
 .tab{flex:1;padding:.8rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--cinza);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
 .tab.active{color:var(--preto);border-bottom-color:var(--vm)}
 
-/* INPUTS */
+/* ── INPUTS ── */
 .field{margin-bottom:1.2rem}
 .field label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:.5rem;font-weight:500}
-.field input{width:100%;padding:.85rem 1rem;border:1px solid #e0dbd4;background:var(--branco);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--preto);outline:none;transition:border-color .2s}
+.field input{
+  width:100%;padding:.85rem 1rem;
+  border:1px solid #e0dbd4;
+  background:var(--branco);
+  font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--preto);
+  outline:none;transition:border-color .2s;
+  /* Evita zoom automático no iOS (font-size mínimo 16px) */
+  font-size:max(.9rem, 16px);
+  border-radius:0;
+  -webkit-appearance:none;
+}
 .field input:focus{border-color:var(--preto)}
 .field input::placeholder{color:#bbb}
 
-/* BOTÕES */
-.btn-principal{width:100%;padding:1rem;background:var(--preto);color:var(--branco);font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;transition:background .2s;margin-bottom:1rem}
+/* ── BOTÕES ── */
+.btn-principal{
+  width:100%;padding:1rem;
+  background:var(--preto);color:var(--branco);
+  font-family:'DM Sans',sans-serif;font-size:.78rem;
+  letter-spacing:.15em;text-transform:uppercase;font-weight:500;
+  border:none;cursor:pointer;transition:background .2s;
+  margin-bottom:1rem;border-radius:0;
+  /* Touch target mínimo 44px */
+  min-height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
 .btn-principal:hover{background:var(--vm)}
 .btn-principal:disabled{background:#ccc;cursor:not-allowed}
 
 .divisor{display:flex;align-items:center;gap:1rem;margin:1.2rem 0;color:#ccc;font-size:.75rem}
 .divisor::before,.divisor::after{content:'';flex:1;height:1px;background:#e0dbd4}
 
-.btn-google{width:100%;padding:.9rem;background:white;color:#333;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;border:1px solid #e0dbd4;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.8rem;transition:background .2s,border-color .2s}
+.btn-google{
+  width:100%;padding:.9rem;
+  background:white;color:#333;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;
+  border:1px solid #e0dbd4;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.8rem;
+  transition:background .2s,border-color .2s;
+  min-height:44px;border-radius:0;
+  -webkit-tap-highlight-color:transparent;
+}
 .btn-google:hover{background:#f8f8f8;border-color:#ccc}
+.btn-google:disabled{opacity:.6;cursor:not-allowed}
 .btn-google svg{width:18px;height:18px;flex-shrink:0}
 
 .forgot{text-align:right;margin-top:-.5rem;margin-bottom:1.2rem}
 .forgot a{font-size:.75rem;color:var(--cinza);text-decoration:none;transition:color .2s}
 .forgot a:hover{color:var(--vm)}
 
-/* MENSAGENS */
-.msg{padding:.8rem 1rem;font-size:.8rem;border-radius:0;margin-bottom:1rem;display:none}
+/* ── MENSAGENS ── */
+.msg{padding:.8rem 1rem;font-size:.8rem;margin-bottom:1rem;display:none}
 .msg.erro{background:rgba(193,39,45,.08);border-left:3px solid var(--vm);color:var(--vm)}
 .msg.sucesso{background:rgba(0,150,0,.08);border-left:3px solid green;color:green}
+.msg.info{background:rgba(79,70,229,.08);border-left:3px solid #4f46e5;color:#4f46e5}
 .msg.show{display:block}
 
-/* LOADING */
+/* ── LOADING ── */
 .loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.5rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* NOME CAMPOS CADASTRO */
+/* ── NOME CAMPOS CADASTRO ── */
 .nome-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 
-/* MOBILE */
+/* ── BANNER TROCA ── */
+.banner-troca{
+  display:none;
+  background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);
+  padding:.8rem 1rem;margin-bottom:1.5rem;
+  font-size:.82rem;color:#4f46e5;line-height:1.5;
+}
+
+/* ── MOBILE ── */
 @media(max-width:768px){
-  body{grid-template-columns:1fr}
+  body{grid-template-columns:1fr;overflow:auto}
   .visual{display:none}
-  .form-side{padding:2rem 1.5rem;min-height:100vh}
+  .form-side{
+    padding:2rem 1.5rem;
+    min-height:100vh;
+    min-height:100dvh;
+    align-items:flex-start;
+    padding-top:max(2rem, env(safe-area-inset-top));
+    padding-bottom:max(2rem, env(safe-area-inset-bottom));
+  }
 }
 </style>
 </head>
@@ -131,9 +196,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 <div class="form-side">
   <div class="form-box">
 
-    <!-- BANNER de troca de conta (oculto por padrão) -->
-    <div id="bannerTrocou" style="display:none;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);padding:.8rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:#4f46e5;line-height:1.5;border-radius:6px">
-      🔄 <strong>Sessão anterior encerrada.</strong><br>Entre com outra conta para testar a plataforma como aluna.
+    <div class="banner-troca" id="bannerTrocou">
+      🔄 <strong>Sessão anterior encerrada.</strong><br>
+      Entre com outra conta para testar a plataforma.
     </div>
 
     <h1 class="form-titulo" id="formTitulo">Bem-vinda de volta</h1>
@@ -148,63 +213,57 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 
     <div id="msgBox" class="msg"></div>
 
-    <!-- FORMULÁRIO LOGIN -->
+    <!-- LOGIN EMAIL -->
     <div id="formLogin">
       <div class="field">
         <label>E-mail</label>
-        <input type="email" id="loginEmail" placeholder="seu@email.com">
+        <input type="email" id="loginEmail" placeholder="seu@email.com"
+               autocomplete="email" inputmode="email">
       </div>
       <div class="field">
         <label>Senha</label>
-        <input type="password" id="loginSenha" placeholder="••••••••">
+        <input type="password" id="loginSenha" placeholder="••••••••"
+               autocomplete="current-password">
       </div>
       <div class="forgot"><a href="#" onclick="esqueceuSenha();return false;">Esqueceu a senha?</a></div>
       <button class="btn-principal" id="btnLogin" onclick="fazerLogin()">Entrar</button>
 
       <div class="divisor">ou</div>
 
-      <button class="btn-google" onclick="loginGoogle()">
-        <svg viewBox="0 0 48 48">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
+      <button class="btn-google" id="btnGoogleLogin" onclick="loginGoogle(this)">
+        <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continuar com Google
       </button>
     </div>
 
-    <!-- FORMULÁRIO CADASTRO -->
+    <!-- CADASTRO EMAIL -->
     <div id="formCadastro" style="display:none">
       <div class="nome-row">
         <div class="field">
           <label>Nome</label>
-          <input type="text" id="cadNome" placeholder="Seu nome">
+          <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="given-name">
         </div>
         <div class="field">
           <label>Sobrenome</label>
-          <input type="text" id="cadSobrenome" placeholder="Sobrenome">
+          <input type="text" id="cadSobrenome" placeholder="Sobrenome" autocomplete="family-name">
         </div>
       </div>
       <div class="field">
         <label>E-mail</label>
-        <input type="email" id="cadEmail" placeholder="seu@email.com">
+        <input type="email" id="cadEmail" placeholder="seu@email.com"
+               autocomplete="email" inputmode="email">
       </div>
       <div class="field">
         <label>Senha</label>
-        <input type="password" id="cadSenha" placeholder="Mínimo 8 caracteres">
+        <input type="password" id="cadSenha" placeholder="Mínimo 8 caracteres"
+               autocomplete="new-password">
       </div>
       <button class="btn-principal" id="btnCadastro" onclick="fazerCadastro()">Criar conta gratuita</button>
 
       <div class="divisor">ou</div>
 
-      <button class="btn-google" onclick="loginGoogle()">
-        <svg viewBox="0 0 48 48">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
+      <button class="btn-google" id="btnGoogleCadastro" onclick="loginGoogle(this)">
+        <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Cadastrar com Google
       </button>
     </div>
@@ -213,91 +272,155 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
 </div>
 
 <script>
-// SUPABASE
-const { createClient } = supabase;
-const sb = createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
+// ══════════════════════════════════════════════════════
+// ICONZA LOGIN — v3 estável
+//
+// MUDANÇAS vs versão anterior:
+// 1. Usa window.sb do core-supabase.js (sem createClient inline)
+// 2. loginGoogle() com prompt:'select_account' — sempre mostra seletor
+// 3. redirecionarAposLogin() verifica onboarding antes de ir para dashboard
+// 4. getSession() inicial com flag _loginChecked para não redirecionar
+//    enquanto a página está renderizando (fix do flickering mobile)
+// 5. Todos os redirects passam por redirecionarAposLogin()
+// ══════════════════════════════════════════════════════
 
-// Detecta modo "troca de conta" — aceita ?trocar=1 ou ?modo=trocar
+// ── BANNER DE TROCA ──────────────────────────────────
 (function detectarTroca() {
   const params = new URLSearchParams(window.location.search);
   const isTroca = params.get('trocar') === '1' || params.get('modo') === 'trocar';
   if (isTroca) {
-    const banner = document.getElementById('bannerTrocou');
-    if (banner) banner.style.display = 'block';
-    // Atualiza título para orientar a usuária
-    const titulo = document.getElementById('formTitulo');
-    if (titulo) titulo.textContent = 'Entrar com outra conta';
-    // Limpa o parâmetro da URL para não persistir
+    document.getElementById('bannerTrocou').style.display = 'block';
+    document.getElementById('formTitulo').textContent = 'Entrar com outra conta';
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 })();
 
-// TABS
+// ── REDIRECT INTELIGENTE ─────────────────────────────
+// Único ponto de decisão pós-login — evita redirects duplicados
+async function redirecionarAposLogin(session) {
+  try {
+    // Busca perfil para verificar onboarding
+    const { data: perfil } = await window.sb
+      .from('profiles')
+      .select('role, onboarding_completo')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!perfil) {
+      // Perfil ainda não existe (novo usuário Google) → onboarding
+      window.location.replace('diagnostico.html');
+      return;
+    }
+
+    // Admin/founder → CRM (independe de onboarding)
+    if (perfil.role === 'admin' || perfil.role === 'founder') {
+      window.location.replace('admin-crm.html');
+      return;
+    }
+
+    // Aluna sem onboarding → onboarding obrigatório
+    if (!perfil.onboarding_completo) {
+      window.location.replace('diagnostico.html');
+      return;
+    }
+
+    // Aluna com onboarding completo → dashboard
+    window.location.replace('dashboard.html');
+
+  } catch (e) {
+    console.error('Erro ao verificar perfil:', e);
+    // Fallback seguro: onboarding
+    window.location.replace('diagnostico.html');
+  }
+}
+
+// ── VERIFICAÇÃO INICIAL DE SESSÃO ────────────────────
+// FIX FLICKERING: usa flag para não redirecionar durante renderização inicial
+// O problema: Supabase emite sessão antes da página terminar de renderizar,
+// causando redirect imediato → página pisca/some antes de aparecer
+let _sessionCheckDone = false;
+
+async function verificarSessaoExistente() {
+  // Pequeno delay para garantir que a página renderizou completamente
+  // antes de qualquer redirect (fix do flash mobile)
+  await new Promise(r => setTimeout(r, 80));
+
+  const { data } = await window.sb.auth.getSession();
+  _sessionCheckDone = true;
+
+  if (data.session) {
+    // Já logada: redireciona para o lugar certo
+    mostrarMsg('Você já está conectada. Redirecionando...', 'info');
+    await redirecionarAposLogin(data.session);
+  }
+}
+
+// Executa verificação após DOM estar pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', verificarSessaoExistente);
+} else {
+  verificarSessaoExistente();
+}
+
+// ── TABS ──────────────────────────────────────────────
 function mudarTab(tab) {
-  const tabs = document.querySelectorAll('.tab');
   const titulo = document.getElementById('formTitulo');
   const subtitulo = document.getElementById('formSubtitulo');
-  const login = document.getElementById('formLogin');
-  const cadastro = document.getElementById('formCadastro');
   limparMsg();
 
   if (tab === 'login') {
-    tabs[0].classList.add('active');
-    tabs[1].classList.remove('active');
-    login.style.display = 'block';
-    cadastro.style.display = 'none';
+    document.querySelector('.tab:nth-child(1)').classList.add('active');
+    document.querySelector('.tab:nth-child(2)').classList.remove('active');
+    document.getElementById('formLogin').style.display = 'block';
+    document.getElementById('formCadastro').style.display = 'none';
     titulo.textContent = 'Bem-vinda de volta';
     subtitulo.innerHTML = 'Não tem conta? <a href="#" onclick="mudarTab(\'cadastro\');return false;">Criar conta gratuita</a>';
   } else {
-    tabs[1].classList.add('active');
-    tabs[0].classList.remove('active');
-    cadastro.style.display = 'block';
-    login.style.display = 'none';
+    document.querySelector('.tab:nth-child(2)').classList.add('active');
+    document.querySelector('.tab:nth-child(1)').classList.remove('active');
+    document.getElementById('formCadastro').style.display = 'block';
+    document.getElementById('formLogin').style.display = 'none';
     titulo.textContent = 'Criar sua conta';
     subtitulo.innerHTML = 'Já tem conta? <a href="#" onclick="mudarTab(\'login\');return false;">Entrar</a>';
   }
 }
 
-// MENSAGENS
-function mostrarMsg(texto, tipo) {
+// ── MENSAGENS ────────────────────────────────────────
+function mostrarMsg(texto, tipo = 'erro') {
   const box = document.getElementById('msgBox');
   box.textContent = texto;
   box.className = 'msg ' + tipo + ' show';
 }
-
 function limparMsg() {
-  const box = document.getElementById('msgBox');
-  box.className = 'msg';
+  document.getElementById('msgBox').className = 'msg';
 }
 
-// LOGIN EMAIL
+// ── LOGIN EMAIL ──────────────────────────────────────
 async function fazerLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const senha = document.getElementById('loginSenha').value;
   const btn = document.getElementById('btnLogin');
 
-  if (!email || !senha) { mostrarMsg('Preencha e-mail e senha.', 'erro'); return; }
+  if (!email || !senha) { mostrarMsg('Preencha e-mail e senha.'); return; }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="loading"></span>Entrando...';
   limparMsg();
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+  const { data, error } = await window.sb.auth.signInWithPassword({ email, password: senha });
 
   if (error) {
-    mostrarMsg('E-mail ou senha incorretos. Tente novamente.', 'erro');
+    mostrarMsg('E-mail ou senha incorretos. Tente novamente.');
     btn.disabled = false;
     btn.textContent = 'Entrar';
-  } else {
-    mostrarMsg('Bem-vinda! Redirecionando...', 'sucesso');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+    return;
   }
+
+  mostrarMsg('Bem-vinda! Verificando acesso...', 'sucesso');
+  await redirecionarAposLogin(data.session);
 }
 
-// CADASTRO EMAIL
+// ── CADASTRO EMAIL ───────────────────────────────────
 async function fazerCadastro() {
   const nome = document.getElementById('cadNome').value.trim();
   const sobrenome = document.getElementById('cadSobrenome').value.trim();
@@ -305,14 +428,14 @@ async function fazerCadastro() {
   const senha = document.getElementById('cadSenha').value;
   const btn = document.getElementById('btnCadastro');
 
-  if (!nome || !email || !senha) { mostrarMsg('Preencha todos os campos obrigatórios.', 'erro'); return; }
-  if (senha.length < 8) { mostrarMsg('A senha precisa ter pelo menos 8 caracteres.', 'erro'); return; }
+  if (!nome || !email || !senha) { mostrarMsg('Preencha todos os campos obrigatórios.'); return; }
+  if (senha.length < 8) { mostrarMsg('A senha precisa ter pelo menos 8 caracteres.'); return; }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="loading"></span>Criando conta...';
   limparMsg();
 
-  const { data, error } = await sb.auth.signUp({
+  const { data, error } = await window.sb.auth.signUp({
     email,
     password: senha,
     options: {
@@ -321,52 +444,100 @@ async function fazerCadastro() {
   });
 
   if (error) {
-    mostrarMsg(error.message === 'User already registered' ? 'Este e-mail já está cadastrado.' : 'Erro ao criar conta. Tente novamente.', 'erro');
+    const msg = error.message === 'User already registered'
+      ? 'Este e-mail já está cadastrado.'
+      : 'Erro ao criar conta. Tente novamente.';
+    mostrarMsg(msg);
     btn.disabled = false;
     btn.textContent = 'Criar conta gratuita';
-  } else {
-    mostrarMsg('Conta criada! Verifique seu e-mail para confirmar o cadastro.', 'sucesso');
-    setTimeout(() => { window.location.href = 'diagnostico.html'; }, 2000);
-    btn.textContent = 'Conta criada ✓';
+    return;
   }
+
+  mostrarMsg('Conta criada! Redirecionando para o diagnóstico criativo...', 'sucesso');
+  btn.textContent = 'Conta criada ✓';
+  // Novo cadastro → sempre vai para onboarding
+  setTimeout(() => window.location.replace('diagnostico.html'), 1500);
 }
 
-// LOGIN GOOGLE
-async function loginGoogle() {
-  const { error } = await sb.auth.signInWithOAuth({
+// ── LOGIN GOOGLE ─────────────────────────────────────
+// FIX: prompt='select_account' — SEMPRE mostra seletor de conta Google
+// Sem isso, Android Chrome reutiliza a última sessão silenciosamente
+async function loginGoogle(btnEl) {
+  if (btnEl) {
+    btnEl.disabled = true;
+    const original = btnEl.innerHTML;
+    btnEl.innerHTML = '<span class="loading" style="border-top-color:#333"></span> Conectando...';
+    // Restaura se demorar muito (ex: usuário fecha popup)
+    setTimeout(() => {
+      if (btnEl.disabled) {
+        btnEl.disabled = false;
+        btnEl.innerHTML = original;
+      }
+    }, 15000);
+  }
+
+  const { error } = await window.sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://iconza.vercel.app/dashboard.html' }
-  });
-  if (error) mostrarMsg('Erro ao conectar com Google.', 'erro');
-}
-
-// ESQUECEU SENHA
-async function esqueceuSenha() {
-  const email = document.getElementById('loginEmail').value.trim();
-  if (!email) { mostrarMsg('Digite seu e-mail primeiro.', 'erro'); return; }
-
-  const { error } = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login.html'
+    options: {
+      redirectTo: 'https://iconza.vercel.app/login.html',
+      // CRÍTICO: sempre mostra seletor de conta — sem isso reutiliza última sessão
+      queryParams: {
+        prompt: 'select_account',
+        access_type: 'online',
+      }
+    }
   });
 
   if (error) {
-    mostrarMsg('Erro ao enviar e-mail. Tente novamente.', 'erro');
-  } else {
-    mostrarMsg('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'sucesso');
+    mostrarMsg('Erro ao conectar com Google. Tente novamente.');
+    if (btnEl) { btnEl.disabled = false; }
   }
+  // Se OK: Supabase redireciona para Google → Google redireciona para redirectTo
+  // O login.html recebe de volta com #access_token na URL
+  // onAuthStateChange captura e chama redirecionarAposLogin()
 }
 
-// ENTER para submeter
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (document.getElementById('formLogin').style.display !== 'none') fazerLogin();
-    else fazerCadastro();
+// ── CAPTURA RETORNO DO OAUTH GOOGLE ──────────────────
+// Quando Google redireciona de volta para login.html,
+// Supabase processa o token e dispara SIGNED_IN
+// Sem isso o retorno do OAuth fica em loop (o maior culpado do flickering)
+window.sb.auth.onAuthStateChange(async (event, session) => {
+  // Ignora INITIAL_SESSION (já tratado em verificarSessaoExistente)
+  if (event === 'INITIAL_SESSION') return;
+
+  if (event === 'SIGNED_IN' && session) {
+    // Só processa se veio de OAuth (hash na URL) ou se a verificação inicial já terminou
+    const hasOAuthHash = window.location.hash.includes('access_token');
+    if (hasOAuthHash || _sessionCheckDone) {
+      mostrarMsg('Bem-vinda! Verificando acesso...', 'sucesso');
+      // Limpa hash da URL antes de redirecionar
+      window.history.replaceState({}, document.title, window.location.pathname);
+      await redirecionarAposLogin(session);
+    }
   }
 });
 
-// VERIFICAR SE JÁ ESTÁ LOGADA
-sb.auth.getSession().then(({ data }) => {
-  if (data.session) window.location.href = 'dashboard.html';
+// ── ESQUECEU SENHA ───────────────────────────────────
+async function esqueceuSenha() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { mostrarMsg('Digite seu e-mail primeiro.'); return; }
+
+  const { error } = await window.sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/login.html'
+  });
+
+  mostrarMsg(
+    error ? 'Erro ao enviar e-mail. Tente novamente.' : 'E-mail de recuperação enviado! Verifique sua caixa de entrada.',
+    error ? 'erro' : 'sucesso'
+  );
+}
+
+// ── ENTER para submeter ───────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const loginVisible = document.getElementById('formLogin').style.display !== 'none';
+  if (loginVisible) fazerLogin();
+  else fazerCadastro();
 });
 </script>
 </body>
