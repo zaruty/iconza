@@ -196,9 +196,21 @@
   };
 
   // Helper para trocar de conta (modo teste)
-  window.iconzaTrocarConta = function() {
+  window.iconzaTrocarConta = async function() {
     if (confirm('Sair desta conta e fazer login com outro email?\n\nSua sessão atual será encerrada.')) {
-      window.location.href = 'sair.html?trocar=1';
+      try {
+        // Limpa sessão Supabase diretamente (sem depender do sair.html)
+        if (window.sb) await window.sb.auth.signOut();
+        // Limpa cache local
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('iconza-') || k.startsWith('sb-')) localStorage.removeItem(k);
+        });
+        // Vai para login com flag de troca
+        window.location.href = 'login.html?modo=trocar';
+      } catch (e) {
+        // Fallback: vai para login mesmo com erro
+        window.location.href = 'login.html?modo=trocar';
+      }
     }
   };
 })();
