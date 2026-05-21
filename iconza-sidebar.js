@@ -186,6 +186,30 @@
         backdrop.onclick = () => this.close();
         document.body.appendChild(backdrop);
       }
+      // Backdrop mobile — cria uma vez, reutiliza sempre
+      if (!document.querySelector('.iconza-side-backdrop')) {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'iconza-side-backdrop';
+        backdrop.addEventListener('click', () => this.close(), { passive: true });
+        document.body.appendChild(backdrop);
+      }
+
+      // Swipe-to-close mobile: deslizar para esquerda fecha sidebar
+      if (!window.__iconzaSidebarSwipeInit) {
+        window.__iconzaSidebarSwipeInit = true;
+        let _touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+          _touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+          const dx = e.changedTouches[0].clientX - _touchStartX;
+          const side = document.querySelector('.iconza-side');
+          if (side && side.classList.contains('is-open') && dx < -50) {
+            IconzaSidebar.close();
+          }
+        }, { passive: true });
+      }
+
     },
 
     // Nav admin: botões que chamam mostrar() do admin-crm

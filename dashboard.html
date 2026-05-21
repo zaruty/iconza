@@ -2,7 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f11">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ICONZA — Boas-vindas</title>
 
 <!-- Design System -->
@@ -30,7 +34,6 @@
 
 <!-- ═══ BARRA DE PREVIEW MODE ═══ -->
 <div id="iconza-preview-bar" style="
-  display:none;
   position:fixed;top:0;left:0;right:0;z-index:10000;
   background:linear-gradient(90deg,#4f46e5,#7c3aed);
   color:#fff;
@@ -63,9 +66,27 @@
   <div style="width:32px;height:32px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite"></div>
 </div>
 <style>
-body.preview-mode { padding-top: 38px; }
-#iconza-preview-bar { display:none; }
-body.preview-mode #iconza-preview-bar { display:flex !important; }
+/* Preview bar: oculta por padrão, sem display:none inline para evitar flash */
+#iconza-preview-bar {
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-100%);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+body.preview-mode #iconza-preview-bar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+body.preview-mode {
+  /* Compensa altura da barra de preview */
+  padding-top: 38px;
+}
+/* Garante que o app shell ocupa height dinâmico no mobile */
+body.preview-mode .iconza-app {
+  min-height: calc(100dvh - 38px);
+}
 </style>
 <style>@keyframes spin{to{transform:rotate(360deg)}}#loadingOverlay.hide{opacity:0;pointer-events:none}</style>
 
@@ -381,7 +402,11 @@ main.addEventListener('scroll', () => {
   topbar.classList.toggle('is-scrolled', main.scrollTop > 6);
 });
 
-init();
+// Guard: evita dupla execução (ex: script carregado duas vezes)
+if (!window.__dashboardInit) {
+  window.__dashboardInit = true;
+  init();
+}
 </script>
 <script src="acesso.js"></script>
 </body>

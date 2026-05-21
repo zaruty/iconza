@@ -73,16 +73,27 @@
     /**
      * Pega perfil OBRIGATÓRIO: redireciona se não logado
      * USO PRINCIPAL em páginas protegidas
+     * Promise lock: evita race condition se chamado múltiplas vezes
      */
     async requireUser() {
-      await this.requireLogin();
-      const user = await this.getCurrentUser();
-      if (!user) {
-        console.error('Sessão válida mas perfil não encontrado');
-        window.location.href = 'login.html';
-        throw new Error('profile_not_found');
-      }
-      return user;
+      // Se já existe uma promise em andamento, aguarda ela (não duplica)
+      if (this._requireUserPromise) return this._requireUserPromise;
+      this._requireUserPromise = (async () => {
+        try {
+          await this.requireLogin();
+          const user = await this.getCurrentUser();
+          if (!user) {
+            console.error('Sessão válida mas perfil não encontrado');
+            window.location.href = 'login.html';
+            throw new Error('profile_not_found');
+          }
+          return user;
+        } finally {
+          // Limpa lock ao finalizar (sucesso ou erro)
+          this._requireUserPromise = null;
+        }
+      })();
+      return this._requireUserPromise;
     },
 
     /**
@@ -173,9 +184,14 @@
 
     /**
      * Listener: chama callback quando auth muda (login/logout)
+     * ATENÇÃO: Supabase emite INITIAL_SESSION ao montar — não usar para
+     * detectar "novo login". Usar apenas para SIGNED_OUT / TOKEN_REFRESHED.
+     * Retorna { data: { subscription } } — chamar .unsubscribe() ao desmontar.
      */
     onAuthChange(callback) {
       return sb.auth.onAuthStateChange((event, session) => {
+        // Ignora INITIAL_SESSION para evitar loops de render ao carregar página
+        if (event === 'INITIAL_SESSION') return;
         if (event === 'SIGNED_OUT') {
           _perfilCache = null;
         }
