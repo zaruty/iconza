@@ -55,12 +55,50 @@ html{scroll-behavior:smooth;overflow-x:hidden}
 
 body{
   font-family:var(--sans);
-  background:var(--d1);
+  background:#07030F;
   color:var(--t2);
   overflow-x:hidden;
   cursor:none;
+  position:relative;
 }
 
+
+/* ── ATMOSPHERIC BACKGROUND ──────────────────────────
+   position:absolute spans real page height.
+   JS sets gradient stops based on actual section positions.
+   This is the ONLY gradient — per section overrides
+   are just solid darks so sections don't fight it.
+   ─────────────────────────────────────────────────── */
+#atmos-bg{
+  position:absolute;
+  top:0;left:0;right:0;
+  bottom:0;
+  z-index:0;
+  pointer-events:none;
+  /* Default gradient — JS refines this after load */
+  background:
+    radial-gradient(ellipse 100% 40% at 65% 8%,
+      rgba(140,80,140,.14) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 30% at 20% 15%,
+      rgba(100,50,110,.07) 0%, transparent 50%),
+    linear-gradient(180deg,
+      #07030F 0%,   #0A051A 10%,
+      #0E0820 22%,  #130B26 34%,
+      #19102E 45%,  #1F1336 54%,
+      #2A1740 60%,  #381D50 64%,
+      #502660 68%,  #6B3570 72%,
+      #8A4878 76%,  #A86080 80%,
+      #BE8090 84%,  #CFA0A8 87%,
+      #DAB8BE 90%,  #E5CDD2 93%,
+      #EDD8DC 96%,  #F0E2E6 100%
+    );
+}
+/* Every section sits ON TOP of the gradient — no background overrides
+   except hero and fase1 which MUST stay dark */
+section, .sep, .citacao, footer{
+  position:relative;
+  z-index:1;
+}
 /* ── CUSTOM CURSOR ── */
 .cursor{
   position:fixed;width:5px;height:5px;
@@ -84,56 +122,7 @@ body{
    Escuro no topo → transição MUITO suave →
    claro após seção Fase 1 (via body + page-bg)
 */
-.page-bg{
-  /* NOT fixed — flows with page height so gradient distributes correctly */
-  position:absolute;
-  top:0;left:0;right:0;
-  /* Height set by JS to match real page height */
-  min-height:100%;
-  z-index:-1;
-  /* Dark stays dominant until ~62% of page height
-     Transition is atmospheric, no hard line */
-  background:
-    linear-gradient(180deg,
-      #07030F  0%,
-      #0D061A  8%,
-      #12091F  18%,
-      #160C24  28%,
-      #1B1028  38%,
-      #1E1230  46%,
-      #22133A  54%,
-      #271544  60%,
-      /* atmospheric dissolve begins here — very slow */
-      #341A50  64%,
-      #4A2260  67%,
-      #663370  70%,
-      #8A5080  73%,
-      #A87090  76%,
-      #C49098  79%,
-      #D8B4B8  82%,
-      #E4CDD0  86%,
-      #EDD8DC  90%,
-      #F0E0E4  94%,
-      #F3E8EA  100%
-    );
-  pointer-events:none;
-}
-/* Neural glow — right side of hero */
-.page-bg::before{
-  content:'';position:absolute;
-  top:0;right:0;width:55%;height:100vh;
-  background:
-    radial-gradient(ellipse 80% 65% at 75% 28%, rgba(199,139,190,.11) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 85% 55%, rgba(185,127,181,.07) 0%, transparent 55%);
-  pointer-events:none;
-}
-/* Left atmospheric nebula */
-.page-bg::after{
-  content:'';position:absolute;
-  top:20%;left:0;width:45%;height:60vh;
-  background:radial-gradient(ellipse 60% 50% at 15% 40%, rgba(150,100,160,.05) 0%, transparent 65%);
-  pointer-events:none;
-}
+
 
 /* ── NAV ── */
 nav{
@@ -199,13 +188,17 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   min-height:100vh;padding-top:72px;
   position:relative;
   display:flex;align-items:center;
-  /* Left-aligned editorial layout */
   justify-content:flex-start;
   overflow:hidden;
+  background:transparent;
 }
 #neural-canvas{
-  position:absolute;inset:0;pointer-events:none;
-  opacity:.7;
+  position:absolute;
+  top:0;left:0;width:100%;
+  /* Height set by JS */
+  pointer-events:none;
+  opacity:.75;
+  z-index:0;
 }
 
 .hero-content{
@@ -302,7 +295,8 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 /* ── SEPARADOR ── */
 .sep{
   display:flex;align-items:center;gap:1.5rem;
-  padding:0 var(--pad);
+  padding:.5rem var(--pad);
+  background:transparent;
   margin:0;
 }
 .sep-line{flex:1;height:1px;background:rgba(199,139,190,.1)}
@@ -315,6 +309,7 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .secao-escura{
   padding:var(--section-pad) var(--pad);
   position:relative;
+  background:transparent;
 }
 
 /* ── FASE 1 — cards com cores preservadas mas adaptados ── */
@@ -372,10 +367,12 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .secao-transicao{
   padding:var(--section-pad) var(--pad);
   position:relative;
+  background:transparent;
 }
 .secao-clara{
   padding:var(--section-pad) var(--pad);
   position:relative;
+  background:transparent;
 }
 
 /* ── EYEBROW / TÍTULO GLOBAL ── */
@@ -529,8 +526,18 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 /* ── CITAÇÃO (volta para escuro) ── */
 .citacao{
   background:
-    radial-gradient(ellipse 80% 60% at 20% 50%, rgba(55,20,75,.5) 0%, transparent 65%),
-    linear-gradient(160deg, #17082A 0%, #241331 50%, #1B1028 100%);
+    radial-gradient(ellipse 80% 60% at 20% 60%, rgba(55,20,75,.4) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 40%, rgba(80,30,80,.25) 0%, transparent 55%),
+    linear-gradient(180deg,
+      #ffffff 0%,
+      #F3E8EA 6%,
+      #C8A0B0 16%,
+      #8A4878 26%,
+      #4A1E52 40%,
+      #2A1240 58%,
+      #1E0E32 78%,
+      #ffffff 100%
+    );
   padding:var(--section-pad) var(--pad);
   display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;
 }
@@ -609,9 +616,10 @@ footer p{font-size:.6rem;color:rgba(199,139,190,.2);letter-spacing:.06em}
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cRing"></div>
 
-<!-- Background atmosférico fixo -->
-<div class="page-bg"></div>
 
+
+<!-- Atmospheric background — gradient calibrated by JS -->
+<div id="atmos-bg"></div>
 <!-- Canvas neural -->
 <canvas id="neural-canvas"></canvas>
 
@@ -917,22 +925,27 @@ document.querySelectorAll('a,button').forEach(el => {
 
   function resize() {
     W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+    // Canvas covers hero + fase1 (about 2 viewports)
+    H = canvas.height = window.innerHeight * 1.8;
+    canvas.style.height = H + 'px';
   }
   resize();
   window.addEventListener('resize', () => { resize(); buildNodes(); });
 
-  const NODE_COUNT = window.innerWidth < 768 ? 42 : 72;
-  const MAX_DIST = 160;
+  const NODE_COUNT = window.innerWidth < 768 ? 50 : 90;
+  const MAX_DIST = 170;
 
   function buildNodes() {
-    nodes = Array.from({ length: NODE_COUNT }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H * .85, // confina ao hero
-      vx: (Math.random() - .5) * .28,
-      vy: (Math.random() - .5) * .18,
-      r:  Math.random() * 1.6 + .4,
-      o:  Math.random() * .6 + .2,
+    nodes = Array.from({ length: NODE_COUNT }, (_, i) => ({
+      x: i < NODE_COUNT * .7
+        // Most nodes cluster in hero (right-biased)
+        ? W * .4 + Math.random() * W * .6
+        : Math.random() * W,
+      y: Math.random() * H * .55,
+      vx: (Math.random() - .5) * .25,
+      vy: (Math.random() - .5) * .15,
+      r:  Math.random() * 2 + .5,
+      o:  Math.random() * .7 + .25,
     }));
   }
   buildNodes();
@@ -961,21 +974,29 @@ document.querySelectorAll('a,button').forEach(el => {
       }
     }
 
-    // Nós
+    // Nós — bloom + core
     nodes.forEach((n, i) => {
       const col = COLORS[i % COLORS.length];
-      // Glow
-      const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 5);
-      grd.addColorStop(0, `rgba(${col},${n.o * .5})`);
+      // Outer bloom
+      const grdOuter = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 8);
+      grdOuter.addColorStop(0, `rgba(${col},${n.o * .3})`);
+      grdOuter.addColorStop(1, `rgba(${col},0)`);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 8, 0, Math.PI * 2);
+      ctx.fillStyle = grdOuter;
+      ctx.fill();
+      // Inner glow
+      const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 3);
+      grd.addColorStop(0, `rgba(${col},${n.o * .8})`);
       grd.addColorStop(1, `rgba(${col},0)`);
       ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r * 5, 0, Math.PI * 2);
+      ctx.arc(n.x, n.y, n.r * 3, 0, Math.PI * 2);
       ctx.fillStyle = grd;
       ctx.fill();
-      // Nó central
+      // Bright core
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${col},${n.o})`;
+      ctx.fillStyle = `rgba(${col},${Math.min(n.o * 1.2, 1)})`;
       ctx.fill();
     });
   }
@@ -1010,7 +1031,9 @@ document.querySelectorAll('a,button').forEach(el => {
   window.addEventListener('scroll', () => {
     const sy = window.scrollY;
     canvas.style.transform = `translateY(${sy * .12}px)`;
-    canvas.style.opacity = Math.max(0, 1 - sy / (window.innerHeight * 1.2));
+    const fadeStart = window.innerHeight * 0.5;
+    const fadeEnd = window.innerHeight * 2.2;
+    canvas.style.opacity = sy < fadeStart ? 0.75 : Math.max(0.08, 0.75 * (1 - (sy - fadeStart) / (fadeEnd - fadeStart)));
   }, { passive: true });
 })();
 
@@ -1034,6 +1057,57 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 }, { passive: true });
+
+/* Calibrate atmospheric gradient to actual page layout */
+(function calibrateAtmos() {
+  function set() {
+    const bg = document.getElementById('atmos-bg');
+    const transicao = document.getElementById('gastronomia');
+    const footer = document.querySelector('footer');
+    if (!bg || !transicao || !footer) return;
+
+    const pageH = document.documentElement.scrollHeight;
+    const transStart = transicao.offsetTop;
+    const footerStart = footer.offsetTop;
+
+    // Convert to percentages of page height
+    const p0 = 0;
+    const pDark = Math.round((transStart * 0.9 / pageH) * 100);      // stays dark until 90% of transicao
+    const pFogStart = Math.round((transStart / pageH) * 100);         // fog begins
+    const pFogMid = Math.round(((transStart + (footerStart - transStart) * .4) / pageH) * 100);
+    const pFogPeak = Math.round(((transStart + (footerStart - transStart) * .7) / pageH) * 100);
+    const pFooterStart = Math.round((footerStart / pageH) * 100);
+
+    bg.style.background = `
+      radial-gradient(ellipse 110% 45% at 62% ${Math.round(transStart/pageH*100+5)}%,
+        rgba(120,60,120,.18) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 35% at 25% ${Math.round(transStart/pageH*100+15)}%,
+        rgba(90,40,100,.1) 0%, transparent 50%),
+      linear-gradient(180deg,
+        #07030F ${p0}%,
+        #0B061C ${Math.round(pDark*.2)}%,
+        #10092A ${Math.round(pDark*.4)}%,
+        #150D32 ${Math.round(pDark*.6)}%,
+        #1B1238 ${Math.round(pDark*.8)}%,
+        #201540 ${pDark}%,
+        #2E1A52 ${pFogStart}%,
+        #4A2665 ${Math.round((pFogStart+pFogMid)/2)}%,
+        #6A3872 ${pFogMid}%,
+        #8A5080 ${Math.round((pFogMid+pFogPeak)/2)}%,
+        #AB6E8C ${pFogPeak}%,
+        #C4909A ${Math.round((pFogPeak+pFooterStart)/2)}%,
+        #D5AEBE ${pFooterStart}%,
+        #E2C8CE ${Math.round(pFooterStart+3)}%,
+        #EDD8DC ${Math.round(pFooterStart+6)}%,
+        #F3E8EA 100%
+      )
+    `;
+  }
+  // Run after layout stabilizes
+  if (document.readyState === 'complete') { set(); }
+  else { window.addEventListener('load', set); }
+  window.addEventListener('resize', set);
+})();
 
 /* Smooth scroll links */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
