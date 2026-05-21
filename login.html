@@ -589,19 +589,25 @@ async function fazerCadastro() {
 }
 
 // ── LOGIN GOOGLE ─────────────────────────────────────
-// FIX: prompt='select_account' — SEMPRE mostra seletor de conta Google
-// Sem isso, Android Chrome reutiliza a última sessão silenciosamente
-async function loginGoogle(btnEl) {
+// intent: 'login' = só aceita contas existentes
+//         'cadastro' = permite criar conta nova
+// Flag gravada em sessionStorage para sobreviver ao redirect OAuth
+async function loginGoogle(btnEl, intent) {
+  // Determina intenção pela aba ativa se não passado explicitamente
+  if (!intent) {
+    const tabCadastroAtiva = document.querySelector('.tab:nth-child(2)')?.classList.contains('active');
+    intent = tabCadastroAtiva ? 'cadastro' : 'login';
+  }
+
+  // Salva intenção — sobrevive ao redirect OAuth (sessionStorage persiste na aba)
+  sessionStorage.setItem('iconza-oauth-intent', intent);
+
   if (btnEl) {
     btnEl.disabled = true;
     const original = btnEl.innerHTML;
     btnEl.innerHTML = '<span class="loading" style="border-top-color:#333"></span> Conectando...';
-    // Restaura se demorar muito (ex: usuário fecha popup)
     setTimeout(() => {
-      if (btnEl.disabled) {
-        btnEl.disabled = false;
-        btnEl.innerHTML = original;
-      }
+      if (btnEl.disabled) { btnEl.disabled = false; btnEl.innerHTML = original; }
     }, 15000);
   }
 
@@ -609,9 +615,8 @@ async function loginGoogle(btnEl) {
     provider: 'google',
     options: {
       redirectTo: 'https://iconza.vercel.app/login.html',
-      // CRÍTICO: sempre mostra seletor de conta — sem isso reutiliza última sessão
       queryParams: {
-        prompt: 'select_account',
+        prompt: 'select_account', // sempre mostra seletor
         access_type: 'online',
       }
     }
@@ -619,32 +624,116 @@ async function loginGoogle(btnEl) {
 
   if (error) {
     mostrarMsg('Erro ao conectar com Google. Tente novamente.');
-    if (btnEl) { btnEl.disabled = false; }
+    sessionStorage.removeItem('iconza-oauth-intent');
+    if (btnEl) btnEl.disabled = false;
   }
-  // Se OK: Supabase redireciona para Google → Google redireciona para redirectTo
-  // O login.html recebe de volta com #access_token na URL
-  // onAuthStateChange captura e chama redirecionarAposLogin()
 }
 
 // ── CAPTURA RETORNO DO OAUTH GOOGLE ──────────────────
-// Quando Google redireciona de volta para login.html,
-// Supabase processa o token e dispara SIGNED_IN
-// Sem isso o retorno do OAuth fica em loop (o maior culpado do flickering)
+// Ponto central de decisão pós-OAuth:
+// - Recupera intenção (login vs cadastro) do sessionStorage
+// - login: bloqueia se perfil não existe no banco
+// - cadastro: cria perfil e vai para onboarding
 window.sb.auth.onAuthStateChange(async (event, session) => {
-  // Ignora INITIAL_SESSION (já tratado em verificarSessaoExistente)
   if (event === 'INITIAL_SESSION') return;
 
-  if (event === 'SIGNED_IN' && session) {
-    // Só processa se veio de OAuth (hash na URL) ou se a verificação inicial já terminou
-    const hasOAuthHash = window.location.hash.includes('access_token');
-    if (hasOAuthHash || _sessionCheckDone) {
-      mostrarMsg('Bem-vinda! Verificando acesso...', 'sucesso');
-      // Limpa hash da URL antes de redirecionar
-      window.history.replaceState({}, document.title, window.location.pathname);
-      await redirecionarAposLogin(session);
+  if (event !== 'SIGNED_IN' || !session) return;
+
+  const hasOAuthHash = window.location.hash.includes('access_token');
+  if (!hasOAuthHash && !_sessionCheckDone) return;
+
+  // Limpa hash da URL
+  if (hasOAuthHash) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  // Recupera intenção do sessionStorage
+  const intent = sessionStorage.getItem('iconza-oauth-intent') || 'login';
+  sessionStorage.removeItem('iconza-oauth-intent');
+
+  mostrarMsg('Verificando cadastro...', 'info');
+
+  // Verifica se perfil existe na tabela profiles
+  const { data: perfil, error: perfilError } = await window.sb
+    .from('profiles')
+    .select('id, role, onboarding_completo')
+    .eq('id', session.user.id)
+    .maybeSingle(); // maybeSingle: retorna null sem erro se não existe
+
+  const perfilExiste = perfil && !perfilError;
+
+  // ── ABA "ENTRAR": só aceita contas já cadastradas ──────────
+  if (intent === 'login') {
+    if (!perfilExiste) {
+      // Conta Google nova tentando entrar como login → bloqueia
+      mostrarMsg('', '');
+      // Desloga imediatamente (sem rede — scope:local)
+      await window.sb.auth.signOut({ scope: 'local' });
+
+      // Mostra erro com sugestão de cadastro
+      mostrarErroContaNaoEncontrada(session.user.email);
+      return;
     }
+    // Perfil existe → redireciona normalmente
+    mostrarMsg('Bem-vinda! Verificando acesso...', 'sucesso');
+    await redirecionarAposLogin(session);
+    return;
+  }
+
+  // ── ABA "CADASTRAR": permite criar conta nova ──────────────
+  if (intent === 'cadastro') {
+    if (perfilExiste) {
+      // Conta já existe → comporta como login normal
+      mostrarMsg('Conta encontrada. Entrando...', 'sucesso');
+      await redirecionarAposLogin(session);
+      return;
+    }
+
+    // Conta nova → cria perfil e vai para onboarding
+    mostrarMsg('Criando seu perfil ICONZA...', 'info');
+    const user = session.user;
+    const nomeMeta = user.user_metadata?.full_name ||
+                     user.user_metadata?.nome_completo ||
+                     user.email.split('@')[0];
+
+    const { error: insertError } = await window.sb
+      .from('profiles')
+      .insert({
+        id: user.id,
+        email: user.email,
+        nome_completo: nomeMeta,
+        avatar_url: user.user_metadata?.avatar_url || null,
+        role: 'aluno',
+        onboarding_completo: false,
+        created_at: new Date().toISOString(),
+      });
+
+    if (insertError && insertError.code !== '23505') {
+      // 23505 = unique violation (perfil criado pelo trigger do Supabase) — ok
+      console.error('Erro ao criar perfil:', insertError);
+      mostrarMsg('Erro ao criar perfil. Tente novamente.', 'erro');
+      await window.sb.auth.signOut({ scope: 'local' });
+      return;
+    }
+
+    mostrarMsg('Perfil criado! Iniciando diagnóstico criativo...', 'sucesso');
+    setTimeout(() => window.location.replace('diagnostico.html'), 1200);
   }
 });
+
+// Exibe erro quando conta não existe no login
+function mostrarErroContaNaoEncontrada(email) {
+  const box = document.getElementById('msgBox');
+  box.innerHTML = `
+    <strong>Conta não encontrada.</strong><br>
+    O e-mail <em>${email}</em> não está cadastrado no ICONZA.<br>
+    <a href="#" onclick="mudarTab('cadastro');return false;"
+       style="color:var(--vm);font-weight:600;text-decoration:underline">
+      → Criar conta gratuita
+    </a>
+  `;
+  box.className = 'msg erro show';
+}
 
 // ── ESQUECEU SENHA ───────────────────────────────────
 async function esqueceuSenha() {
