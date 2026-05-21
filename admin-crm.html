@@ -24,9 +24,10 @@
   --cinza-700: #5a5a6e;
   --preto: #0d0d12;
 
-  --grafite: #16161e;
-  --grafite-2: #1e1e28;
-  --grafite-3: #262632;
+  --grafite: #0d0d18;
+  --grafite-2: #111827;
+  --grafite-3: #1a1f2e;
+  --indigo-glow: rgba(99,102,241,.12);
 
   --indigo: #4f46e5;
   --indigo-light: rgba(79,70,229,.08);
@@ -91,7 +92,11 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:15px;background:v
 
 /* ─── SIDEBAR ─── */
 .iz-side{
-  width:var(--sidebar-w);background:var(--grafite);
+  width:var(--sidebar-w);
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(99,102,241,.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(59,130,246,.08) 0%, transparent 55%),
+    linear-gradient(160deg, var(--grafite) 0%, var(--grafite-2) 100%);
   display:flex;flex-direction:column;flex-shrink:0;
   border-right:1px solid rgba(255,255,255,.04);
   overflow-y:auto;
@@ -293,15 +298,107 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
 .bar-track{height:4px;background:var(--borda);border-radius:2px}
 .bar-fill{height:100%;border-radius:2px;background:var(--indigo)}
 
-@media(max-width:900px){
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .grid-2{grid-template-columns:1fr}
-  .iz-side{width:52px}
-  .iz-side-nome,.iz-side-cargo,.iz-sec-label,.iz-nav-count,.iz-side-footer,.iz-side-user .iz-side-nome,.iz-side-user .iz-side-cargo{display:none}
+/* ── TABLET: sidebar colapsa para ícones ── */
+@media(max-width:1024px) and (min-width:769px){
+  .iz-side{width:60px}
+  .iz-side-nome,.iz-side-cargo,.iz-sec-label,.iz-nav-count,.iz-side-footer .iz-side-link-label{display:none}
   .iz-side-user{justify-content:center;padding:.75rem}
-  .iz-nav-item{justify-content:center;padding:.6rem 0}
-  .iz-nav-icon{width:16px;height:16px;opacity:.8}
-  :root{--sidebar-w:52px}
+  .iz-nav-item{justify-content:center;padding:.65rem 0;border-left:none}
+  .iz-nav-icon{width:18px;height:18px;opacity:.7}
+  :root{--sidebar-w:60px}
+}
+
+/* ── MOBILE: drawer offcanvas ── */
+@media(max-width:768px){
+  :root{--sidebar-w:0px}
+
+  /* Shell: uma coluna só */
+  .iz-shell{display:flex;flex-direction:column}
+  .iz-body{flex:1;min-height:0;position:relative}
+  .iz-content{width:100%}
+
+  /* Sidebar vira drawer */
+  .iz-side{
+    position:fixed;
+    top:0;left:0;bottom:0;
+    width:85vw;max-width:320px;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.2,.8,.2,1);
+    z-index:500;
+    will-change:transform;
+    backface-visibility:hidden;
+    /* Premium gradient — Gemini-inspired */
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(99,102,241,.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 100% 100%, rgba(59,130,246,.12) 0%, transparent 60%),
+      linear-gradient(160deg, #0d0d18 0%, #111827 50%, #0a0a14 100%);
+    border-right:1px solid rgba(99,102,241,.15);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  .iz-side.is-open{
+    transform:translateX(0);
+    box-shadow:
+      4px 0 40px rgba(0,0,0,.6),
+      0 0 80px rgba(99,102,241,.08);
+  }
+  /* Glow accent na borda */
+  .iz-side.is-open::after{
+    content:'';
+    position:absolute;top:0;right:-1px;bottom:0;width:1px;
+    background:linear-gradient(180deg,transparent,rgba(99,102,241,.4),rgba(59,130,246,.3),transparent);
+    pointer-events:none;
+  }
+
+  /* Avatar com anel de glow */
+  .iz-side-av{
+    box-shadow:0 0 0 2px rgba(99,102,241,.3),0 0 12px rgba(99,102,241,.15);
+  }
+
+  /* Nav items com hover mais visível */
+  .iz-nav-item:hover,.iz-nav-item.ativo{
+    background:rgba(99,102,241,.12);
+  }
+  .iz-nav-item.ativo{
+    border-left-color:#818cf8;
+  }
+
+  /* Backdrop */
+  .iz-backdrop{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
+    z-index:499;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  .iz-backdrop.show{
+    display:block;opacity:1;
+  }
+
+  /* Hamburger no topbar */
+  .iz-hamburger{
+    display:flex;
+    width:36px;height:36px;
+    align-items:center;justify-content:center;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:6px;cursor:pointer;
+    color:rgba(255,255,255,.7);
+    transition:all .15s;
+    flex-shrink:0;
+  }
+  .iz-hamburger:hover{background:rgba(255,255,255,.12);color:#fff}
+
+  /* Cards e grids no mobile */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
+  .grid-2{grid-template-columns:1fr}
+  .modulo{padding:1rem}
+  .filtros{flex-direction:column}
+  .f-input,.f-select{width:100%;min-width:unset}
+  .tab-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:640px}
 }
 </style>
 </head>
@@ -314,6 +411,12 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
   <!-- TOPBAR -->
   <header class="iz-top">
     <div class="iz-top-left">
+      <!-- Hamburger: só mobile -->
+      <button class="iz-hamburger" id="izHamburger" onclick="toggleSidebar()" aria-label="Menu" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <a href="admin-crm.html" class="iz-top-logo">
         <img src="coroa.png" alt="ICONZA">
         <span class="iz-top-wordmark">ICONZA</span>
@@ -646,6 +749,9 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
     </main>
   </div>
 </div>
+
+<!-- Backdrop mobile sidebar -->
+<div class="iz-backdrop" id="izBackdrop" onclick="fecharSidebar()"></div>
 
 <!-- ══ MODAL USUÁRIA ══ -->
 <div class="mov" id="modal" onclick="if(event.target===this)fechar()">
@@ -1424,6 +1530,51 @@ function trocarContaAdmin() {
 }
 
 init();
+
+// ── SIDEBAR MOBILE ──────────────────────────────────
+function toggleSidebar() {
+  const side = document.querySelector('.iz-side');
+  if (side.classList.contains('is-open')) fecharSidebar();
+  else abrirSidebar();
+}
+function abrirSidebar() {
+  document.querySelector('.iz-side').classList.add('is-open');
+  document.getElementById('izBackdrop').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function fecharSidebar() {
+  document.querySelector('.iz-side').classList.remove('is-open');
+  document.getElementById('izBackdrop').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Swipe-to-close
+(function(){
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const side = document.querySelector('.iz-side');
+    if (side.classList.contains('is-open') && e.changedTouches[0].clientX - tx < -60) {
+      fecharSidebar();
+    }
+  }, { passive: true });
+})();
+
+// Mostra/oculta hamburger por viewport
+function ajustarHamburger() {
+  const btn = document.getElementById('izHamburger');
+  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+}
+ajustarHamburger();
+window.addEventListener('resize', ajustarHamburger);
+
+// Fecha sidebar ao trocar módulo no mobile
+const _mostrarOriginal = mostrar;
+// Wrap mostrar() to close sidebar on mobile
+window.mostrar = function(mod, btn) {
+  _mostrarOriginal(mod, btn);
+  if (window.innerWidth <= 768) fecharSidebar();
+};
 </script>
 <script src="acesso.js"></script>
 </body>
