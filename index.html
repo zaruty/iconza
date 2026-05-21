@@ -430,30 +430,51 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 }
 .ap-link:hover{color:#8A5580;border-color:#8A5580}
 
-/* ── FERRAMENTAS ── */
-.tools-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:1px;background:rgba(199,139,190,.12);
+/* ── FERRAMENTAS — icon grid dark ── */
+.ferramentas-dark{
+  background:transparent; /* shows atmos gradient — still in dark zone */
+}
+.tools-icons-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2rem;
   margin-top:3rem;
 }
-.tool{
-  background:#ffffff;
-  padding:2rem 1.5rem;
-  display:flex;align-items:flex-start;gap:1rem;
-  border:1px solid rgba(199,139,190,.1);
-  transition:background .2s;
+.tool-icon{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:1rem;
 }
-.tool:hover{background:#f9f4f6}
-.tool-logo{
-  width:40px;height:40px;border-radius:8px;
+.tool-icon-wrap{
+  width:88px;height:88px;
   display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:.6rem;flex-shrink:0;overflow:hidden;
+  border-radius:50%;
+  border:1px solid rgba(199,139,190,.15);
+  background:rgba(199,139,190,.04);
+  transition:all .25s;
+  flex-shrink:0;
 }
-.tool-info h4{
-  font-size:.7rem;font-weight:600;color:#241331;
-  margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.08em;
+.tool-icon-wrap svg{width:48px;height:48px}
+.tool-icon:hover .tool-icon-wrap{
+  background:rgba(199,139,190,.1);
+  border-color:rgba(199,139,190,.3);
+  box-shadow:0 0 20px rgba(199,139,190,.12);
 }
-.tool-info p{font-size:.7rem;color:#5C3468;line-height:1.5}
+.tool-icon-nome{
+  font-size:.68rem;font-weight:600;
+  color:rgba(244,234,239,.75);
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.tool-icon-desc{
+  font-size:.65rem;line-height:1.6;
+  color:rgba(199,139,190,.45);
+  max-width:140px;
+}
+@media(max-width:768px){
+  .tools-icons-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:1.5rem;
+  }
+}
 
 /* ── FASES ── */
 .fases-row{
@@ -768,25 +789,106 @@ footer{
 </div>
 
 <!-- ══ FASE 1 — ainda escuro ══ -->
-<section class="secao-escura" id="fase1">
-  <span class="sec-eyebrow reveal" style="color:var(--g1)">Aprender os elementos fundamentais</span>
-  <h2 class="sec-titulo reveal" style="color:var(--t1)">Fase 1 — Mise en Place.</h2>
-  <div class="grid-8">
-    <div class="ut-card reveal"><span class="ut-num">01</span><span class="ut-nome">Background</span><p class="ut-desc">Fundos, texturas, atmosfera e contexto visual.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">02</span><span class="ut-nome">Cor</span><p class="ut-desc">Paletas, emoções, extração de cor e harmonia.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">03</span><span class="ut-nome">Composição</span><p class="ut-desc">Enquadramento, hierarquia e direção do olhar.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">04</span><span class="ut-nome">Contraste</span><p class="ut-desc">Luz e sombra, destaque e impacto visual.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">05</span><span class="ut-nome">Textura</span><p class="ut-desc">Profundidade, detalhes e sensação tátil visual.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">06</span><span class="ut-nome">Camadas</span><p class="ut-desc">Organização visual, elementos e profundidade.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">07</span><span class="ut-nome">Tipografia</span><p class="ut-desc">Fontes, estilo, leitura e expressão visual.</p></div>
-    <div class="ut-card reveal"><span class="ut-num">08</span><span class="ut-nome">Espaço Negativo</span><p class="ut-desc">Respiro visual, silêncio e foco na narrativa.</p></div>
-  </div>
-  <div class="ver-todos reveal">
-    <a href="#" class="link-arrow">Ver todos os módulos da Fase 1 →</a>
+<section class="secao-escura ferramentas-dark" id="recursos">
+  <span class="sec-eyebrow reveal" style="color:var(--g2)">Infraestrutura criativa</span>
+  <h2 class="sec-titulo reveal" style="color:var(--t1)">Ferramentas Principais.</h2>
+  <div class="tools-icons-grid">
+
+    <!-- CapCut -->
+    <div class="tool-icon reveal">
+      <div class="tool-icon-wrap">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="rgba(199,139,190,.25)" stroke-width="1"/>
+          <path d="M16 16L32 24L16 32V16Z" fill="rgba(199,139,190,.7)" stroke="none"/>
+          <path d="M28 20L34 24L28 28" stroke="rgba(216,166,204,.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <h4 class="tool-icon-nome">CapCut</h4>
+      <p class="tool-icon-desc">Edição de vídeo e animação</p>
+    </div>
+
+    <!-- Canva -->
+    <div class="tool-icon reveal">
+      <div class="tool-icon-wrap">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="rgba(199,139,190,.25)" stroke-width="1"/>
+          <circle cx="24" cy="24" r="10" stroke="rgba(199,139,190,.6)" stroke-width="1.5" fill="none"/>
+          <circle cx="24" cy="24" r="4" fill="rgba(216,166,204,.8)"/>
+          <line x1="24" y1="10" x2="24" y2="14" stroke="rgba(199,139,190,.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="34" x2="24" y2="38" stroke="rgba(199,139,190,.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="10" y1="24" x2="14" y2="24" stroke="rgba(199,139,190,.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="34" y1="24" x2="38" y2="24" stroke="rgba(199,139,190,.5)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h4 class="tool-icon-nome">Canva</h4>
+      <p class="tool-icon-desc">Design gráfico e identidade visual</p>
+    </div>
+
+    <!-- ChatGPT -->
+    <div class="tool-icon reveal">
+      <div class="tool-icon-wrap">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="rgba(199,139,190,.25)" stroke-width="1"/>
+          <path d="M24 13C18.48 13 14 17.03 14 22C14 24.5 15.1 26.76 16.93 28.36L16 35L22.45 31.85C22.95 31.95 23.47 32 24 32C29.52 32 34 27.97 34 23C34 18.03 29.52 13 24 13Z" stroke="rgba(199,139,190,.7)" stroke-width="1.4" fill="rgba(199,139,190,.08)" stroke-linejoin="round"/>
+          <circle cx="20" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
+          <circle cx="24" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
+          <circle cx="28" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
+        </svg>
+      </div>
+      <h4 class="tool-icon-nome">ChatGPT</h4>
+      <p class="tool-icon-desc">Geração de ideias e roteiros</p>
+    </div>
+
+    <!-- Claude -->
+    <div class="tool-icon reveal">
+      <div class="tool-icon-wrap">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="rgba(199,139,190,.25)" stroke-width="1"/>
+          <path d="M24 14L28 20H34L29.5 25.5L31.5 32L24 28L16.5 32L18.5 25.5L14 20H20L24 14Z" stroke="rgba(199,139,190,.7)" stroke-width="1.4" fill="rgba(199,139,190,.1)" stroke-linejoin="round"/>
+          <circle cx="24" cy="22" r="2.5" fill="rgba(216,166,204,.7)"/>
+        </svg>
+      </div>
+      <h4 class="tool-icon-nome">Claude</h4>
+      <p class="tool-icon-desc">Pesquisa profunda e estruturação</p>
+    </div>
+
   </div>
 </section>
 
-<!-- ══ TRÊS ÍCONES — transição para claro ══ -->
+<section class="secao-escura" id="arte" style="padding-top:0">
+  <span class="sec-eyebrow reveal" style="color:var(--g1)">Jornada de aprendizado</span>
+  <h2 class="sec-titulo reveal" style="color:var(--t1)">O Caminho Completo.</h2>
+  <div class="fases-row">
+    <div class="fase ativa reveal">
+      <span class="fase-tag">Fase 1</span>
+      <div class="fase-img"><span class="fase-num">I</span></div>
+      <h3 class="fase-titulo">Mise en Place</h3>
+      <span class="fase-sub">Aprender os elementos fundamentais</span>
+      <p class="fase-desc">Fundamentos visuais que constroem toda narrativa: fundo, cor, composição, textura e tipografia.</p>
+      <span class="fase-badge b-atual">● Atual</span>
+    </div>
+    <div class="fase-seta reveal">→</div>
+    <div class="fase reveal">
+      <span class="fase-tag">Fase 2</span>
+      <div class="fase-img"><span class="fase-num" style="opacity:.1;color:#241331">II</span></div>
+      <h3 class="fase-titulo">Animação e Movimento</h3>
+      <span class="fase-sub" style="color:#A890A0">Dar vida aos elementos</span>
+      <p class="fase-desc">Transformar o estático em dinâmico. Motion, transições e ritmo visual para contar histórias.</p>
+      <span class="fase-badge b-breve">🔒 Em Breve</span>
+    </div>
+    <div class="fase-seta reveal">→</div>
+    <div class="fase reveal">
+      <span class="fase-tag">Fase 3</span>
+      <div class="fase-img"><span class="fase-num" style="opacity:.1;color:#241331">III</span></div>
+      <h3 class="fase-titulo">Narrativa Visual</h3>
+      <span class="fase-sub" style="color:#A890A0">Unir tudo em linguagem autoral</span>
+      <p class="fase-desc">Projetos completos. Do conceito ao produto final — brandbook, conteúdo, produtos físicos.</p>
+      <span class="fase-badge b-futuro">🔒 Futuro</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FERRAMENTAS ══ -->
 <section class="secao-transicao" id="gastronomia">
   <span class="sec-eyebrow reveal eyebrow-escuro">Universo 1 — Surrealismo Radical</span>
   <h2 class="sec-titulo reveal titulo-escuro">Três Ícones, Três Caminhos.</h2>
@@ -850,71 +952,33 @@ footer{
   </div>
 </section>
 
-<!-- ══ FERRAMENTAS ══ -->
-<section class="secao-clara" id="recursos">
-  <span class="sec-eyebrow reveal eyebrow-escuro">Infraestrutura criativa</span>
-  <h2 class="sec-titulo reveal titulo-escuro">Ferramentas Principais.</h2>
-  <div class="tools-grid">
-    <div class="tool reveal">
-      <div class="tool-logo" style="background:#000;padding:4px">
-        <img src="capcut-icon.webp" style="width:100%;height:100%;object-fit:contain;border-radius:4px">
-      </div>
-      <div class="tool-info"><h4>CapCut</h4><p>Edição de vídeo e animação</p></div>
-    </div>
-    <div class="tool reveal">
-      <div class="tool-logo" style="background:#fff;border:1px solid rgba(199,139,190,.2);padding:4px">
-        <img src="canva.png" style="width:100%;height:100%;object-fit:contain">
-      </div>
-      <div class="tool-info"><h4>Canva</h4><p>Design gráfico e identidade visual</p></div>
-    </div>
-    <div class="tool reveal">
-      <div class="tool-logo" style="background:#fff;border:1px solid rgba(199,139,190,.2);padding:4px">
-        <img src="gpt.webp" style="width:100%;height:100%;object-fit:contain">
-      </div>
-      <div class="tool-info"><h4>ChatGPT</h4><p>Geração de ideias e roteiros</p></div>
-    </div>
-    <div class="tool reveal">
-      <div class="tool-logo" style="background:#fff;border:1px solid rgba(199,139,190,.2);padding:4px">
-        <img src="claude.png" style="width:100%;height:100%;object-fit:contain">
-      </div>
-      <div class="tool-info"><h4>Claude</h4><p>Pesquisa profunda e estruturação</p></div>
-    </div>
+<!-- ══ TRÊS ÍCONES ══ -->
+<section class="secao-clara" id="fase1">
+  <span class="sec-eyebrow reveal eyebrow-escuro">Aprender os elementos fundamentais</span>
+  <h2 class="sec-titulo reveal titulo-escuro">Fase 1 — Mise en Place.</h2>
+  <div class="grid-8">
+    <div class="ut-card reveal"><span class="ut-num">01</span><span class="ut-nome">Background</span><p class="ut-desc">Fundos, texturas, atmosfera e contexto visual.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">02</span><span class="ut-nome">Cor</span><p class="ut-desc">Paletas, emoções, extração de cor e harmonia.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">03</span><span class="ut-nome">Composição</span><p class="ut-desc">Enquadramento, hierarquia e direção do olhar.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">04</span><span class="ut-nome">Contraste</span><p class="ut-desc">Luz e sombra, destaque e impacto visual.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">05</span><span class="ut-nome">Textura</span><p class="ut-desc">Profundidade, detalhes e sensação tátil visual.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">06</span><span class="ut-nome">Camadas</span><p class="ut-desc">Organização visual, elementos e profundidade.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">07</span><span class="ut-nome">Tipografia</span><p class="ut-desc">Fontes, estilo, leitura e expressão visual.</p></div>
+    <div class="ut-card reveal"><span class="ut-num">08</span><span class="ut-nome">Espaço Negativo</span><p class="ut-desc">Respiro visual, silêncio e foco na narrativa.</p></div>
+  </div>
+  <div class="ver-todos reveal">
+    <a href="#" class="link-arrow" style="color:#5C3468">Ver todos os módulos da Fase 1 →</a>
   </div>
 </section>
 
+<!-- ══ TRÊS ÍCONES — transição para claro ══ -->
+
+
+<!-- ══ FERRAMENTAS ══ -->
+
+
 <!-- ══ JORNADA / FASES ══ -->
-<section class="secao-clara" id="arte" style="padding-top:0">
-  <span class="sec-eyebrow reveal eyebrow-escuro">Jornada de aprendizado</span>
-  <h2 class="sec-titulo reveal titulo-escuro">O Caminho Completo.</h2>
-  <div class="fases-row">
-    <div class="fase ativa reveal">
-      <span class="fase-tag">Fase 1</span>
-      <div class="fase-img"><span class="fase-num">I</span></div>
-      <h3 class="fase-titulo">Mise en Place</h3>
-      <span class="fase-sub">Aprender os elementos fundamentais</span>
-      <p class="fase-desc">Fundamentos visuais que constroem toda narrativa: fundo, cor, composição, textura e tipografia.</p>
-      <span class="fase-badge b-atual">● Atual</span>
-    </div>
-    <div class="fase-seta reveal">→</div>
-    <div class="fase reveal">
-      <span class="fase-tag">Fase 2</span>
-      <div class="fase-img"><span class="fase-num" style="opacity:.1;color:#241331">II</span></div>
-      <h3 class="fase-titulo">Animação e Movimento</h3>
-      <span class="fase-sub" style="color:#A890A0">Dar vida aos elementos</span>
-      <p class="fase-desc">Transformar o estático em dinâmico. Motion, transições e ritmo visual para contar histórias.</p>
-      <span class="fase-badge b-breve">🔒 Em Breve</span>
-    </div>
-    <div class="fase-seta reveal">→</div>
-    <div class="fase reveal">
-      <span class="fase-tag">Fase 3</span>
-      <div class="fase-img"><span class="fase-num" style="opacity:.1;color:#241331">III</span></div>
-      <h3 class="fase-titulo">Narrativa Visual</h3>
-      <span class="fase-sub" style="color:#A890A0">Unir tudo em linguagem autoral</span>
-      <p class="fase-desc">Projetos completos. Do conceito ao produto final — brandbook, conteúdo, produtos físicos.</p>
-      <span class="fase-badge b-futuro">🔒 Futuro</span>
-    </div>
-  </div>
-</section>
+
 
 
 <!-- ══ FOOTER ══ -->
