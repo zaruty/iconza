@@ -123,10 +123,10 @@
                 Modo Teste
               </div>
               <p class="iconza-side-support-copy">
-                Trocar de conta para testar como aluna.
+                Visualize a plataforma exatamente como uma aluna vê.
               </p>
-              <button class="iconza-side-support-btn" onclick="iconzaTrocarConta()">
-                Trocar de conta
+              <button class="iconza-side-support-btn" onclick="iconzaAtivarPreview()">
+                Visualizar como aluna
                 ${window.icon('arrow-right', { size: 12, stroke: 1.6 })}
               </button>
             </div>
@@ -195,22 +195,15 @@
     window.location.href = 'sair.html';
   };
 
-  // Helper para trocar de conta (modo teste)
-  window.iconzaTrocarConta = async function() {
-    if (confirm('Sair desta conta e fazer login com outro email?\n\nSua sessão atual será encerrada.')) {
-      try {
-        // Limpa sessão Supabase diretamente (sem depender do sair.html)
-        if (window.sb) await window.sb.auth.signOut();
-        // Limpa cache local
-        Object.keys(localStorage).forEach(k => {
-          if (k.startsWith('iconza-') || k.startsWith('sb-')) localStorage.removeItem(k);
-        });
-        // Vai para login com flag de troca
-        window.location.href = 'login.html?modo=trocar';
-      } catch (e) {
-        // Fallback: vai para login mesmo com erro
-        window.location.href = 'login.html?modo=trocar';
-      }
-    }
+  // Preview Mode — visualizar como aluna SEM logout, mesma sessão
+  window.iconzaAtivarPreview = function() {
+    localStorage.setItem('iconza-preview-mode', 'aluna');
+    window.location.href = 'dashboard.html';
+  };
+
+  // Sair do preview — restaura visão admin
+  window.iconzaSairPreview = function() {
+    localStorage.removeItem('iconza-preview-mode');
+    window.location.href = 'dashboard.html';
   };
 })();

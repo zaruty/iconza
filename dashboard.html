@@ -27,9 +27,46 @@
 </head>
 <body>
 
+
+<!-- ═══ BARRA DE PREVIEW MODE ═══ -->
+<div id="iconza-preview-bar" style="
+  display:none;
+  position:fixed;top:0;left:0;right:0;z-index:10000;
+  background:linear-gradient(90deg,#4f46e5,#7c3aed);
+  color:#fff;
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:.75rem;font-weight:500;letter-spacing:.03em;
+  padding:.55rem 1.25rem;
+  display:none;
+  align-items:center;justify-content:space-between;
+  gap:1rem;
+  box-shadow:0 2px 12px rgba(79,70,229,.4);
+">
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.8">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+    <span>Modo Preview · Você está visualizando a plataforma <strong>como aluna</strong> · Sua conta admin permanece ativa.</span>
+  </div>
+  <button onclick="iconzaSairPreview()" style="
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    color:#fff;font-size:.7rem;font-weight:600;letter-spacing:.06em;
+    padding:.3rem .75rem;cursor:pointer;border-radius:4px;
+    font-family:inherit;white-space:nowrap;transition:background .15s;
+  " onmouseenter="this.style.background='rgba(255,255,255,.25)'"
+     onmouseleave="this.style.background='rgba(255,255,255,.15)'">
+    ✕ Sair do preview
+  </button>
+</div>
+
 <div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s ease">
   <div style="width:32px;height:32px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite"></div>
 </div>
+<style>
+body.preview-mode { padding-top: 38px; }
+#iconza-preview-bar { display:none; }
+body.preview-mode #iconza-preview-bar { display:flex !important; }
+</style>
 <style>@keyframes spin{to{transform:rotate(360deg)}}#loadingOverlay.hide{opacity:0;pointer-events:none}</style>
 
 <div class="iconza-app">
@@ -184,30 +221,49 @@ let carrosselOffset = 0;
 const CARROSSEL_VISIBLE = 5;
 const CARROSSEL_MAX = Math.max(0, UNIVERSOS.length - CARROSSEL_VISIBLE);
 
+// ── PREVIEW MODE HELPERS ──────────────────────
+function iconzaSairPreview() {
+  localStorage.removeItem('iconza-preview-mode');
+  document.body.classList.remove('preview-mode');
+  // Reload para restaurar visão admin completa
+  window.location.reload();
+}
+
 async function init() {
-  // ANTES: 8 linhas. AGORA: 1 linha. Redireciona automaticamente se não logada.
   perfilUsuario = await IconzaAuth.requireUser();
 
-  renderUI();
+  const previewMode = localStorage.getItem('iconza-preview-mode') === 'aluna';
+
+  if (previewMode) {
+    // Ativa visual de preview
+    document.body.classList.add('preview-mode');
+    // Renderiza como ALUNA independente do role real
+    renderUI({ forceRole: 'aluno' });
+  } else {
+    renderUI();
+  }
 
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.add('hide');
   }, 400);
 }
 
-function renderUI() {
-  // ANTES: 2 linhas para pegar primeiro nome. AGORA: 1.
+function renderUI(opts = {}) {
+  const { forceRole = null } = opts;
+
   const primeiroNome = IconzaUtils.primeiroNome(
     perfilUsuario.nome_completo || perfilUsuario.email.split('@')[0]
   );
 
-  // Sidebar — activeId detectado automaticamente pela URL
+  const roleEfetivo = forceRole || perfilUsuario.role;
+
+  // Sidebar — usa role efetivo (pode ser forçado para 'aluno' no preview)
   IconzaSidebar.render({
     target: '#iconza-sidebar',
     activeId: IconzaUtils.getCurrentPage(),
     user: {
       nome: primeiroNome,
-      role: perfilUsuario.role,
+      role: roleEfetivo,
       avatar_url: perfilUsuario.avatar_url || null,
     },
   });
