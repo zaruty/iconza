@@ -1207,7 +1207,7 @@ async function init() {
   renderAdminUI(perfilAdmin);
   await carregarUsuarios();
   await carregarCursos();
-  await inicializarStorage();
+  // Storage inicializado apenas quando módulo Mídia é aberto (não no boot)
   document.getElementById('agoraData').textContent = IconzaUtils.formatarDataLonga();
   setTimeout(() => document.getElementById('iz-load').classList.add('hide'), 400);
 }
@@ -1730,20 +1730,26 @@ let MIDIA_TODOS = [];
 const MIDIA_BUCKETS = ['avatars','covers','universos','aulas','posts','uploads'];
 
 async function inicializarStorage() {
-  // Cria buckets se não existem (silencioso se já existem)
-  for (const bucket of MIDIA_BUCKETS) {
-    await sb.storage.createBucket(bucket, {
-      public: true,
-      allowedMimeTypes: ['image/*','video/*','application/pdf'],
-      fileSizeLimit: 10 * 1024 * 1024 // 10MB
-    }).catch(() => {}); // ignora erro se bucket já existe
-  }
+  // Tenta criar buckets em paralelo, sem bloquear (fire-and-forget)
+  // Erros são silenciosos — buckets já existentes retornam erro 409 (normal)
+  await Promise.allSettled(
+    MIDIA_BUCKETS.map(bucket =>
+      sb.storage.createBucket(bucket, {
+        public: true,
+        allowedMimeTypes: ['image/*','video/*','application/pdf'],
+        fileSizeLimit: 10 * 1024 * 1024
+      })
+    )
+  );
 }
 
 async function carregarMidia() {
   const bucket = document.getElementById('midiaBucket').value;
   const grid = document.getElementById('midiaGrid');
   grid.innerHTML = '<p class="empty">Carregando...</p>';
+
+  // Garante buckets sem bloquear (non-critical)
+  inicializarStorage().catch(() => {});
 
   const { data, error } = await sb.storage.from(bucket).list('', {
     limit: 200,
