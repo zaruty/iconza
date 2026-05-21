@@ -4,551 +4,635 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ICONZA — Painel Administrativo</title>
-<link rel="stylesheet" href="acesso.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- CORE — Lógica compartilhada -->
 <script src="core-supabase.js"></script>
 <script src="core-auth.js"></script>
 <script src="core-utils.js"></script>
 
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
 :root{
-  --vm:#C1272D;--gold:#C9A227;--preto:#1a1a1a;--grafite:#2d2d2d;
-  --branco:#fff;--off:#f7f5f2;--cinza:#9a9490;--borda:#e8e4de;--verde:#4a8c4a;
-  --admin-sidebar:240px;
+  /* V4 Tokens — Premium SaaS Contemporâneo */
+  --branco: #ffffff;
+  --off: #f8f8fa;
+  --borda: #e8e8ec;
+  --cinza-100: #f2f2f5;
+  --cinza-300: #d1d1db;
+  --cinza-500: #9696a8;
+  --cinza-700: #5a5a6e;
+  --preto: #0d0d12;
+
+  --grafite: #16161e;
+  --grafite-2: #1e1e28;
+  --grafite-3: #262632;
+
+  --indigo: #4f46e5;
+  --indigo-light: rgba(79,70,229,.08);
+  --indigo-mid: rgba(79,70,229,.15);
+
+  --verde: #16a34a;
+  --verde-light: rgba(22,163,74,.1);
+  --amber: #d97706;
+  --amber-light: rgba(217,119,6,.1);
+  --vm: #dc2626;
+  --vm-light: rgba(220,38,38,.1);
+  --azul: #2563eb;
+  --azul-light: rgba(37,99,235,.1);
+
+  --sidebar-w: 232px;
+  --topbar-h: 52px;
+  --radius: 8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 16px rgba(0,0,0,.08);
 }
-html,body{height:100%}
-body{font-family:'DM Sans',sans-serif;font-size:16px;background:var(--off);color:var(--preto);display:flex;flex-direction:column;overflow:hidden}
 
-/* TOPBAR */
-.adm-top{background:var(--grafite);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.05)}
-.adm-top-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
-.adm-top-logo img{width:28px;height:28px;object-fit:contain}
-.adm-top-logo-text{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;letter-spacing:.12em;color:#fff}
-.adm-top-tag{font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);display:block;margin-top:-2px}
-.adm-top-center{display:flex;align-items:center;gap:.8rem}
-.adm-badge{font-size:.6rem;padding:.25rem .7rem;background:var(--vm);color:#fff;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
-.adm-top-right{display:flex;gap:.8rem;align-items:center}
-.adm-btn{font-size:.68rem;padding:.5rem 1rem;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;letter-spacing:.05em}
-.adm-btn:hover{border-color:#fff;color:#fff}
-.adm-btn.verde{background:var(--verde);border-color:var(--verde);color:#fff;font-weight:600}
-.adm-btn.verde:hover{background:#3d7a3d}
+html,body{height:100%;font-family:'Inter',sans-serif;font-size:15px;background:var(--off);color:var(--preto);overflow:hidden}
 
-/* LAYOUT */
-.adm-wrap{display:flex;flex:1;min-height:0}
-
-/* SIDEBAR */
-.adm-side{width:var(--admin-sidebar);background:var(--grafite);display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid rgba(255,255,255,.05)}
-.adm-side-perfil{padding:1.3rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.8rem}
-.adm-side-avatar{width:42px;height:42px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.1)}
-.adm-side-avatar img{width:100%;height:100%;object-fit:cover}
-.adm-side-info{flex:1;min-width:0}
-.adm-side-nome{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.adm-side-cargo{font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-top:1px}
-
-.adm-side-nav{padding:.8rem 0;flex:1;overflow-y:auto}
-.adm-side-section{font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.25);font-weight:700;padding:.6rem 1.2rem .3rem;display:block}
-.adm-side-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.2rem;color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;font-weight:600;transition:all .15s;cursor:pointer;border:none;background:none;width:100%;text-align:left;position:relative;font-family:'DM Sans',sans-serif}
-.adm-side-item:hover{color:#fff;background:rgba(255,255,255,.04)}
-.adm-side-item.ativo{color:#fff;background:rgba(255,255,255,.07)}
-.adm-side-item.ativo::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--vm)}
-.adm-side-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
-.adm-side-item.ativo .adm-side-icon,.adm-side-item:hover .adm-side-icon{opacity:1}
-.adm-side-counter{margin-left:auto;font-size:.6rem;background:rgba(255,255,255,.08);padding:.1rem .4rem;color:rgba(255,255,255,.6);font-weight:600}
-.adm-side-item.ativo .adm-side-counter{background:var(--vm);color:#fff}
-
-.adm-side-footer{padding:.8rem 1.2rem;border-top:1px solid rgba(255,255,255,.06)}
-.adm-side-link{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);padding:.55rem .9rem;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all .2s;width:100%;text-decoration:none;font-family:'DM Sans',sans-serif;margin-bottom:.5rem}
-.adm-side-link:hover{background:rgba(255,255,255,.08);color:#fff}
-.adm-side-sair{font-size:.62rem;color:rgba(255,255,255,.25);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;padding:.3rem 0}
-.adm-side-sair:hover{color:var(--vm)}
-
-/* CONTEÚDO */
-.adm-content{flex:1;overflow-y:auto;background:var(--off)}
-.modulo{display:none;padding:1.5rem 2rem}
-.modulo.ativo{display:block;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-.mod-header{margin-bottom:1.5rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.mod-titulo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--preto)}
-.mod-sub{font-size:.82rem;color:var(--cinza);margin-top:.3rem}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-c{background:var(--branco);border:1px solid var(--borda);padding:1.1rem 1.2rem}
-.stat-c-icon{font-size:1rem;margin-bottom:.5rem;color:var(--vm)}
-.stat-c-num{font-size:1.5rem;font-weight:700;color:var(--preto);display:block;line-height:1}
-.stat-c-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);margin-top:.4rem;display:block}
-.stat-c-sub{font-size:.7rem;color:var(--verde);margin-top:.3rem;font-weight:600}
-
-/* GRID 2 COLUNAS */
-.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-.card{background:var(--branco);border:1px solid var(--borda);padding:1.5rem}
-.card-titulo{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:1px solid var(--borda)}
-
-/* FILTROS */
-.filtros{background:var(--branco);border:1px solid var(--borda);padding:1rem 1.2rem;margin-bottom:1rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
-.f-input{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;background:var(--branco);color:var(--preto);flex:1;min-width:200px}
-.f-input:focus{border-color:var(--preto)}
-.f-select{padding:.55rem .9rem;border:1px solid var(--borda);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;background:var(--branco);color:var(--preto);cursor:pointer}
-.btn-prim{padding:.55rem 1.2rem;background:var(--preto);color:#fff;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;font-weight:600}
-.btn-prim:hover{background:var(--vm)}
-
-/* TABELA */
-.tab-wrap{background:var(--branco);border:1px solid var(--borda);overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:800px}
-thead tr{background:var(--grafite)}
-th{padding:.7rem 1rem;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.65);font-weight:700;text-align:left;white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--borda);transition:background .15s;cursor:pointer}
-tbody tr:hover{background:var(--off)}
-td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
-.td-av{width:32px;height:32px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
-.td-av img{width:100%;height:100%;object-fit:cover}
-.td-nm{font-weight:600;color:var(--preto)}
-.td-em{color:var(--cinza);font-size:.75rem}
-
-/* BADGES */
-.bdg{font-size:.56rem;padding:.18rem .55rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:inline-block;margin:.1rem}
-.b-verde{background:rgba(74,140,74,.1);color:var(--verde)}
-.b-vm{background:rgba(193,39,45,.1);color:var(--vm)}
-.b-gold{background:rgba(201,162,39,.12);color:var(--gold)}
-.b-cinza{background:rgba(0,0,0,.05);color:var(--cinza)}
-.b-azul{background:rgba(30,100,200,.08);color:#1e64c8}
-
-/* MODAL */
-.mov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
-.mov.show{display:flex}
-.mod{background:var(--branco);width:100%;max-width:680px;position:relative;margin:auto}
-.mod-h{background:var(--grafite);padding:1.4rem 1.8rem;display:flex;align-items:center;gap:1rem}
-.mod-h-av{width:52px;height:52px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
-.mod-h-av img{width:100%;height:100%;object-fit:cover}
-.mod-h-nome{font-size:1.05rem;font-weight:700;color:#fff}
-.mod-h-em{font-size:.76rem;color:rgba(255,255,255,.45)}
-.mod-cl{position:absolute;top:.8rem;right:.8rem;background:none;border:none;color:rgba(255,255,255,.5);font-size:1.1rem;cursor:pointer;padding:.3rem}
-.mod-cl:hover{color:#fff}
-.mod-b{padding:1.4rem 1.8rem}
-.mod-sec{margin-bottom:1.3rem}
-.mod-sec-t{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);font-weight:700;display:block;margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:1px solid var(--borda)}
-.mod-gr{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-.mod-c{display:flex;flex-direction:column;gap:.15rem}
-.mod-c-l{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600}
-.mod-c-v{font-size:.85rem;color:var(--preto);font-weight:500}
-.mod-c-v.vazio{color:var(--borda)}
-.mod-tags{display:flex;flex-wrap:wrap;gap:.3rem}
-.mod-f{padding:1rem 1.8rem;border-top:1px solid var(--borda);display:flex;gap:.7rem;justify-content:flex-end}
-.btn-m{padding:.55rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;cursor:pointer}
-.btn-m-p{background:var(--preto);color:#fff;border:none}
-.btn-m-p:hover{background:var(--vm)}
-.btn-m-s{background:transparent;color:var(--cinza);border:1px solid var(--borda)}
-.btn-m-s:hover{border-color:var(--preto);color:var(--preto)}
-
-/* PLACEHOLDER */
-.placeholder{background:var(--branco);border:1px solid var(--borda);padding:3rem;text-align:center}
-.ph-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.5}
-.ph-tit{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
-.ph-desc{font-size:.85rem;color:var(--cinza);margin-bottom:1rem;line-height:1.7}
-.ph-bdg{font-size:.6rem;padding:.25rem .7rem;background:rgba(0,0,0,.05);color:var(--cinza);letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:inline-block}
-
-/* LOADING */
-.load{position:fixed;inset:0;background:var(--off);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
-.load.hide{opacity:0;pointer-events:none}
-.spin{width:28px;height:28px;border:2px solid var(--borda);border-top-color:var(--vm);border-radius:50%;animation:spin .7s linear infinite}
+/* ─── LOADING ─── */
+.iz-load{position:fixed;inset:0;background:var(--grafite);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+.iz-load.hide{opacity:0;pointer-events:none}
+.iz-spin{width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--indigo);border-radius:50%;animation:spin .65s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.empty{text-align:center;padding:2.5rem;color:var(--cinza);font-size:.88rem}
+/* ─── SHELL ─── */
+.iz-shell{display:flex;flex-direction:column;height:100%}
+
+/* ─── TOPBAR ─── */
+.iz-top{
+  height:var(--topbar-h);background:var(--grafite);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.25rem;flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.iz-top-left{display:flex;align-items:center;gap:.75rem}
+.iz-top-logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.iz-top-logo img{width:22px;height:22px;object-fit:contain;opacity:.9}
+.iz-top-wordmark{font-size:.78rem;font-weight:700;letter-spacing:.14em;color:#fff;text-transform:uppercase}
+.iz-top-divider{width:1px;height:16px;background:rgba(255,255,255,.1);margin:0 .25rem}
+.iz-top-badge{font-size:.58rem;padding:.2rem .55rem;background:var(--indigo);color:#fff;letter-spacing:.12em;text-transform:uppercase;font-weight:600;border-radius:3px}
+.iz-top-user{font-size:.72rem;color:rgba(255,255,255,.45);font-weight:500;letter-spacing:.01em}
+
+.iz-top-right{display:flex;align-items:center;gap:.5rem}
+.iz-btn-top{
+  font-size:.68rem;padding:.4rem .85rem;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.7);cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .18s;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;
+  font-weight:500;border-radius:var(--radius);letter-spacing:.02em;white-space:nowrap;
+}
+.iz-btn-top:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
+.iz-btn-top.accent{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.iz-btn-top.accent:hover{background:#4338ca}
+
+/* ─── BODY ROW ─── */
+.iz-body{display:flex;flex:1;min-height:0}
+
+/* ─── SIDEBAR ─── */
+.iz-side{
+  width:var(--sidebar-w);background:var(--grafite);
+  display:flex;flex-direction:column;flex-shrink:0;
+  border-right:1px solid rgba(255,255,255,.04);
+  overflow-y:auto;
+}
+.iz-side-user{
+  padding:1rem 1rem .9rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:.65rem;
+}
+.iz-side-av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--indigo);display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;
+}
+.iz-side-av img{width:100%;height:100%;object-fit:cover}
+.iz-side-nome{font-size:.78rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iz-side-cargo{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.15rem}
+
+.iz-side-nav{padding:.75rem 0;flex:1}
+.iz-sec-label{
+  font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);font-weight:600;
+  padding:.6rem .9rem .25rem;display:block;
+}
+.iz-nav-item{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.5rem .9rem;color:rgba(255,255,255,.45);
+  text-decoration:none;font-size:.8rem;font-weight:500;
+  transition:all .15s;cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;font-family:'Inter',sans-serif;
+  border-left:2px solid transparent;
+}
+.iz-nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04)}
+.iz-nav-item.ativo{
+  color:#fff;background:rgba(255,255,255,.07);
+  border-left-color:var(--indigo);
+}
+.iz-nav-icon{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.iz-nav-item.ativo .iz-nav-icon,.iz-nav-item:hover .iz-nav-icon{opacity:1}
+.iz-nav-count{
+  margin-left:auto;font-size:.6rem;
+  background:rgba(255,255,255,.07);padding:.1rem .4rem;
+  color:rgba(255,255,255,.45);font-weight:600;border-radius:3px;
+}
+.iz-nav-item.ativo .iz-nav-count{background:var(--indigo);color:#fff}
+
+.iz-side-footer{padding:.75rem 1rem;border-top:1px solid rgba(255,255,255,.05)}
+.iz-side-link{
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.35);font-size:.7rem;font-weight:500;
+  text-decoration:none;padding:.35rem 0;
+  transition:color .15s;cursor:pointer;background:none;border:none;
+  font-family:'Inter',sans-serif;width:100%;letter-spacing:.01em;
+}
+.iz-side-link:hover{color:rgba(255,255,255,.8)}
+.iz-side-sair{color:rgba(255,255,255,.2);margin-top:.2rem}
+.iz-side-sair:hover{color:var(--vm)}
+
+/* ─── CONTEÚDO ─── */
+.iz-content{flex:1;overflow-y:auto;background:var(--off)}
+.modulo{display:none;padding:1.75rem 2rem;animation:fadeIn .2s ease}
+.modulo.ativo{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── CABEÇALHO DO MÓDULO ─── */
+.mod-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;
+}
+.mod-titulo{font-size:1.2rem;font-weight:700;color:var(--preto);letter-spacing:-.02em}
+.mod-sub{font-size:.8rem;color:var(--cinza-500);margin-top:.2rem;font-weight:400}
+
+/* ─── STATS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;margin-bottom:1.25rem}
+.stat-c{background:var(--branco);border:1px solid var(--borda);padding:1rem 1.1rem;border-radius:var(--radius)}
+.stat-num{font-size:1.5rem;font-weight:700;color:var(--preto);letter-spacing:-.03em;display:block;line-height:1}
+.stat-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);margin-top:.4rem;display:block;font-weight:500}
+.stat-trend{font-size:.7rem;color:var(--verde);margin-top:.25rem;font-weight:500}
+
+/* ─── GRID 2 COLUNAS ─── */
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1rem}
+
+/* ─── CARDS ─── */
+.card{background:var(--branco);border:1px solid var(--borda);padding:1.25rem;border-radius:var(--radius)}
+.card-label{
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cinza-500);font-weight:600;display:block;
+  margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--borda);
+}
+
+/* ─── FILTROS ─── */
+.filtros{
+  background:var(--branco);border:1px solid var(--borda);
+  padding:.75rem 1rem;margin-bottom:.75rem;
+  display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;
+  border-radius:var(--radius);
+}
+.f-input{
+  padding:.5rem .75rem;border:1px solid var(--borda);
+  font-family:'Inter',sans-serif;font-size:.82rem;
+  outline:none;background:var(--branco);color:var(--preto);
+  flex:1;min-width:180px;border-radius:6px;
+  transition:border-color .15s;
+}
+.f-input:focus{border-color:var(--indigo)}
+.f-select{
+  padding:.5rem .75rem;border:1px solid var(--borda);
+  font-family:'Inter',sans-serif;font-size:.8rem;
+  outline:none;background:var(--branco);color:var(--preto);
+  cursor:pointer;border-radius:6px;
+}
+.f-select:focus{border-color:var(--indigo);outline:none}
+.btn-prim{
+  padding:.5rem 1rem;background:var(--preto);color:#fff;
+  font-family:'Inter',sans-serif;font-size:.72rem;
+  letter-spacing:.06em;text-transform:uppercase;
+  border:none;cursor:pointer;font-weight:600;border-radius:var(--radius);
+  transition:background .15s;
+}
+.btn-prim:hover{background:var(--indigo)}
+
+/* ─── TABELA ─── */
+.tab-wrap{background:var(--branco);border:1px solid var(--borda);overflow:auto;border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;min-width:820px}
+thead tr{background:var(--off);border-bottom:1px solid var(--borda)}
+th{padding:.6rem 1rem;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;text-align:left;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--borda);transition:background .12s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--off)}
+td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
+.td-av{width:30px;height:30px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.td-av img{width:100%;height:100%;object-fit:cover}
+.td-nm{font-weight:600;font-size:.84rem}
+.td-em{color:var(--cinza-500);font-size:.72rem;margin-top:.1rem}
+
+/* ─── BADGES ─── */
+.bdg{font-size:.56rem;padding:.18rem .5rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;display:inline-block;margin:.1rem;border-radius:3px}
+.b-verde{background:var(--verde-light);color:var(--verde)}
+.b-vm{background:var(--vm-light);color:var(--vm)}
+.b-amber{background:var(--amber-light);color:var(--amber)}
+.b-gold{background:rgba(217,119,6,.1);color:var(--amber)}
+.b-cinza{background:var(--cinza-100);color:var(--cinza-700)}
+.b-azul{background:var(--azul-light);color:var(--azul)}
+.b-indigo{background:var(--indigo-light);color:var(--indigo)}
+
+/* ─── PLACEHOLDER ─── */
+.placeholder{background:var(--branco);border:1px solid var(--borda);padding:3rem;text-align:center;border-radius:var(--radius)}
+.ph-icon{font-size:2rem;margin-bottom:.75rem;display:block;opacity:.4}
+.ph-tit{font-size:.95rem;font-weight:700;margin-bottom:.4rem;color:var(--preto)}
+.ph-desc{font-size:.82rem;color:var(--cinza-500);margin-bottom:.75rem;line-height:1.7}
+.ph-bdg{font-size:.58rem;padding:.2rem .6rem;background:var(--cinza-100);color:var(--cinza-500);letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:inline-block;border-radius:3px}
+
+/* ─── MODAL ─── */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.mov.show{display:flex}
+.mod{background:var(--branco);width:100%;max-width:680px;position:relative;margin:auto;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.mod-h{background:var(--grafite);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.85rem}
+.mod-h-av{width:44px;height:44px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0}
+.mod-h-av img{width:100%;height:100%;object-fit:cover}
+.mod-h-nome{font-size:.95rem;font-weight:700;color:#fff}
+.mod-h-em{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.1rem}
+.mod-cl{position:absolute;top:.75rem;right:.75rem;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.5);font-size:.9rem;cursor:pointer;padding:.35rem .5rem;border-radius:5px;line-height:1;transition:all .15s}
+.mod-cl:hover{background:rgba(255,255,255,.15);color:#fff}
+.mod-b{padding:1.25rem 1.5rem;max-height:70vh;overflow-y:auto}
+.mod-sec{margin-bottom:1.25rem}
+.mod-sec-t{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid var(--borda)}
+.mod-gr{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.mod-c{display:flex;flex-direction:column;gap:.12rem}
+.mod-c-l{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600}
+.mod-c-v{font-size:.84rem;color:var(--preto);font-weight:500}
+.mod-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.2rem}
+.mod-f{padding:.9rem 1.5rem;border-top:1px solid var(--borda);display:flex;gap:.5rem;justify-content:flex-end;background:var(--off)}
+.btn-m{padding:.48rem .9rem;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;cursor:pointer;border-radius:6px;transition:all .15s}
+.btn-m-p{background:var(--preto);color:#fff;border:none}
+.btn-m-p:hover{background:var(--indigo)}
+.btn-m-s{background:transparent;color:var(--cinza-700);border:1px solid var(--borda)}
+.btn-m-s:hover{border-color:var(--preto);color:var(--preto)}
+
+/* ─── MISC ─── */
+.empty{text-align:center;padding:2.5rem;color:var(--cinza-500);font-size:.85rem}
+
+/* ─── CARD DESTAQUE ─── */
+.card-highlight{
+  background:var(--grafite);color:#fff;
+  border:none;margin-bottom:1rem;border-radius:var(--radius);
+  padding:1.25rem 1.5rem;position:relative;overflow:hidden;
+}
+.card-highlight::before{
+  content:'ICONZA';
+  position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+  font-family:'Instrument Serif',serif;font-size:5rem;font-weight:400;
+  color:rgba(255,255,255,.03);pointer-events:none;user-select:none;letter-spacing:-.02em;
+}
+
+/* ─── BARRAS ─── */
+.bar-row{margin-bottom:.65rem}
+.bar-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem}
+.bar-label span:last-child{color:var(--cinza-500)}
+.bar-track{height:4px;background:var(--borda);border-radius:2px}
+.bar-fill{height:100%;border-radius:2px;background:var(--indigo)}
 
 @media(max-width:900px){
-  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
   .grid-2{grid-template-columns:1fr}
-  .adm-side{width:60px}
-  .adm-side-info,.adm-side-section,.adm-side-counter,.adm-side-link,.adm-side-sair,.adm-side-cargo{display:none}
-  .adm-side-item{justify-content:center;padding:.7rem 0}
-  :root{--admin-sidebar:60px}
+  .iz-side{width:52px}
+  .iz-side-nome,.iz-side-cargo,.iz-sec-label,.iz-nav-count,.iz-side-footer,.iz-side-user .iz-side-nome,.iz-side-user .iz-side-cargo{display:none}
+  .iz-side-user{justify-content:center;padding:.75rem}
+  .iz-nav-item{justify-content:center;padding:.6rem 0}
+  .iz-nav-icon{width:16px;height:16px;opacity:.8}
+  :root{--sidebar-w:52px}
 }
 </style>
 </head>
 <body>
 
-<div class="load" id="load"><div class="spin"></div></div>
+<div class="iz-load" id="iz-load"><div class="iz-spin"></div></div>
 
-<!-- TOPBAR -->
-<header class="adm-top">
-  <a href="#" class="adm-top-logo">
-    <img src="coroa.png" alt="ICONZA">
-    <div>
-      <span class="adm-top-logo-text">ICONZA</span>
-      <span class="adm-top-tag">Painel Administrativo</span>
+<div class="iz-shell">
+
+  <!-- TOPBAR -->
+  <header class="iz-top">
+    <div class="iz-top-left">
+      <a href="dashboard.html" class="iz-top-logo">
+        <img src="coroa.png" alt="ICONZA">
+        <span class="iz-top-wordmark">ICONZA</span>
+      </a>
+      <div class="iz-top-divider"></div>
+      <span class="iz-top-badge">Admin</span>
+      <span class="iz-top-user" id="adm-nome-top"></span>
     </div>
-  </a>
-  <div class="adm-top-center">
-    <span class="adm-badge">Admin</span>
-    <span style="font-size:.72rem;color:rgba(255,255,255,.4)" id="adm-nome-top">—</span>
-  </div>
-  <div class="adm-top-right">
-    <button class="adm-btn verde" onclick="exportarCSV()">⬇ Exportar CSV</button>
-    <a href="dashboard.html" class="adm-btn">Ver plataforma →</a>
-  </div>
-</header>
-
-<div class="adm-wrap">
-
-  <!-- SIDEBAR -->
-  <aside class="adm-side">
-    <div class="adm-side-perfil">
-      <div class="adm-side-avatar" id="adm-av">L</div>
-      <div class="adm-side-info">
-        <span class="adm-side-nome" id="adm-nome">Carregando</span>
-        <span class="adm-side-cargo">Fundadora · Admin</span>
-      </div>
+    <div class="iz-top-right">
+      <button class="iz-btn-top accent" onclick="exportarCSV()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar CSV
+      </button>
+      <a href="dashboard.html" class="iz-btn-top">Ver plataforma →</a>
     </div>
+  </header>
 
-    <nav class="adm-side-nav">
-      <span class="adm-side-section">Geral</span>
-      <button class="adm-side-item ativo" data-mod="dashboard" onclick="mostrar('dashboard',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </button>
+  <div class="iz-body">
 
-      <span class="adm-side-section">Gestão de Pessoas</span>
-      <button class="adm-side-item" data-mod="usuarios" onclick="mostrar('usuarios',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Usuários <span class="adm-side-counter" id="cnt-usuarios">0</span>
-      </button>
-      <button class="adm-side-item" data-mod="onboarding" onclick="mostrar('onboarding',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        Onboarding <span class="adm-side-counter" id="cnt-onb">0</span>
-      </button>
-      <button class="adm-side-item" data-mod="cerebros" onclick="mostrar('cerebros',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5a3 3 0 100 6m0-6a3 3 0 110 6m6-6a3 3 0 100 6m0-6a3 3 0 110 6M9 19a3 3 0 100-6m0 6a3 3 0 110-6m6 6a3 3 0 100-6m0 6a3 3 0 110-6"/></svg>
-        Cérebros
-      </button>
-
-      <span class="adm-side-section">Plataforma</span>
-      <button class="adm-side-item" data-mod="fases" onclick="mostrar('fases',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
-        Fases & Ícones
-      </button>
-      <button class="adm-side-item" data-mod="cursos" onclick="mostrar('cursos',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        Cursos
-      </button>
-      <button class="adm-side-item" data-mod="aulas" onclick="mostrar('aulas',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Aulas
-      </button>
-      <button class="adm-side-item" data-mod="prompts" onclick="mostrar('prompts',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Prompts
-      </button>
-      <button class="adm-side-item" data-mod="biblioteca" onclick="mostrar('biblioteca',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        Biblioteca
-      </button>
-
-      <span class="adm-side-section">Engajamento</span>
-      <button class="adm-side-item" data-mod="comunidade" onclick="mostrar('comunidade',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Comunidade
-      </button>
-      <button class="adm-side-item" data-mod="blog" onclick="mostrar('blog',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Blog
-      </button>
-      <button class="adm-side-item" data-mod="certificados" onclick="mostrar('certificados',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-        Certificados
-      </button>
-
-      <span class="adm-side-section">Análise</span>
-      <button class="adm-side-item" data-mod="analytics" onclick="mostrar('analytics',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Analytics
-      </button>
-      <button class="adm-side-item" data-mod="idiomas" onclick="mostrar('idiomas',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-        Idiomas
-      </button>
-
-      <span class="adm-side-section">Sistema</span>
-      <button class="adm-side-item" data-mod="config" onclick="mostrar('config',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        Configurações
-      </button>
-      <button class="adm-side-item" data-mod="suporte" onclick="mostrar('suporte',this)">
-        <svg class="adm-side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Suporte
-      </button>
-    </nav>
-
-    <div class="adm-side-footer">
-      <a href="u.html" target="_blank" class="adm-side-link">↗ Perfil público</a>
-      <button class="adm-side-sair" onclick="sair()">✕ Sair</button>
-    </div>
-  </aside>
-
-  <!-- CONTEÚDO -->
-  <main class="adm-content">
-
-    <!-- MÓDULO DASHBOARD -->
-    <section class="modulo ativo" id="mod-dashboard">
-      <div class="mod-header">
+    <!-- SIDEBAR -->
+    <aside class="iz-side">
+      <div class="iz-side-user">
+        <div class="iz-side-av" id="adm-av">L</div>
         <div>
-          <h1 class="mod-titulo">Dashboard</h1>
-          <p class="mod-sub">Visão geral da plataforma · <span id="agoraData"></span></p>
+          <div class="iz-side-nome" id="adm-nome">Carregando</div>
+          <div class="iz-side-cargo">Fundadora · Admin</div>
         </div>
       </div>
 
-      <div class="stats-row">
-        <div class="stat-c">
-          <div class="stat-c-icon">👥</div>
-          <span class="stat-c-num" id="s-usuarios">—</span>
-          <span class="stat-c-label">Usuários totais</span>
-        </div>
-        <div class="stat-c">
-          <div class="stat-c-icon">✓</div>
-          <span class="stat-c-num" id="s-onb">—</span>
-          <span class="stat-c-label">Onboarding completo</span>
-        </div>
-        <div class="stat-c">
-          <div class="stat-c-icon">🌍</div>
-          <span class="stat-c-num" id="s-paises">—</span>
-          <span class="stat-c-label">Países ativos</span>
-        </div>
-        <div class="stat-c">
-          <div class="stat-c-icon">🗣</div>
-          <span class="stat-c-num" id="s-idiomas">—</span>
-          <span class="stat-c-label">Idiomas</span>
-        </div>
-        <div class="stat-c">
-          <div class="stat-c-icon">📅</div>
-          <span class="stat-c-num" id="s-hoje">—</span>
-          <span class="stat-c-label">Cadastros hoje</span>
-        </div>
-        <div class="stat-c">
-          <div class="stat-c-icon">📊</div>
-          <span class="stat-c-num" id="s-semana">—</span>
-          <span class="stat-c-label">Últimos 7 dias</span>
-        </div>
-      </div>
+      <nav class="iz-side-nav">
+        <span class="iz-sec-label">Geral</span>
+        <button class="iz-nav-item ativo" data-mod="dashboard" onclick="mostrar('dashboard',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </button>
 
-      <div class="grid-2">
-        <div class="card">
-          <span class="card-titulo">Últimos cadastros</span>
-          <div id="ultimosCadastros"><p class="empty">Carregando...</p></div>
+        <span class="iz-sec-label">Pessoas</span>
+        <button class="iz-nav-item" data-mod="usuarios" onclick="mostrar('usuarios',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Usuárias <span class="iz-nav-count" id="cnt-usuarios">0</span>
+        </button>
+        <button class="iz-nav-item" data-mod="onboarding" onclick="mostrar('onboarding',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Onboarding <span class="iz-nav-count" id="cnt-onb">0</span>
+        </button>
+        <button class="iz-nav-item" data-mod="cerebros" onclick="mostrar('cerebros',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5a3 3 0 100 6m0-6a3 3 0 110 6m6-6a3 3 0 100 6m0-6a3 3 0 110 6M9 19a3 3 0 100-6m0 6a3 3 0 110-6m6 6a3 3 0 100-6m0 6a3 3 0 110-6"/></svg>
+          Cérebros
+        </button>
+
+        <span class="iz-sec-label">Plataforma</span>
+        <button class="iz-nav-item" data-mod="fases" onclick="mostrar('fases',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          Fases & Ícones
+        </button>
+        <button class="iz-nav-item" data-mod="cursos" onclick="mostrar('cursos',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Universos
+        </button>
+        <button class="iz-nav-item" data-mod="aulas" onclick="mostrar('aulas',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Aulas
+        </button>
+        <button class="iz-nav-item" data-mod="prompts" onclick="mostrar('prompts',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Prompts
+        </button>
+        <button class="iz-nav-item" data-mod="biblioteca" onclick="mostrar('biblioteca',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          Biblioteca
+        </button>
+
+        <span class="iz-sec-label">Engajamento</span>
+        <button class="iz-nav-item" data-mod="comunidade" onclick="mostrar('comunidade',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Comunidade
+        </button>
+        <button class="iz-nav-item" data-mod="blog" onclick="mostrar('blog',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Blog
+        </button>
+        <button class="iz-nav-item" data-mod="certificados" onclick="mostrar('certificados',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Certificados
+        </button>
+
+        <span class="iz-sec-label">Análise</span>
+        <button class="iz-nav-item" data-mod="analytics" onclick="mostrar('analytics',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </button>
+        <button class="iz-nav-item" data-mod="idiomas" onclick="mostrar('idiomas',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Idiomas
+        </button>
+
+        <span class="iz-sec-label">Sistema</span>
+        <button class="iz-nav-item" data-mod="config" onclick="mostrar('config',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Configurações
+        </button>
+        <button class="iz-nav-item" data-mod="suporte" onclick="mostrar('suporte',this)">
+          <svg class="iz-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Suporte
+        </button>
+      </nav>
+
+      <div class="iz-side-footer">
+        <a href="u.html" target="_blank" class="iz-side-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Perfil público
+        </a>
+        <button class="iz-side-link iz-side-sair" onclick="sair()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="iz-content">
+
+      <!-- ══ DASHBOARD ══ -->
+      <section class="modulo ativo" id="mod-dashboard">
+        <div class="mod-head">
+          <div>
+            <h1 class="mod-titulo">Dashboard</h1>
+            <p class="mod-sub">Visão geral · <span id="agoraData"></span></p>
+          </div>
         </div>
-        <div class="card">
-          <span class="card-titulo">Distribuição por país</span>
-          <div id="distPais"><p class="empty">Carregando...</p></div>
+
+        <div class="stats-grid">
+          <div class="stat-c"><span class="stat-num" id="s-usuarios">—</span><span class="stat-label">Usuárias totais</span></div>
+          <div class="stat-c"><span class="stat-num" id="s-onb">—</span><span class="stat-label">Onboarding completo</span></div>
+          <div class="stat-c"><span class="stat-num" id="s-paises">—</span><span class="stat-label">Países ativos</span></div>
+          <div class="stat-c"><span class="stat-num" id="s-idiomas">—</span><span class="stat-label">Idiomas</span></div>
+          <div class="stat-c"><span class="stat-num" id="s-hoje">—</span><span class="stat-label">Cadastros hoje</span></div>
+          <div class="stat-c"><span class="stat-num" id="s-semana">—</span><span class="stat-label">Últimos 7 dias</span></div>
         </div>
-      </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <span class="card-titulo">Aptidões em alta</span>
-          <div id="aptidoesAlta"><p class="empty">Carregando...</p></div>
+        <div class="grid-2">
+          <div class="card"><span class="card-label">Últimos cadastros</span><div id="ultimosCadastros"><p class="empty">Carregando...</p></div></div>
+          <div class="card"><span class="card-label">Por país</span><div id="distPais"><p class="empty">Carregando...</p></div></div>
         </div>
-        <div class="card">
-          <span class="card-titulo">Produtos mais escolhidos</span>
-          <div id="prodTop"><p class="empty">Carregando...</p></div>
+        <div class="grid-2">
+          <div class="card"><span class="card-label">Aptidões em alta</span><div id="aptidoesAlta"><p class="empty">Carregando...</p></div></div>
+          <div class="card"><span class="card-label">Produtos mais escolhidos</span><div id="prodTop"><p class="empty">Carregando...</p></div></div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- MÓDULO USUÁRIOS -->
-    <section class="modulo" id="mod-usuarios">
-      <div class="mod-header">
-        <div>
-          <h1 class="mod-titulo">Usuários</h1>
-          <p class="mod-sub" id="usuariosCount">Carregando...</p>
+      <!-- ══ USUÁRIAS ══ -->
+      <section class="modulo" id="mod-usuarios">
+        <div class="mod-head">
+          <div>
+            <h1 class="mod-titulo">Usuárias</h1>
+            <p class="mod-sub" id="usuariosCount">Carregando...</p>
+          </div>
         </div>
-      </div>
-
-      <div class="filtros">
-        <input class="f-input" type="text" placeholder="🔍  Buscar por nome, email ou telefone..." id="busca" oninput="filtrarUsuarios()">
-        <select class="f-select" id="fProd" onchange="filtrarUsuarios()">
-          <option value="">Todos os produtos</option>
-          <option>Acesso Gratuito</option><option>Tronco</option>
-          <option>Tronco VIP</option><option>Mentoria</option><option>E-book</option>
-        </select>
-        <select class="f-select" id="fStatus" onchange="filtrarUsuarios()">
-          <option value="">Todos os status</option>
-          <option>Em andamento</option><option>Pendente</option>
-          <option>Concluído</option><option>Cancelado</option>
-        </select>
-        <select class="f-select" id="fPais" onchange="filtrarUsuarios()">
-          <option value="">Todos os países</option>
-        </select>
-        <select class="f-select" id="fOnb" onchange="filtrarUsuarios()">
-          <option value="">Onboarding: todos</option>
-          <option value="sim">Completo</option><option value="nao">Incompleto</option>
-        </select>
-      </div>
-
-      <div class="tab-wrap">
-        <table>
-          <thead><tr>
-            <th>Usuária</th><th>Telefone</th><th>País</th><th>Produto</th>
-            <th>Idioma</th><th>Status</th><th>Onboarding</th><th>Cadastro</th>
-          </tr></thead>
-          <tbody id="tabUsuarios"><tr><td colspan="8" class="empty">Carregando...</td></tr></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- MÓDULO ONBOARDING -->
-    <section class="modulo" id="mod-onboarding">
-      <div class="mod-header">
-        <div>
-          <h1 class="mod-titulo">Respostas do Onboarding</h1>
-          <p class="mod-sub">Análise das respostas e padrões comportamentais</p>
+        <div class="filtros">
+          <input class="f-input" type="text" placeholder="Buscar por nome, email ou telefone..." id="busca" oninput="filtrarUsuarios()">
+          <select class="f-select" id="fProd" onchange="filtrarUsuarios()">
+            <option value="">Todos os produtos</option>
+            <option>Acesso Gratuito</option><option>Tronco</option>
+            <option>Tronco VIP</option><option>Mentoria</option><option>E-book</option>
+          </select>
+          <select class="f-select" id="fStatus" onchange="filtrarUsuarios()">
+            <option value="">Todos os status</option>
+            <option>Em andamento</option><option>Pendente</option>
+            <option>Concluído</option><option>Cancelado</option>
+          </select>
+          <select class="f-select" id="fPais" onchange="filtrarUsuarios()"><option value="">Todos os países</option></select>
+          <select class="f-select" id="fOnb" onchange="filtrarUsuarios()">
+            <option value="">Onboarding: todos</option>
+            <option value="sim">Completo</option><option value="nao">Incompleto</option>
+          </select>
         </div>
-      </div>
-
-      <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-c"><span class="stat-c-num" id="o-completos">—</span><span class="stat-c-label">Completaram</span></div>
-        <div class="stat-c"><span class="stat-c-num" id="o-incompletos">—</span><span class="stat-c-label">Incompletos</span></div>
-        <div class="stat-c"><span class="stat-c-num" id="o-taxa">—</span><span class="stat-c-label">Taxa de conclusão</span></div>
-        <div class="stat-c"><span class="stat-c-num" id="o-objetivos">—</span><span class="stat-c-label">Objetivos únicos</span></div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <span class="card-titulo">Objetivos mais escolhidos</span>
-          <div id="objTop"><p class="empty">Carregando...</p></div>
+        <div class="tab-wrap">
+          <table>
+            <thead><tr>
+              <th>Usuária</th><th>Telefone</th><th>País</th><th>Produto</th>
+              <th>Idioma</th><th>Status</th><th>Onboarding</th><th>Cadastro</th>
+            </tr></thead>
+            <tbody id="tabUsuarios"><tr><td colspan="8" class="empty">Carregando...</td></tr></tbody>
+          </table>
         </div>
-        <div class="card">
-          <span class="card-titulo">Como conheceram o ICONZA</span>
-          <div id="origemTop"><p class="empty">Carregando...</p></div>
+      </section>
+
+      <!-- ══ ONBOARDING ══ -->
+      <section class="modulo" id="mod-onboarding">
+        <div class="mod-head">
+          <div><h1 class="mod-titulo">Onboarding</h1><p class="mod-sub">Análise de respostas e padrões</p></div>
         </div>
-      </div>
-
-      <div class="card">
-        <span class="card-titulo">Distribuição por horário preferido</span>
-        <div id="horariosDist"><p class="empty">Carregando...</p></div>
-      </div>
-    </section>
-
-    <!-- MÓDULOS PLACEHOLDER -->
-    <section class="modulo" id="mod-cerebros">
-      <div class="mod-header"><div><h1 class="mod-titulo">Cérebros Criativos</h1><p class="mod-sub">Mapa neural de cada aluna</p></div></div>
-      <div class="placeholder"><span class="ph-icon">🧠</span><h2 class="ph-tit">Cérebros Criativos</h2><p class="ph-desc">Visualização neural das conexões criativas de cada aluna.<br>Sistema em desenvolvimento.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-fases">
-      <div class="mod-header"><div><h1 class="mod-titulo">Fases & Ícones</h1><p class="mod-sub">Sistema de 6 fases e desbloqueios</p></div></div>
-      <div class="placeholder"><span class="ph-icon">⭐</span><h2 class="ph-tit">Sistema de Fases</h2><p class="ph-desc">Descoberta · Linguagem · Criação · Comunicação · Projeto · Legado</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-cursos">
-      <div class="mod-header">
-        <div>
-          <h1 class="mod-titulo">Universos Criativos</h1>
-          <p class="mod-sub">Seus cursos como portais para o universo ICONZA</p>
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-c"><span class="stat-num" id="o-completos">—</span><span class="stat-label">Completaram</span></div>
+          <div class="stat-c"><span class="stat-num" id="o-incompletos">—</span><span class="stat-label">Incompletos</span></div>
+          <div class="stat-c"><span class="stat-num" id="o-taxa">—</span><span class="stat-label">Taxa de conclusão</span></div>
+          <div class="stat-c"><span class="stat-num" id="o-objetivos">—</span><span class="stat-label">Objetivos únicos</span></div>
         </div>
-        <button class="btn-prim" onclick="abrirCursoNovo()">+ Novo Universo</button>
-      </div>
+        <div class="grid-2">
+          <div class="card"><span class="card-label">Objetivos mais escolhidos</span><div id="objTop"><p class="empty">Carregando...</p></div></div>
+          <div class="card"><span class="card-label">Como conheceram o ICONZA</span><div id="origemTop"><p class="empty">Carregando...</p></div></div>
+        </div>
+        <div class="card"><span class="card-label">Distribuição por horário preferido</span><div id="horariosDist"><p class="empty">Carregando...</p></div></div>
+      </section>
 
-      <!-- VISÃO DA CRIADORA -->
-      <div class="card" style="background:linear-gradient(135deg,#1a1a1a 0%,#2d1010 100%);color:#fff;border:none;margin-bottom:1.5rem;position:relative;overflow:hidden">
-        <div style="position:absolute;right:-1rem;top:50%;transform:translateY(-50%);font-family:'Playfair Display',serif;font-size:7rem;font-weight:900;color:rgba(255,255,255,.03);pointer-events:none;user-select:none">ICONZA</div>
-        <div style="display:flex;align-items:center;gap:1.2rem;position:relative">
-          <div style="width:60px;height:60px;border-radius:50%;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.15)" id="criadoraAv">L</div>
+      <!-- ══ PLACEHOLDERS ══ -->
+      <section class="modulo" id="mod-cerebros">
+        <div class="mod-head"><div><h1 class="mod-titulo">Cérebros Criativos</h1><p class="mod-sub">Mapa neural de cada aluna</p></div></div>
+        <div class="placeholder"><span class="ph-icon">🧠</span><h2 class="ph-tit">Cérebros Criativos</h2><p class="ph-desc">Visualização neural das conexões criativas de cada aluna.<br>Sistema em desenvolvimento.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-fases">
+        <div class="mod-head"><div><h1 class="mod-titulo">Fases & Ícones</h1><p class="mod-sub">Sistema de 6 fases e desbloqueios</p></div></div>
+        <div class="placeholder"><span class="ph-icon">⭐</span><h2 class="ph-tit">Sistema de Fases</h2><p class="ph-desc">Descoberta · Linguagem · Criação · Comunicação · Projeto · Legado</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+
+      <!-- ══ UNIVERSOS (CURSOS) ══ -->
+      <section class="modulo" id="mod-cursos">
+        <div class="mod-head">
+          <div><h1 class="mod-titulo">Universos Criativos</h1><p class="mod-sub">Portais de aprendizado ICONZA</p></div>
+          <button class="btn-prim" onclick="abrirCursoNovo()">+ Novo Universo</button>
+        </div>
+
+        <!-- Card criadora -->
+        <div class="card-highlight" style="margin-bottom:1rem">
+          <div style="display:flex;align-items:center;gap:1rem;position:relative">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#fff;overflow:hidden;border:2px solid rgba(255,255,255,.1);flex-shrink:0" id="criadoraAv">L</div>
+            <div style="flex:1">
+              <span style="font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);font-weight:600">Criadora · Fundadora</span>
+              <h2 style="font-family:'Instrument Serif',serif;font-size:1.15rem;color:#fff;margin:.15rem 0;font-weight:400;font-style:italic">Lívia Zaruty</h2>
+              <p style="font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.6">Você é o rosto do ICONZA. Cada universo aqui é uma extensão da sua narrativa criativa.</p>
+            </div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0">
+              <a href="u.html" target="_blank" class="iz-btn-top">↗ Perfil público</a>
+              <button onclick="mostrar('config',document.querySelector('[data-mod=config]'))" class="iz-btn-top">⚙ Pagamentos</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-c"><span class="stat-num" id="c-total">—</span><span class="stat-label">Universos criados</span></div>
+          <div class="stat-c"><span class="stat-num" id="c-pub">—</span><span class="stat-label">Publicados</span></div>
+          <div class="stat-c"><span class="stat-num" id="c-mat">—</span><span class="stat-label">Matrículas totais</span></div>
+          <div class="stat-c"><span class="stat-num" id="c-receita">R$ 0</span><span class="stat-label">Receita gerada</span></div>
+        </div>
+
+        <div id="cursosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem">
+          <p class="empty">Carregando universos...</p>
+        </div>
+
+        <!-- Apoio / Doação -->
+        <div class="card" style="margin-top:1.5rem;display:flex;align-items:flex-start;gap:1rem">
+          <div style="font-size:1.5rem;flex-shrink:0">🌱</div>
           <div style="flex:1">
-            <span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600">Criadora · Fundadora</span>
-            <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fff;margin:.2rem 0">Lívia Zaruty</h2>
-            <p style="font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.6">Você é o rosto do ICONZA. Cada curso aqui é uma extensão da sua narrativa criativa.</p>
-          </div>
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap;justify-content:flex-end">
-            <a href="u.html" target="_blank" style="font-size:.65rem;padding:.5rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;font-weight:600">↗ Perfil público</a>
-            <button onclick="mostrar('config',document.querySelector('[data-mod=config]'))" style="font-size:.65rem;padding:.5rem 1rem;background:var(--vm);border:none;color:#fff;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:600;font-family:'DM Sans',sans-serif">⚙ Configurar Pagamentos</button>
+            <span style="font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:600">Apoio ao ICONZA</span>
+            <h3 style="font-size:.95rem;font-weight:700;margin:.25rem 0 .4rem">Permita que mais mulheres acessem o universo criativo</h3>
+            <p style="font-size:.8rem;color:var(--cinza-500);line-height:1.7;margin-bottom:.75rem">Doações voluntárias sustentam bolsas de estudo e módulos gratuitos permanentes.</p>
+            <button class="btn-prim" onclick="abrirProjetoDoacao()" style="background:var(--amber)">+ Criar projeto de apoio</button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- STATS DE CURSOS -->
-      <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-c"><div class="stat-c-icon">📚</div><span class="stat-c-num" id="c-total">—</span><span class="stat-c-label">Universos criados</span></div>
-        <div class="stat-c"><div class="stat-c-icon">✓</div><span class="stat-c-num" id="c-pub">—</span><span class="stat-c-label">Publicados</span></div>
-        <div class="stat-c"><div class="stat-c-icon">🎓</div><span class="stat-c-num" id="c-mat">—</span><span class="stat-c-label">Total de matrículas</span></div>
-        <div class="stat-c"><div class="stat-c-icon">💰</div><span class="stat-c-num" id="c-receita">R$ 0</span><span class="stat-c-label">Receita gerada</span></div>
-      </div>
+      <section class="modulo" id="mod-aulas">
+        <div class="mod-head"><div><h1 class="mod-titulo">Aulas</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">▶️</span><h2 class="ph-tit">Gestão de Aulas</h2><p class="ph-desc">Vídeos, materiais e progresso das aulas.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-prompts">
+        <div class="mod-head"><div><h1 class="mod-titulo">Prompts</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">⚡</span><h2 class="ph-tit">Biblioteca de Prompts</h2><p class="ph-desc">Prompts públicos, privados, virais e tags emocionais.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-biblioteca">
+        <div class="mod-head"><div><h1 class="mod-titulo">Biblioteca</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">📖</span><h2 class="ph-tit">Biblioteca</h2><p class="ph-desc">PDFs, e-books, iscas digitais e materiais.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-comunidade">
+        <div class="mod-head"><div><h1 class="mod-titulo">Comunidade</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Comunidade</h2><p class="ph-desc">Mural, posts, conexões e cérebros públicos.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-blog">
+        <div class="mod-head"><div><h1 class="mod-titulo">Blog</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">📝</span><h2 class="ph-tit">Blog</h2><p class="ph-desc">Artigos, editoriais e conteúdos.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-certificados">
+        <div class="mod-head"><div><h1 class="mod-titulo">Certificados</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">🏆</span><h2 class="ph-tit">Certificados</h2><p class="ph-desc">Emissão automática com QR Code.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-analytics">
+        <div class="mod-head"><div><h1 class="mod-titulo">Analytics</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">📊</span><h2 class="ph-tit">Analytics</h2><p class="ph-desc">Métricas de engajamento, retenção e tendências.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
+      <section class="modulo" id="mod-idiomas">
+        <div class="mod-head"><div><h1 class="mod-titulo">Idiomas</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">🌐</span><h2 class="ph-tit">Sistema Multilíngue</h2><p class="ph-desc">Português · Inglês · Espanhol · Italiano · Francês</p><span class="ph-bdg">Em breve</span></div>
+      </section>
 
-      <!-- GRID DE CURSOS -->
-      <div id="cursosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-top:1.5rem">
-        <p class="empty">Carregando universos...</p>
-      </div>
-
-      <!-- CARD DE DOAÇÃO INTEGRADO -->
-      <div style="margin-top:2rem;background:var(--branco);border:1px solid var(--borda);padding:1.5rem;position:relative;overflow:hidden">
-        <div style="display:flex;align-items:flex-start;gap:1.2rem">
-          <div style="font-size:2rem">🌱</div>
-          <div style="flex:1">
-            <span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700">Apoio ao ICONZA</span>
-            <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin:.3rem 0">Permita que mais mulheres acessem o universo criativo</h3>
-            <p style="font-size:.82rem;color:var(--cinza);line-height:1.7;margin-bottom:1rem">Doações voluntárias sustentam bolsas de estudo, traduções multilíngues e mantém os primeiros módulos gratuitos para sempre.</p>
-            <button class="btn-prim" onclick="abrirProjetoDoacao()" style="background:var(--gold);color:#1a1a1a">+ Criar projeto de apoio</button>
-          </div>
+      <!-- ══ CONFIGURAÇÕES ══ -->
+      <section class="modulo" id="mod-config">
+        <div class="mod-head"><div><h1 class="mod-titulo">Configurações</h1></div></div>
+        <div class="card" style="margin-bottom:.75rem">
+          <span class="card-label">Plataforma</span>
+          <p style="font-size:.84rem;color:var(--cinza-700);margin-bottom:.35rem">🌐 <strong>URL:</strong> iconza.vercel.app</p>
+          <p style="font-size:.84rem;color:var(--cinza-700);margin-bottom:.35rem">🗄 <strong>Banco:</strong> Supabase — rwnedxbhlnvmqjsdzwyo</p>
+          <p style="font-size:.84rem;color:var(--cinza-700)">📁 <strong>Repositório:</strong> github.com/zaruty/iconza</p>
         </div>
-      </div>
-    </section>
-    <section class="modulo" id="mod-aulas">
-      <div class="mod-header"><div><h1 class="mod-titulo">Aulas</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">▶️</span><h2 class="ph-tit">Gestão de Aulas</h2><p class="ph-desc">Vídeos, materiais e progresso das aulas.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-prompts">
-      <div class="mod-header"><div><h1 class="mod-titulo">Prompts</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">⚡</span><h2 class="ph-tit">Biblioteca de Prompts</h2><p class="ph-desc">Prompts públicos, privados, virais e tags emocionais.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-biblioteca">
-      <div class="mod-header"><div><h1 class="mod-titulo">Biblioteca</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">📖</span><h2 class="ph-tit">Biblioteca</h2><p class="ph-desc">PDFs, e-books, iscas digitais e materiais.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-comunidade">
-      <div class="mod-header"><div><h1 class="mod-titulo">Comunidade</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Comunidade</h2><p class="ph-desc">Mural, posts, conexões e cérebros públicos.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-blog">
-      <div class="mod-header"><div><h1 class="mod-titulo">Blog</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">📝</span><h2 class="ph-tit">Blog</h2><p class="ph-desc">Artigos, editoriais e conteúdos.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-certificados">
-      <div class="mod-header"><div><h1 class="mod-titulo">Certificados</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">🏆</span><h2 class="ph-tit">Certificados</h2><p class="ph-desc">Emissão automática com QR Code.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-analytics">
-      <div class="mod-header"><div><h1 class="mod-titulo">Analytics</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">📊</span><h2 class="ph-tit">Analytics</h2><p class="ph-desc">Métricas de engajamento, retenção e tendências.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-    <section class="modulo" id="mod-idiomas">
-      <div class="mod-header"><div><h1 class="mod-titulo">Idiomas</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">🌐</span><h2 class="ph-tit">Sistema Multilíngue</h2><p class="ph-desc">Português · Inglês · Espanhol · Italiano · Francês</p><span class="ph-bdg">Em breve</span></div>
-    </section>
+        <div class="card">
+          <span class="card-label">Administradores</span>
+          <div id="listaAdmins"><p class="empty">Carregando...</p></div>
+        </div>
+      </section>
 
-    <!-- CONFIG -->
-    <section class="modulo" id="mod-config">
-      <div class="mod-header"><div><h1 class="mod-titulo">Configurações</h1></div></div>
-      <div class="card" style="margin-bottom:1rem">
-        <span class="card-titulo">Plataforma</span>
-        <p style="font-size:.85rem;color:#555;margin-bottom:.4rem">🌐 <strong>URL:</strong> iconza.vercel.app</p>
-        <p style="font-size:.85rem;color:#555;margin-bottom:.4rem">🗄 <strong>Banco:</strong> Supabase — rwnedxbhlnvmqjsdzwyo</p>
-        <p style="font-size:.85rem;color:#555">📁 <strong>Repositório:</strong> github.com/zaruty/iconza</p>
-      </div>
-      <div class="card">
-        <span class="card-titulo">Administradores</span>
-        <div id="listaAdmins"><p class="empty">Carregando...</p></div>
-      </div>
-    </section>
+      <section class="modulo" id="mod-suporte">
+        <div class="mod-head"><div><h1 class="mod-titulo">Suporte</h1></div></div>
+        <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Central de Suporte</h2><p class="ph-desc">Tickets, mensagens e atendimento das alunas.</p><span class="ph-bdg">Em breve</span></div>
+      </section>
 
-    <section class="modulo" id="mod-suporte">
-      <div class="mod-header"><div><h1 class="mod-titulo">Suporte</h1></div></div>
-      <div class="placeholder"><span class="ph-icon">💬</span><h2 class="ph-tit">Central de Suporte</h2><p class="ph-desc">Tickets, mensagens e atendimento das alunas.</p><span class="ph-bdg">Em breve</span></div>
-    </section>
-
-  </main>
+    </main>
+  </div>
 </div>
 
-<!-- MODAL USUÁRIO -->
+<!-- ══ MODAL USUÁRIA ══ -->
 <div class="mov" id="modal" onclick="if(event.target===this)fechar()">
   <div class="mod">
     <div class="mod-h">
@@ -573,7 +657,7 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       </div>
       <div class="mod-sec">
         <span class="mod-sec-t">Perfil Criativo</span>
-        <div class="mod-c" style="margin-bottom:.7rem">
+        <div class="mod-c" style="margin-bottom:.65rem">
           <span class="mod-c-l">Aptidões</span>
           <div class="mod-tags" id="mApt"></div>
         </div>
@@ -594,7 +678,8 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
         <span class="mod-sec-t">Assinatura</span>
         <div class="mod-gr">
           <div class="mod-c"><span class="mod-c-l">Produto</span><span class="mod-c-v" id="mProd">—</span></div>
-          <div class="mod-c"><span class="mod-c-l">Status</span>
+          <div class="mod-c">
+            <span class="mod-c-l">Status</span>
             <select class="f-select" id="mStatusSel" style="margin-top:.2rem">
               <option>Em andamento</option><option>Pendente</option>
               <option>Concluído</option><option>Cancelado</option>
@@ -606,7 +691,7 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       </div>
       <div class="mod-sec">
         <span class="mod-sec-t">Observações</span>
-        <p style="font-size:.85rem;color:var(--cinza);line-height:1.7" id="mObs">—</p>
+        <p style="font-size:.84rem;color:var(--cinza-700);line-height:1.7" id="mObs">—</p>
       </div>
     </div>
     <div class="mod-f">
@@ -616,11 +701,11 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
   </div>
 </div>
 
-<!-- MODAL CURSO -->
+<!-- ══ MODAL CURSO ══ -->
 <div class="mov" id="modalCurso" onclick="if(event.target===this)fecharCurso()">
   <div class="mod" style="max-width:780px">
     <div class="mod-h">
-      <div style="width:48px;height:48px;background:var(--vm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">📖</div>
+      <div style="width:42px;height:42px;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;border-radius:8px">📖</div>
       <div>
         <div class="mod-h-nome" id="mcTituloHeader">Novo Universo Criativo</div>
         <div class="mod-h-em">Construa um portal de aprendizado autoral</div>
@@ -628,83 +713,69 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       <button class="mod-cl" onclick="fecharCurso()">✕</button>
     </div>
     <div class="mod-b">
-
       <div class="mod-sec">
         <span class="mod-sec-t">Narrativa do Universo</span>
-        <div style="margin-bottom:1rem">
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Título principal</label>
+        <div style="margin-bottom:.85rem">
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Título principal</label>
           <input class="f-input" type="text" id="mc_titulo" placeholder="Ex: Universo 1 — Surrealismo Radical" style="width:100%">
         </div>
-        <div style="margin-bottom:1rem">
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Subtítulo (trio referencial)</label>
+        <div style="margin-bottom:.85rem">
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Subtítulo (trio referencial)</label>
           <input class="f-input" type="text" id="mc_subtitulo" placeholder="Frida Kahlo · Schiaparelli · Massimo Bottura" style="width:100%">
         </div>
-        <div style="margin-bottom:1rem">
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Manifesto · Descrição emocional</label>
-          <textarea class="f-input" id="mc_descricao" placeholder="O que essa aluna vai descobrir sobre si mesma? Como esse universo transforma a identidade criativa dela?" style="width:100%;min-height:100px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+        <div style="margin-bottom:.85rem">
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Manifesto · Descrição emocional</label>
+          <textarea class="f-input" id="mc_descricao" placeholder="O que essa aluna vai descobrir sobre si mesma?" style="width:100%;min-height:90px;font-family:'Inter',sans-serif;resize:vertical"></textarea>
         </div>
       </div>
-
       <div class="mod-sec">
         <span class="mod-sec-t">Identidade Visual</span>
-        <div style="margin-bottom:1rem">
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">URL da capa</label>
+        <div style="margin-bottom:.85rem">
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">URL da capa</label>
           <input class="f-input" type="url" id="mc_capa" placeholder="https://..." style="width:100%">
         </div>
-        <div style="margin-bottom:1rem">
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Trailer (YouTube/Vimeo)</label>
+        <div style="margin-bottom:.85rem">
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Trailer (YouTube/Vimeo)</label>
           <input class="f-input" type="url" id="mc_trailer" placeholder="https://youtube.com/..." style="width:100%">
         </div>
       </div>
-
       <div class="mod-sec">
         <span class="mod-sec-t">Classificação</span>
         <div class="mod-gr">
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Fase</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Fase</label>
             <select class="f-select" id="mc_fase" style="width:100%">
-              <option value="1">Fase 1 — Descoberta</option>
-              <option value="2">Fase 2 — Linguagem</option>
-              <option value="3">Fase 3 — Criação</option>
-              <option value="4">Fase 4 — Comunicação</option>
-              <option value="5">Fase 5 — Projeto</option>
-              <option value="6">Fase 6 — Legado</option>
+              <option value="1">Fase 1 — Descoberta</option><option value="2">Fase 2 — Linguagem</option>
+              <option value="3">Fase 3 — Criação</option><option value="4">Fase 4 — Comunicação</option>
+              <option value="5">Fase 5 — Projeto</option><option value="6">Fase 6 — Legado</option>
             </select>
           </div>
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Nível</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Nível</label>
             <select class="f-select" id="mc_nivel" style="width:100%">
-              <option value="iniciante">Iniciante</option>
-              <option value="intermediario">Intermediário</option>
-              <option value="avancado">Avançado</option>
+              <option value="iniciante">Iniciante</option><option value="intermediario">Intermediário</option><option value="avancado">Avançado</option>
             </select>
           </div>
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Idioma</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Idioma</label>
             <select class="f-select" id="mc_idioma" style="width:100%">
-              <option value="pt">🇧🇷 Português</option>
-              <option value="en">🇺🇸 English</option>
-              <option value="it">🇮🇹 Italiano</option>
-              <option value="es">🇪🇸 Español</option>
-              <option value="fr">🇫🇷 Français</option>
+              <option value="pt">🇧🇷 Português</option><option value="en">🇺🇸 English</option>
+              <option value="it">🇮🇹 Italiano</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option>
             </select>
           </div>
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Status</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Status</label>
             <select class="f-select" id="mc_status" style="width:100%">
-              <option value="rascunho">Rascunho</option>
-              <option value="publicado">Publicado</option>
-              <option value="arquivado">Arquivado</option>
+              <option value="rascunho">Rascunho</option><option value="publicado">Publicado</option><option value="arquivado">Arquivado</option>
             </select>
           </div>
         </div>
       </div>
-
       <div class="mod-sec">
         <span class="mod-sec-t">Acesso e Monetização</span>
         <div class="mod-gr">
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Modelo</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Modelo</label>
             <select class="f-select" id="mc_tipo" style="width:100%">
               <option value="gratuito">Gratuito</option>
               <option value="pago" selected>Pago (com 3 módulos grátis)</option>
@@ -712,16 +783,15 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
             </select>
           </div>
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Preço (R$)</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Preço (R$)</label>
             <input class="f-input" type="number" id="mc_preco" placeholder="297.00" step="0.01" min="0" style="width:100%">
           </div>
           <div>
-            <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Módulos grátis</label>
+            <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Módulos grátis</label>
             <input class="f-input" type="number" id="mc_gratis" value="3" min="0" max="10" style="width:100%">
           </div>
         </div>
       </div>
-
       <input type="hidden" id="mc_id">
     </div>
     <div class="mod-f">
@@ -731,11 +801,11 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
   </div>
 </div>
 
-<!-- MODAL AULAS DO CURSO -->
+<!-- ══ MODAL AULAS DO CURSO ══ -->
 <div class="mov" id="modalAulas" onclick="if(event.target===this)fecharAulas()">
   <div class="mod" style="max-width:780px">
     <div class="mod-h">
-      <div style="width:48px;height:48px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🎬</div>
+      <div style="width:42px;height:42px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;border-radius:8px">🎬</div>
       <div>
         <div class="mod-h-nome" id="maTitulo">Aulas do Universo</div>
         <div class="mod-h-em" id="maSub">—</div>
@@ -743,21 +813,21 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       <button class="mod-cl" onclick="fecharAulas()">✕</button>
     </div>
     <div class="mod-b">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.85rem">
         <button class="btn-prim" onclick="adicionarAula()">+ Nova Aula</button>
       </div>
-      <div id="listaAulas">
-        <p class="empty">Carregando...</p>
-      </div>
+      <div id="listaAulas"><p class="empty">Carregando...</p></div>
     </div>
   </div>
 </div>
 
-<!-- MODAL NOVA AULA -->
+<!-- ══ MODAL NOVA AULA ══ -->
 <div class="mov" id="modalAula" onclick="if(event.target===this)fecharAula()" style="z-index:300">
   <div class="mod" style="max-width:580px">
     <div class="mod-h">
-      <div style="width:48px;height:48px;background:var(--preto);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;color:#fff">▶</div>
+      <div style="width:42px;height:42px;background:var(--preto);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border-radius:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
       <div>
         <div class="mod-h-nome">Nova Aula</div>
         <div class="mod-h-em">Construa um momento do universo</div>
@@ -765,37 +835,34 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
       <button class="mod-cl" onclick="fecharAula()">✕</button>
     </div>
     <div class="mod-b">
-      <div style="margin-bottom:1rem">
-        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Título da aula</label>
+      <div style="margin-bottom:.85rem">
+        <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Título da aula</label>
         <input class="f-input" type="text" id="ma_titulo" placeholder="Ex: A dor como linguagem visual" style="width:100%">
       </div>
-      <div style="margin-bottom:1rem">
-        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Descrição</label>
-        <textarea class="f-input" id="ma_descricao" placeholder="O que essa aula transmite?" style="width:100%;min-height:60px;font-family:'DM Sans',sans-serif;resize:vertical"></textarea>
+      <div style="margin-bottom:.85rem">
+        <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Descrição</label>
+        <textarea class="f-input" id="ma_descricao" placeholder="O que essa aula transmite?" style="width:100%;min-height:60px;font-family:'Inter',sans-serif;resize:vertical"></textarea>
       </div>
       <div class="mod-gr">
         <div>
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Tipo</label>
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Tipo</label>
           <select class="f-select" id="ma_tipo" style="width:100%">
-            <option value="video">Vídeo</option>
-            <option value="texto">Texto</option>
-            <option value="quiz">Quiz</option>
-            <option value="desafio">Desafio</option>
-            <option value="pdf">PDF</option>
+            <option value="video">Vídeo</option><option value="texto">Texto</option>
+            <option value="quiz">Quiz</option><option value="desafio">Desafio</option><option value="pdf">PDF</option>
           </select>
         </div>
         <div>
-          <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">Duração (min)</label>
+          <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">Duração (min)</label>
           <input class="f-input" type="number" id="ma_duracao" placeholder="10" min="0" style="width:100%">
         </div>
       </div>
-      <div style="margin-top:1rem">
-        <label style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);font-weight:600;display:block;margin-bottom:.3rem">URL do vídeo (YouTube/Vimeo)</label>
+      <div style="margin-top:.85rem">
+        <label style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-500);font-weight:600;display:block;margin-bottom:.3rem">URL do vídeo (YouTube/Vimeo)</label>
         <input class="f-input" type="url" id="ma_video" placeholder="https://youtube.com/watch?v=..." style="width:100%">
       </div>
-      <div style="margin-top:1rem;display:flex;align-items:center;gap:.5rem">
-        <input type="checkbox" id="ma_gratuita">
-        <label for="ma_gratuita" style="font-size:.82rem;cursor:pointer">Aula gratuita (acesso liberado para todas)</label>
+      <div style="margin-top:.85rem;display:flex;align-items:center;gap:.5rem">
+        <input type="checkbox" id="ma_gratuita" style="accent-color:var(--indigo)">
+        <label for="ma_gratuita" style="font-size:.82rem;cursor:pointer;color:var(--cinza-700)">Aula gratuita (acesso liberado para todas)</label>
       </div>
       <input type="hidden" id="ma_id">
     </div>
@@ -807,381 +874,55 @@ td{padding:.8rem 1rem;font-size:.82rem;color:var(--preto)}
 </div>
 
 <script>
-// ============================================
-// MÓDULO CURSOS — Gestão completa
-// ============================================
-let TODOS_CURSOS = [];
-let cursoAtual = null;
-
-async function carregarCursos() {
-  const { data, error } = await sb
-    .from('cursos')
-    .select('*')
-    .order('ordem', { ascending: true })
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Erro cursos:', error);
-    document.getElementById('cursosGrid').innerHTML = `<p class="empty">Erro: ${error.message}</p>`;
-    return;
-  }
-
-  TODOS_CURSOS = data || [];
-  renderCursos();
-  atualizarStatsCursos();
-}
-
-function atualizarStatsCursos() {
-  const total = TODOS_CURSOS.length;
-  const publicados = TODOS_CURSOS.filter(c => c.status === 'publicado').length;
-  const matriculas = TODOS_CURSOS.reduce((s, c) => s + (c.total_matriculas || 0), 0);
-
-  document.getElementById('c-total').textContent = total;
-  document.getElementById('c-pub').textContent = publicados;
-  document.getElementById('c-mat').textContent = matriculas;
-  // Receita virá das transações pagas — placeholder por agora
-  document.getElementById('c-receita').textContent = 'R$ 0';
-}
-
-function renderCursos() {
-  const grid = document.getElementById('cursosGrid');
-  if (!TODOS_CURSOS.length) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;background:var(--branco);border:2px dashed var(--borda);padding:3rem;text-align:center">
-        <div style="font-size:2.5rem;margin-bottom:1rem">📖</div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:.5rem">Nenhum universo criado ainda</h3>
-        <p style="font-size:.85rem;color:var(--cinza);margin-bottom:1.2rem">Comece criando seu primeiro portal criativo</p>
-        <button class="btn-prim" onclick="abrirCursoNovo()">+ Criar primeiro universo</button>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = TODOS_CURSOS.map(c => {
-    const stCor = c.status === 'publicado' ? 'b-verde' : c.status === 'rascunho' ? 'b-gold' : 'b-cinza';
-    const tipoLb = c.tipo === 'pago' ? `R$ ${Number(c.preco || 0).toFixed(2)}` : c.tipo === 'assinatura' ? 'Assinatura' : 'Gratuito';
-    const tipoCor = c.tipo === 'pago' ? 'b-vm' : c.tipo === 'assinatura' ? 'b-gold' : 'b-verde';
-    const capa = c.capa_url
-      ? `<img src="${c.capa_url}" style="width:100%;height:160px;object-fit:cover">`
-      : `<div style="width:100%;height:160px;background:linear-gradient(135deg,#1a0808,#2d1010);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-family:'Playfair Display',serif;font-size:3rem;font-weight:900">${(c.titulo||'').charAt(0).toUpperCase()}</div>`;
-
-    return `<div style="background:var(--branco);border:1px solid var(--borda);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,border-color .2s;cursor:pointer" onmouseenter="this.style.borderColor='var(--preto)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--borda)';this.style.transform='translateY(0)'">
-      ${capa}
-      <div style="padding:1.2rem;flex:1;display:flex;flex-direction:column">
-        <div style="display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap">
-          <span class="bdg ${stCor}">${c.status}</span>
-          <span class="bdg ${tipoCor}">${tipoLb}</span>
-          ${c.fase ? `<span class="bdg b-azul">Fase ${c.fase}</span>` : ''}
-        </div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--preto);margin-bottom:.3rem;line-height:1.3">${c.titulo}</h3>
-        ${c.subtitulo ? `<p style="font-size:.78rem;color:var(--gold);font-style:italic;margin-bottom:.6rem">${c.subtitulo}</p>` : ''}
-        <p style="font-size:.78rem;color:var(--cinza);line-height:1.6;margin-bottom:1rem;flex:1">${(c.descricao||'').substring(0,120)}${(c.descricao||'').length>120?'...':''}</p>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:.8rem;border-top:1px solid var(--borda);font-size:.7rem;color:var(--cinza)">
-          <span>${c.total_aulas || 0} aulas · ${c.total_matriculas || 0} alunas</span>
-        </div>
-        <div style="display:flex;gap:.5rem;margin-top:.8rem">
-          <button onclick="abrirAulasCurso('${c.id}')" class="btn-m btn-m-s" style="flex:1;font-size:.65rem">📚 Aulas</button>
-          <button onclick="editarCurso('${c.id}')" class="btn-m btn-m-p" style="flex:1;font-size:.65rem">✎ Editar</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function abrirCursoNovo() {
-  cursoAtual = null;
-  document.getElementById('mcTituloHeader').textContent = 'Novo Universo Criativo';
-  document.getElementById('mc_id').value = '';
-  document.getElementById('mc_titulo').value = '';
-  document.getElementById('mc_subtitulo').value = '';
-  document.getElementById('mc_descricao').value = '';
-  document.getElementById('mc_capa').value = '';
-  document.getElementById('mc_trailer').value = '';
-  document.getElementById('mc_fase').value = '1';
-  document.getElementById('mc_nivel').value = 'iniciante';
-  document.getElementById('mc_idioma').value = 'pt';
-  document.getElementById('mc_status').value = 'rascunho';
-  document.getElementById('mc_tipo').value = 'pago';
-  document.getElementById('mc_preco').value = '297.00';
-  document.getElementById('mc_gratis').value = '3';
-  document.getElementById('modalCurso').classList.add('show');
-}
-
-function editarCurso(id) {
-  const c = TODOS_CURSOS.find(x => x.id === id);
-  if (!c) return;
-  cursoAtual = c;
-  document.getElementById('mcTituloHeader').textContent = 'Editar ' + c.titulo;
-  document.getElementById('mc_id').value = c.id;
-  document.getElementById('mc_titulo').value = c.titulo || '';
-  document.getElementById('mc_subtitulo').value = c.subtitulo || '';
-  document.getElementById('mc_descricao').value = c.descricao || '';
-  document.getElementById('mc_capa').value = c.capa_url || '';
-  document.getElementById('mc_trailer').value = c.trailer_url || '';
-  document.getElementById('mc_fase').value = c.fase || 1;
-  document.getElementById('mc_nivel').value = c.nivel || 'iniciante';
-  document.getElementById('mc_idioma').value = c.idioma || 'pt';
-  document.getElementById('mc_status').value = c.status || 'rascunho';
-  document.getElementById('mc_tipo').value = c.tipo || 'gratuito';
-  document.getElementById('mc_preco').value = c.preco || 0;
-  document.getElementById('mc_gratis').value = c.modulos_gratis || 3;
-  document.getElementById('modalCurso').classList.add('show');
-}
-
-function fecharCurso() {
-  document.getElementById('modalCurso').classList.remove('show');
-}
-
-function slugify(text) {
-  return (text||'').toString().toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-async function salvarCurso() {
-  const titulo = document.getElementById('mc_titulo').value.trim();
-  if (!titulo) { alert('Digite o título do universo.'); return; }
-
-  const id = document.getElementById('mc_id').value;
-  const dados = {
-    titulo,
-    slug: cursoAtual?.slug || slugify(titulo) + '-' + Date.now().toString(36),
-    subtitulo: document.getElementById('mc_subtitulo').value.trim() || null,
-    descricao: document.getElementById('mc_descricao').value.trim() || null,
-    capa_url: document.getElementById('mc_capa').value.trim() || null,
-    trailer_url: document.getElementById('mc_trailer').value.trim() || null,
-    fase: parseInt(document.getElementById('mc_fase').value),
-    nivel: document.getElementById('mc_nivel').value,
-    idioma: document.getElementById('mc_idioma').value,
-    status: document.getElementById('mc_status').value,
-    tipo: document.getElementById('mc_tipo').value,
-    preco: parseFloat(document.getElementById('mc_preco').value) || 0,
-    modulos_gratis: parseInt(document.getElementById('mc_gratis').value) || 3,
-    criador_id: perfilAdmin.id,
-    updated_at: new Date().toISOString()
-  };
-
-  let result;
-  if (id) {
-    result = await sb.from('cursos').update(dados).eq('id', id).select().single();
-  } else {
-    result = await sb.from('cursos').insert(dados).select().single();
-  }
-
-  if (result.error) {
-    alert('Erro ao salvar: ' + result.error.message);
-    return;
-  }
-
-  fecharCurso();
-  await carregarCursos();
-}
-
-// ============================================
-// AULAS DO CURSO
-// ============================================
-let AULAS_CURSO = [];
-let cursoAulasId = null;
-
-async function abrirAulasCurso(cursoId) {
-  cursoAulasId = cursoId;
-  const c = TODOS_CURSOS.find(x => x.id === cursoId);
-  if (!c) return;
-
-  document.getElementById('maTitulo').textContent = c.titulo;
-  document.getElementById('maSub').textContent = c.subtitulo || 'Gerencie as aulas deste universo';
-  document.getElementById('modalAulas').classList.add('show');
-
-  const { data, error } = await sb
-    .from('aulas')
-    .select('*')
-    .eq('curso_id', cursoId)
-    .order('ordem', { ascending: true });
-
-  if (error) {
-    document.getElementById('listaAulas').innerHTML = `<p class="empty">Erro: ${error.message}</p>`;
-    return;
-  }
-
-  AULAS_CURSO = data || [];
-  renderAulas();
-}
-
-function renderAulas() {
-  const lista = document.getElementById('listaAulas');
-  if (!AULAS_CURSO.length) {
-    lista.innerHTML = `<div style="padding:2rem;text-align:center;background:var(--off)">
-      <div style="font-size:2rem;margin-bottom:.5rem">🎬</div>
-      <p style="font-size:.85rem;color:var(--cinza)">Nenhuma aula ainda. Comece adicionando a primeira.</p>
-    </div>`;
-    return;
-  }
-  lista.innerHTML = AULAS_CURSO.map((a, i) => `
-    <div style="display:flex;align-items:center;gap:.8rem;padding:.8rem;border:1px solid var(--borda);margin-bottom:.5rem;background:var(--branco)">
-      <div style="width:32px;height:32px;background:var(--off);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--cinza);font-size:.85rem">${i+1}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:.88rem">${a.titulo}</div>
-        <div style="font-size:.7rem;color:var(--cinza);margin-top:.2rem">
-          <span class="bdg ${a.gratuita ? 'b-verde' : 'b-cinza'}">${a.gratuita ? 'Grátis' : 'Premium'}</span>
-          ${a.tipo} · ${a.duracao_min || 0} min
-        </div>
-      </div>
-      <button onclick="editarAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.65rem">Editar</button>
-      <button onclick="excluirAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.65rem;color:var(--vm);border-color:var(--vm)">✕</button>
-    </div>
-  `).join('');
-}
-
-function adicionarAula() {
-  document.getElementById('ma_id').value = '';
-  document.getElementById('ma_titulo').value = '';
-  document.getElementById('ma_descricao').value = '';
-  document.getElementById('ma_tipo').value = 'video';
-  document.getElementById('ma_duracao').value = '';
-  document.getElementById('ma_video').value = '';
-  document.getElementById('ma_gratuita').checked = AULAS_CURSO.length < 3; // 3 primeiras grátis por padrão
-  document.getElementById('modalAula').classList.add('show');
-}
-
-function editarAula(id) {
-  const a = AULAS_CURSO.find(x => x.id === id);
-  if (!a) return;
-  document.getElementById('ma_id').value = a.id;
-  document.getElementById('ma_titulo').value = a.titulo || '';
-  document.getElementById('ma_descricao').value = a.descricao || '';
-  document.getElementById('ma_tipo').value = a.tipo || 'video';
-  document.getElementById('ma_duracao').value = a.duracao_min || 0;
-  document.getElementById('ma_video').value = a.video_url || '';
-  document.getElementById('ma_gratuita').checked = a.gratuita || false;
-  document.getElementById('modalAula').classList.add('show');
-}
-
-function fecharAula() {
-  document.getElementById('modalAula').classList.remove('show');
-}
-
-function fecharAulas() {
-  document.getElementById('modalAulas').classList.remove('show');
-  carregarCursos(); // Atualiza contadores
-}
-
-async function salvarAula() {
-  const titulo = document.getElementById('ma_titulo').value.trim();
-  if (!titulo) { alert('Digite o título da aula.'); return; }
-
-  const id = document.getElementById('ma_id').value;
-  const videoUrl = document.getElementById('ma_video').value.trim();
-
-  // Detecta provider
-  let provider = null;
-  if (videoUrl) {
-    if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) provider = 'youtube';
-    else if (videoUrl.includes('vimeo')) provider = 'vimeo';
-    else provider = 'external';
-  }
-
-  const dados = {
-    curso_id: cursoAulasId,
-    titulo,
-    descricao: document.getElementById('ma_descricao').value.trim() || null,
-    tipo: document.getElementById('ma_tipo').value,
-    duracao_min: parseInt(document.getElementById('ma_duracao').value) || 0,
-    video_url: videoUrl || null,
-    video_provider: provider,
-    gratuita: document.getElementById('ma_gratuita').checked,
-    ordem: id ? undefined : AULAS_CURSO.length,
-    publicada: true,
-    updated_at: new Date().toISOString()
-  };
-
-  let result;
-  if (id) {
-    delete dados.ordem;
-    result = await sb.from('aulas').update(dados).eq('id', id).select().single();
-  } else {
-    result = await sb.from('aulas').insert(dados).select().single();
-  }
-
-  if (result.error) { alert('Erro: ' + result.error.message); return; }
-
-  // Atualiza contadores no curso
-  await sb.from('cursos').update({
-    total_aulas: AULAS_CURSO.length + (id ? 0 : 1),
-    duracao_total_min: AULAS_CURSO.reduce((s,a) => s + (a.duracao_min||0), 0) + dados.duracao_min
-  }).eq('id', cursoAulasId);
-
-  fecharAula();
-  abrirAulasCurso(cursoAulasId);
-}
-
-async function excluirAula(id) {
-  if (!confirm('Excluir esta aula?')) return;
-  const { error } = await sb.from('aulas').delete().eq('id', id);
-  if (error) { alert('Erro: ' + error.message); return; }
-  abrirAulasCurso(cursoAulasId);
-}
-
-// ============================================
-// PROJETO DE DOAÇÃO
-// ============================================
-function abrirProjetoDoacao() {
-  alert('Sistema de doações: estrutura no banco pronta. Interface visual será construída na próxima etapa.');
-}
-
-
-// CLIENTE SUPABASE: vem de core-supabase.js (window.sb)
-// AUTH: usa IconzaAuth para proteção de rota e cache de perfil
-
+// ════════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════════
 let TODOS = [];
+let TODOS_CURSOS = [];
+let AULAS_CURSO = [];
 let usuarioAtual = null;
 let perfilAdmin = null;
+let cursoAtual = null;
+let cursoAulasId = null;
 
-// ============================================
-// AUTH + AUTORIZAÇÃO
-// ============================================
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
 async function init() {
-  // requireAdmin já redireciona se não for admin/founder
-  // ANTES: 16 linhas. AGORA: 1.
   perfilAdmin = await IconzaAuth.requireAdmin();
-
   renderAdminUI(perfilAdmin);
-
-  // Carrega dados em paralelo
   await carregarUsuarios();
   await carregarCursos();
-
   document.getElementById('agoraData').textContent = IconzaUtils.formatarDataLonga();
-  setTimeout(() => document.getElementById('load').classList.add('hide'), 400);
+  setTimeout(() => document.getElementById('iz-load').classList.add('hide'), 400);
 }
 
 function renderAdminUI(p) {
   const nome = p.nome_completo || p.email.split('@')[0];
-  const inicial = IconzaUtils.inicial(nome);
-
+  const inicial = IconzaUtils.inicial ? IconzaUtils.inicial(nome) : nome.charAt(0).toUpperCase();
   document.getElementById('adm-nome').textContent = nome;
   document.getElementById('adm-nome-top').textContent = '👑 ' + nome;
-
   const av = document.getElementById('adm-av');
-  const avatar = perfilAdmin.avatar_url || null;
-  if (avatar) av.innerHTML = `<img src="${avatar}">`;
+  if (p.avatar_url) av.innerHTML = `<img src="${p.avatar_url}">`;
   else av.textContent = inicial;
 }
 
-// ============================================
-// USUÁRIOS — Carrega da tabela profiles
-// ============================================
+// ════════════════════════════════════════════
+// NAVEGAÇÃO
+// ════════════════════════════════════════════
+function mostrar(modulo, btn) {
+  document.querySelectorAll('.modulo').forEach(m => m.classList.remove('ativo'));
+  document.querySelectorAll('.iz-nav-item').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('mod-' + modulo).classList.add('ativo');
+  btn.classList.add('ativo');
+}
+
+// ════════════════════════════════════════════
+// USUÁRIAS
+// ════════════════════════════════════════════
 async function carregarUsuarios() {
-  const { data, error } = await sb
-    .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Erro carregar usuários:', error);
-    document.getElementById('tabUsuarios').innerHTML = `<tr><td colspan="8" class="empty">Erro: ${error.message}</td></tr>`;
-    return;
-  }
-
+  const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+  if (error) { console.error('Erro carregar usuários:', error); return; }
   TODOS = data || [];
   preencherFiltroPaises();
   atualizarStats();
@@ -1213,8 +954,6 @@ function atualizarStats() {
   document.getElementById('s-idiomas').textContent = idiomas.length || '—';
   document.getElementById('s-hoje').textContent = cadHoje;
   document.getElementById('s-semana').textContent = cadSemana;
-
-  // Sidebar counters
   document.getElementById('cnt-usuarios').textContent = total;
   document.getElementById('cnt-onb').textContent = completos;
   document.getElementById('usuariosCount').textContent = `${total} usuária(s) cadastrada(s) · ${completos} com onboarding completo`;
@@ -1222,29 +961,25 @@ function atualizarStats() {
 
 function renderTabela(lista) {
   const tb = document.getElementById('tabUsuarios');
-  if (!lista.length) {
-    tb.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma usuária encontrada.</td></tr>';
-    return;
-  }
+  if (!lista.length) { tb.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma usuária encontrada.</td></tr>'; return; }
   tb.innerHTML = lista.map(u => {
     const inic = (u.nome_completo || u.email || '?').charAt(0).toUpperCase();
     const av = u.avatar_url ? `<img src="${u.avatar_url}">` : inic;
-    const stCor = u.status === 'Em andamento' ? 'b-verde' : u.status === 'Pendente' ? 'b-gold' : u.status === 'Cancelado' ? 'b-vm' : 'b-cinza';
+    const stCor = u.status === 'Em andamento' ? 'b-verde' : u.status === 'Pendente' ? 'b-amber' : u.status === 'Cancelado' ? 'b-vm' : 'b-cinza';
     const onbCor = u.onboarding_completo ? 'b-verde' : 'b-cinza';
     const onbLb = u.onboarding_completo ? '✓ Completo' : '○ Pendente';
     const data = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—';
     const idiomaMap = {pt:'🇧🇷 PT',en:'🇺🇸 EN',it:'🇮🇹 IT',es:'🇪🇸 ES',fr:'🇫🇷 FR'};
     const idioma = idiomaMap[u.idioma] || (u.idioma || '—');
-
     return `<tr onclick="abrirModal('${u.id}')">
-      <td><div style="display:flex;align-items:center;gap:.7rem"><div class="td-av">${av}</div><div><div class="td-nm">${u.nome_completo || '—'}</div><div class="td-em">${u.email}</div></div></div></td>
-      <td>${u.telefone || '<span style="color:var(--borda)">—</span>'}</td>
-      <td>${u.pais || '<span style="color:var(--borda)">—</span>'}</td>
-      <td><span class="bdg b-azul">${u.produto || 'Gratuito'}</span></td>
+      <td><div style="display:flex;align-items:center;gap:.65rem"><div class="td-av">${av}</div><div><div class="td-nm">${u.nome_completo || '—'}</div><div class="td-em">${u.email}</div></div></div></td>
+      <td>${u.telefone || '<span style="color:var(--cinza-300)">—</span>'}</td>
+      <td>${u.pais || '<span style="color:var(--cinza-300)">—</span>'}</td>
+      <td><span class="bdg b-indigo">${u.produto || 'Gratuito'}</span></td>
       <td style="font-size:.78rem">${idioma}</td>
       <td><span class="bdg ${stCor}">${u.status || '—'}</span></td>
       <td><span class="bdg ${onbCor}">${onbLb}</span></td>
-      <td style="font-size:.74rem;color:var(--cinza)">${data}</td>
+      <td style="font-size:.74rem;color:var(--cinza-500)">${data}</td>
     </tr>`;
   }).join('');
 }
@@ -1255,7 +990,6 @@ function filtrarUsuarios() {
   const s = document.getElementById('fStatus').value;
   const pa = document.getElementById('fPais').value;
   const o = document.getElementById('fOnb').value;
-
   const filtrado = TODOS.filter(u => {
     const mb = !b || (u.nome_completo||'').toLowerCase().includes(b) || (u.email||'').toLowerCase().includes(b) || (u.telefone||'').toLowerCase().includes(b);
     const mp = !p || u.produto === p;
@@ -1267,110 +1001,104 @@ function filtrarUsuarios() {
   renderTabela(filtrado);
 }
 
-// ============================================
-// DASHBOARD — Cards de análise
-// ============================================
+// ════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════
 function renderDashboard() {
   // Últimos cadastros
-  const ultimos = TODOS.slice(0, 5);
+  const ultimos = TODOS.slice(0,5);
   document.getElementById('ultimosCadastros').innerHTML = ultimos.length ? ultimos.map(u => {
     const inic = (u.nome_completo || u.email).charAt(0).toUpperCase();
     const av = u.avatar_url ? `<img src="${u.avatar_url}" style="width:100%;height:100%;object-fit:cover">` : inic;
     const data = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '';
-    return `<div style="display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--borda)" onclick="abrirModal('${u.id}')" style="cursor:pointer">
+    return `<div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--borda);cursor:pointer" onclick="abrirModal('${u.id}')">
       <div class="td-av">${av}</div>
-      <div style="flex:1"><div style="font-size:.85rem;font-weight:600">${u.nome_completo || u.email.split('@')[0]}</div><div style="font-size:.72rem;color:var(--cinza)">${u.email}</div></div>
-      <span style="font-size:.7rem;color:var(--cinza)">${data}</span>
+      <div style="flex:1"><div style="font-size:.84rem;font-weight:600">${u.nome_completo || u.email.split('@')[0]}</div><div style="font-size:.72rem;color:var(--cinza-500)">${u.email}</div></div>
+      <span style="font-size:.7rem;color:var(--cinza-500)">${data}</span>
     </div>`;
   }).join('') : '<p class="empty">Sem cadastros ainda.</p>';
 
-  // Distribuição por país
+  // Por país
   const paises = {};
-  TODOS.forEach(u => { if (u.pais) paises[u.pais] = (paises[u.pais] || 0) + 1; });
-  const paisesOrd = Object.entries(paises).sort((a,b) => b[1]-a[1]).slice(0,6);
+  TODOS.forEach(u => { if(u.pais) paises[u.pais] = (paises[u.pais]||0)+1; });
+  const paisesOrd = Object.entries(paises).sort((a,b)=>b[1]-a[1]).slice(0,6);
   document.getElementById('distPais').innerHTML = paisesOrd.length ? paisesOrd.map(([p,c]) => {
     const pct = Math.round((c/TODOS.length)*100);
-    return `<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>${p}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:4px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--vm)"></div></div></div>`;
+    return `<div class="bar-row"><div class="bar-label"><span>${p}</span><span>${c} · ${pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div></div>`;
   }).join('') : '<p class="empty">Sem dados.</p>';
 
-  // Aptidões em alta
+  // Aptidões
   const apt = {};
   TODOS.forEach(u => (u.aptidoes||[]).forEach(a => { apt[a] = (apt[a]||0)+1; }));
-  const aptOrd = Object.entries(apt).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const aptOrd = Object.entries(apt).sort((a,b)=>b[1]-a[1]).slice(0,5);
   document.getElementById('aptidoesAlta').innerHTML = aptOrd.length ? aptOrd.map(([a,c]) =>
-    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem;font-weight:500">${a}</span><span class="bdg b-vm">${c}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.84rem;font-weight:500">${a}</span><span class="bdg b-indigo">${c}</span></div>`
   ).join('') : '<p class="empty">Aguardando dados.</p>';
 
   // Produtos
   const prods = {};
-  TODOS.forEach(u => { if (u.produto) prods[u.produto] = (prods[u.produto]||0)+1; });
-  const prodOrd = Object.entries(prods).sort((a,b) => b[1]-a[1]);
+  TODOS.forEach(u => { if(u.produto) prods[u.produto] = (prods[u.produto]||0)+1; });
+  const prodOrd = Object.entries(prods).sort((a,b)=>b[1]-a[1]);
   document.getElementById('prodTop').innerHTML = prodOrd.length ? prodOrd.map(([p,c]) => {
     const pct = Math.round((c/TODOS.length)*100);
-    return `<div style="margin-bottom:.7rem"><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>${p}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:4px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--gold)"></div></div></div>`;
+    return `<div class="bar-row"><div class="bar-label"><span>${p}</span><span>${c} · ${pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--amber)"></div></div></div>`;
   }).join('') : '<p class="empty">Sem dados.</p>';
 }
 
-// ============================================
-// ONBOARDING — Painel analítico
-// ============================================
+// ════════════════════════════════════════════
+// ONBOARDING
+// ════════════════════════════════════════════
 function renderOnboarding() {
   const total = TODOS.length;
   const completos = TODOS.filter(u => u.onboarding_completo).length;
   const incompletos = total - completos;
   const taxa = total ? Math.round((completos/total)*100) : 0;
-
   document.getElementById('o-completos').textContent = completos;
   document.getElementById('o-incompletos').textContent = incompletos;
   document.getElementById('o-taxa').textContent = taxa + '%';
-
   const objs = {};
   TODOS.forEach(u => (u.objetivo||[]).forEach(o => { objs[o] = (objs[o]||0)+1; }));
   document.getElementById('o-objetivos').textContent = Object.keys(objs).length;
-
-  const objOrd = Object.entries(objs).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const objOrd = Object.entries(objs).sort((a,b)=>b[1]-a[1]).slice(0,5);
   document.getElementById('objTop').innerHTML = objOrd.length ? objOrd.map(([o,c]) =>
-    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem">${o}</span><span class="bdg b-azul">${c}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.84rem">${o}</span><span class="bdg b-indigo">${c}</span></div>`
   ).join('') : '<p class="empty">Sem dados.</p>';
-
   const orig = {};
-  TODOS.forEach(u => { if (u.origem) orig[u.origem] = (orig[u.origem]||0)+1; });
-  const origOrd = Object.entries(orig).sort((a,b) => b[1]-a[1]);
+  TODOS.forEach(u => { if(u.origem) orig[u.origem] = (orig[u.origem]||0)+1; });
+  const origOrd = Object.entries(orig).sort((a,b)=>b[1]-a[1]);
   document.getElementById('origemTop').innerHTML = origOrd.length ? origOrd.map(([o,c]) =>
-    `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.85rem">${o}</span><span class="bdg b-gold">${c}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--borda)"><span style="font-size:.84rem">${o}</span><span class="bdg b-amber">${c}</span></div>`
   ).join('') : '<p class="empty">Sem dados.</p>';
-
   const horarios = {Manhã:0,Tarde:0,Noite:0};
-  TODOS.forEach(u => (u.horarios||[]).forEach(h => { if (horarios[h] !== undefined) horarios[h]++; }));
+  TODOS.forEach(u => (u.horarios||[]).forEach(h => { if(horarios[h]!==undefined) horarios[h]++; }));
   document.getElementById('horariosDist').innerHTML = Object.entries(horarios).map(([h,c]) => {
     const pct = total ? Math.round((c/total)*100) : 0;
-    const icon = h === 'Manhã' ? '🌅' : h === 'Tarde' ? '☀️' : '🌙';
-    return `<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.3rem"><span>${icon} ${h}</span><span style="color:var(--cinza)">${c} · ${pct}%</span></div><div style="height:6px;background:var(--borda)"><div style="height:100%;width:${pct}%;background:var(--vm)"></div></div></div>`;
+    const icon = h==='Manhã'?'🌅':h==='Tarde'?'☀️':'🌙';
+    return `<div class="bar-row"><div class="bar-label"><span>${icon} ${h}</span><span>${c} · ${pct}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div></div>`;
   }).join('');
 }
 
-// ============================================
-// CONFIG — Lista admins
-// ============================================
+// ════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════
 function renderConfig() {
   const admins = TODOS.filter(u => u.role === 'admin' || u.role === 'mentor');
   document.getElementById('listaAdmins').innerHTML = admins.length ? admins.map(a =>
-    `<div style="display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--borda)">
+    `<div style="display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--borda)">
       <div class="td-av">${(a.nome_completo||a.email).charAt(0).toUpperCase()}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.88rem">${a.nome_completo||a.email}</div><div style="font-size:.72rem;color:var(--cinza)">${a.email}</div></div>
-      <span class="bdg b-vm">${a.role}</span>
+      <div style="flex:1"><div style="font-weight:600;font-size:.86rem">${a.nome_completo||a.email}</div><div style="font-size:.72rem;color:var(--cinza-500)">${a.email}</div></div>
+      <span class="bdg b-indigo">${a.role}</span>
     </div>`
-  ).join('') : '<p class="empty">Nenhum admin.</p>';
+  ).join('') : '<p class="empty">Nenhum admin além da founder.</p>';
 }
 
-// ============================================
-// MODAL DETALHE
-// ============================================
+// ════════════════════════════════════════════
+// MODAL USUÁRIA
+// ════════════════════════════════════════════
 function abrirModal(id) {
   usuarioAtual = TODOS.find(u => u.id === id);
   if (!usuarioAtual) return;
   const u = usuarioAtual;
-
   const inic = (u.nome_completo||'?').charAt(0).toUpperCase();
   document.getElementById('mAv').innerHTML = u.avatar_url ? `<img src="${u.avatar_url}">` : inic;
   document.getElementById('mNome').textContent = u.nome_completo || '—';
@@ -1390,26 +1118,18 @@ function abrirModal(id) {
   document.getElementById('mObs').textContent = u.observacoes || '—';
   document.getElementById('mDt').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '—';
   document.getElementById('mStatusSel').value = u.status || 'Em andamento';
-  document.getElementById('mApt').innerHTML = (u.aptidoes||[]).map(t => `<span class="bdg b-cinza">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
-  document.getElementById('mObj').innerHTML = (u.objetivo||[]).map(t => `<span class="bdg b-azul">${t}</span>`).join('') || '<span style="color:var(--borda)">—</span>';
-
+  document.getElementById('mApt').innerHTML = (u.aptidoes||[]).map(t => `<span class="bdg b-cinza">${t}</span>`).join('') || '<span style="color:var(--cinza-300)">—</span>';
+  document.getElementById('mObj').innerHTML = (u.objetivo||[]).map(t => `<span class="bdg b-indigo">${t}</span>`).join('') || '<span style="color:var(--cinza-300)">—</span>';
   document.getElementById('modal').classList.add('show');
 }
 
-function fechar() {
-  document.getElementById('modal').classList.remove('show');
-}
+function fechar() { document.getElementById('modal').classList.remove('show'); }
 
 async function salvarStatus() {
   if (!usuarioAtual) return;
   const novoStatus = document.getElementById('mStatusSel').value;
-  const { error } = await sb
-    .from('profiles')
-    .update({ status: novoStatus })
-    .eq('id', usuarioAtual.id);
-
+  const { error } = await sb.from('profiles').update({ status: novoStatus }).eq('id', usuarioAtual.id);
   if (error) { alert('Erro: ' + error.message); return; }
-
   usuarioAtual.status = novoStatus;
   const idx = TODOS.findIndex(u => u.id === usuarioAtual.id);
   if (idx >= 0) TODOS[idx].status = novoStatus;
@@ -1417,45 +1137,271 @@ async function salvarStatus() {
   fechar();
 }
 
-// ============================================
-// NAVEGAÇÃO ENTRE MÓDULOS
-// ============================================
-function mostrar(modulo, btn) {
-  document.querySelectorAll('.modulo').forEach(m => m.classList.remove('ativo'));
-  document.querySelectorAll('.adm-side-item').forEach(b => b.classList.remove('ativo'));
-  document.getElementById('mod-' + modulo).classList.add('ativo');
-  btn.classList.add('ativo');
+// ════════════════════════════════════════════
+// CURSOS
+// ════════════════════════════════════════════
+async function carregarCursos() {
+  const { data, error } = await sb.from('cursos').select('*').order('ordem', { ascending: true }).order('created_at', { ascending: false });
+  if (error) { document.getElementById('cursosGrid').innerHTML = `<p class="empty">Erro: ${error.message}</p>`; return; }
+  TODOS_CURSOS = data || [];
+  renderCursos();
+  atualizarStatsCursos();
 }
 
-// ============================================
-// EXPORTAR CSV
-// ============================================
+function atualizarStatsCursos() {
+  document.getElementById('c-total').textContent = TODOS_CURSOS.length;
+  document.getElementById('c-pub').textContent = TODOS_CURSOS.filter(c => c.status === 'publicado').length;
+  document.getElementById('c-mat').textContent = TODOS_CURSOS.reduce((s,c) => s+(c.total_matriculas||0), 0);
+}
+
+function renderCursos() {
+  const grid = document.getElementById('cursosGrid');
+  if (!TODOS_CURSOS.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;background:var(--branco);border:2px dashed var(--borda);padding:3rem;text-align:center;border-radius:var(--radius)">
+      <div style="font-size:2rem;margin-bottom:.75rem">📖</div>
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:.4rem">Nenhum universo criado ainda</h3>
+      <p style="font-size:.82rem;color:var(--cinza-500);margin-bottom:1rem">Comece criando seu primeiro portal criativo</p>
+      <button class="btn-prim" onclick="abrirCursoNovo()">+ Criar primeiro universo</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = TODOS_CURSOS.map(c => {
+    const stCor = c.status === 'publicado' ? 'b-verde' : c.status === 'rascunho' ? 'b-amber' : 'b-cinza';
+    const tipoLb = c.tipo === 'pago' ? `R$ ${Number(c.preco||0).toFixed(2)}` : c.tipo === 'assinatura' ? 'Assinatura' : 'Gratuito';
+    const tipoCor = c.tipo === 'pago' ? 'b-indigo' : c.tipo === 'assinatura' ? 'b-amber' : 'b-verde';
+    const capa = c.capa_url
+      ? `<img src="${c.capa_url}" style="width:100%;height:150px;object-fit:cover">`
+      : `<div style="width:100%;height:150px;background:var(--grafite);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.1);font-family:'Instrument Serif',serif;font-size:2.5rem;font-style:italic">${(c.titulo||'').charAt(0).toUpperCase()}</div>`;
+    return `<div style="background:var(--branco);border:1px solid var(--borda);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s;cursor:pointer"
+      onmouseenter="this.style.borderColor='var(--indigo)';this.style.boxShadow='var(--shadow)'"
+      onmouseleave="this.style.borderColor='var(--borda)';this.style.boxShadow='none'">
+      ${capa}
+      <div style="padding:1rem;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;gap:.35rem;margin-bottom:.5rem;flex-wrap:wrap">
+          <span class="bdg ${stCor}">${c.status}</span>
+          <span class="bdg ${tipoCor}">${tipoLb}</span>
+          ${c.fase ? `<span class="bdg b-cinza">Fase ${c.fase}</span>` : ''}
+        </div>
+        <h3 style="font-size:.92rem;font-weight:700;color:var(--preto);margin-bottom:.25rem;line-height:1.3">${c.titulo}</h3>
+        ${c.subtitulo ? `<p style="font-size:.74rem;color:var(--cinza-500);font-style:italic;margin-bottom:.5rem">${c.subtitulo}</p>` : ''}
+        <p style="font-size:.76rem;color:var(--cinza-500);line-height:1.6;margin-bottom:.85rem;flex:1">${(c.descricao||'').substring(0,110)}${(c.descricao||'').length>110?'...':''}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:.7rem;border-top:1px solid var(--borda);font-size:.7rem;color:var(--cinza-500);margin-bottom:.7rem">
+          <span>${c.total_aulas||0} aulas · ${c.total_matriculas||0} alunas</span>
+        </div>
+        <div style="display:flex;gap:.4rem">
+          <button onclick="abrirAulasCurso('${c.id}')" class="btn-m btn-m-s" style="flex:1;font-size:.62rem">Aulas</button>
+          <button onclick="editarCurso('${c.id}')" class="btn-m btn-m-p" style="flex:1;font-size:.62rem">Editar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirCursoNovo() {
+  cursoAtual = null;
+  document.getElementById('mcTituloHeader').textContent = 'Novo Universo Criativo';
+  ['mc_id','mc_titulo','mc_subtitulo','mc_descricao','mc_capa','mc_trailer'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mc_fase').value = '1';
+  document.getElementById('mc_nivel').value = 'iniciante';
+  document.getElementById('mc_idioma').value = 'pt';
+  document.getElementById('mc_status').value = 'rascunho';
+  document.getElementById('mc_tipo').value = 'pago';
+  document.getElementById('mc_preco').value = '297.00';
+  document.getElementById('mc_gratis').value = '3';
+  document.getElementById('modalCurso').classList.add('show');
+}
+
+function editarCurso(id) {
+  const c = TODOS_CURSOS.find(x => x.id === id);
+  if (!c) return;
+  cursoAtual = c;
+  document.getElementById('mcTituloHeader').textContent = 'Editar ' + c.titulo;
+  document.getElementById('mc_id').value = c.id;
+  document.getElementById('mc_titulo').value = c.titulo || '';
+  document.getElementById('mc_subtitulo').value = c.subtitulo || '';
+  document.getElementById('mc_descricao').value = c.descricao || '';
+  document.getElementById('mc_capa').value = c.capa_url || '';
+  document.getElementById('mc_trailer').value = c.trailer_url || '';
+  document.getElementById('mc_fase').value = c.fase || 1;
+  document.getElementById('mc_nivel').value = c.nivel || 'iniciante';
+  document.getElementById('mc_idioma').value = c.idioma || 'pt';
+  document.getElementById('mc_status').value = c.status || 'rascunho';
+  document.getElementById('mc_tipo').value = c.tipo || 'gratuito';
+  document.getElementById('mc_preco').value = c.preco || 0;
+  document.getElementById('mc_gratis').value = c.modulos_gratis || 3;
+  document.getElementById('modalCurso').classList.add('show');
+}
+
+function fecharCurso() { document.getElementById('modalCurso').classList.remove('show'); }
+
+function slugify(text) {
+  return (text||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 -]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+}
+
+async function salvarCurso() {
+  const titulo = document.getElementById('mc_titulo').value.trim();
+  if (!titulo) { alert('Digite o título do universo.'); return; }
+  const id = document.getElementById('mc_id').value;
+  const dados = {
+    titulo,
+    slug: cursoAtual?.slug || slugify(titulo)+'-'+Date.now().toString(36),
+    subtitulo: document.getElementById('mc_subtitulo').value.trim() || null,
+    descricao: document.getElementById('mc_descricao').value.trim() || null,
+    capa_url: document.getElementById('mc_capa').value.trim() || null,
+    trailer_url: document.getElementById('mc_trailer').value.trim() || null,
+    fase: parseInt(document.getElementById('mc_fase').value),
+    nivel: document.getElementById('mc_nivel').value,
+    idioma: document.getElementById('mc_idioma').value,
+    status: document.getElementById('mc_status').value,
+    tipo: document.getElementById('mc_tipo').value,
+    preco: parseFloat(document.getElementById('mc_preco').value) || 0,
+    modulos_gratis: parseInt(document.getElementById('mc_gratis').value) || 3,
+    criador_id: perfilAdmin.id,
+    updated_at: new Date().toISOString()
+  };
+  let result;
+  if (id) result = await sb.from('cursos').update(dados).eq('id',id).select().single();
+  else result = await sb.from('cursos').insert(dados).select().single();
+  if (result.error) { alert('Erro ao salvar: ' + result.error.message); return; }
+  fecharCurso();
+  await carregarCursos();
+}
+
+// ════════════════════════════════════════════
+// AULAS
+// ════════════════════════════════════════════
+async function abrirAulasCurso(cursoId) {
+  cursoAulasId = cursoId;
+  const c = TODOS_CURSOS.find(x => x.id === cursoId);
+  if (!c) return;
+  document.getElementById('maTitulo').textContent = c.titulo;
+  document.getElementById('maSub').textContent = c.subtitulo || 'Gerencie as aulas deste universo';
+  document.getElementById('modalAulas').classList.add('show');
+  const { data, error } = await sb.from('aulas').select('*').eq('curso_id',cursoId).order('ordem', { ascending: true });
+  if (error) { document.getElementById('listaAulas').innerHTML = `<p class="empty">Erro: ${error.message}</p>`; return; }
+  AULAS_CURSO = data || [];
+  renderAulas();
+}
+
+function renderAulas() {
+  const lista = document.getElementById('listaAulas');
+  if (!AULAS_CURSO.length) {
+    lista.innerHTML = `<div style="padding:2rem;text-align:center;background:var(--off);border-radius:var(--radius)">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">🎬</div>
+      <p style="font-size:.84rem;color:var(--cinza-500)">Nenhuma aula ainda. Comece adicionando a primeira.</p>
+    </div>`;
+    return;
+  }
+  lista.innerHTML = AULAS_CURSO.map((a,i) => `
+    <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;border:1px solid var(--borda);margin-bottom:.4rem;background:var(--branco);border-radius:6px">
+      <div style="width:28px;height:28px;background:var(--off);border:1px solid var(--borda);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--cinza-500);font-size:.8rem;border-radius:4px;flex-shrink:0">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.86rem">${a.titulo}</div>
+        <div style="font-size:.7rem;color:var(--cinza-500);margin-top:.15rem">
+          <span class="bdg ${a.gratuita ? 'b-verde' : 'b-cinza'}">${a.gratuita ? 'Grátis' : 'Premium'}</span>
+          ${a.tipo} · ${a.duracao_min||0} min
+        </div>
+      </div>
+      <button onclick="editarAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.62rem">Editar</button>
+      <button onclick="excluirAula('${a.id}')" class="btn-m btn-m-s" style="font-size:.62rem;color:var(--vm);border-color:var(--vm)">Excluir</button>
+    </div>
+  `).join('');
+}
+
+function adicionarAula() {
+  document.getElementById('ma_id').value = '';
+  document.getElementById('ma_titulo').value = '';
+  document.getElementById('ma_descricao').value = '';
+  document.getElementById('ma_tipo').value = 'video';
+  document.getElementById('ma_duracao').value = '';
+  document.getElementById('ma_video').value = '';
+  document.getElementById('ma_gratuita').checked = AULAS_CURSO.length < 3;
+  document.getElementById('modalAula').classList.add('show');
+}
+
+function editarAula(id) {
+  const a = AULAS_CURSO.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('ma_id').value = a.id;
+  document.getElementById('ma_titulo').value = a.titulo || '';
+  document.getElementById('ma_descricao').value = a.descricao || '';
+  document.getElementById('ma_tipo').value = a.tipo || 'video';
+  document.getElementById('ma_duracao').value = a.duracao_min || 0;
+  document.getElementById('ma_video').value = a.video_url || '';
+  document.getElementById('ma_gratuita').checked = a.gratuita || false;
+  document.getElementById('modalAula').classList.add('show');
+}
+
+function fecharAula() { document.getElementById('modalAula').classList.remove('show'); }
+function fecharAulas() { document.getElementById('modalAulas').classList.remove('show'); carregarCursos(); }
+
+async function salvarAula() {
+  const titulo = document.getElementById('ma_titulo').value.trim();
+  if (!titulo) { alert('Digite o título da aula.'); return; }
+  const id = document.getElementById('ma_id').value;
+  const videoUrl = document.getElementById('ma_video').value.trim();
+  let provider = null;
+  if (videoUrl) {
+    if (videoUrl.includes('youtube') || videoUrl.includes('youtu.be')) provider = 'youtube';
+    else if (videoUrl.includes('vimeo')) provider = 'vimeo';
+    else provider = 'external';
+  }
+  const dados = {
+    curso_id: cursoAulasId, titulo,
+    descricao: document.getElementById('ma_descricao').value.trim() || null,
+    tipo: document.getElementById('ma_tipo').value,
+    duracao_min: parseInt(document.getElementById('ma_duracao').value) || 0,
+    video_url: videoUrl || null, video_provider: provider,
+    gratuita: document.getElementById('ma_gratuita').checked,
+    ordem: id ? undefined : AULAS_CURSO.length,
+    publicada: true, updated_at: new Date().toISOString()
+  };
+  let result;
+  if (id) { delete dados.ordem; result = await sb.from('aulas').update(dados).eq('id',id).select().single(); }
+  else result = await sb.from('aulas').insert(dados).select().single();
+  if (result.error) { alert('Erro: ' + result.error.message); return; }
+  await sb.from('cursos').update({
+    total_aulas: AULAS_CURSO.length + (id ? 0 : 1),
+    duracao_total_min: AULAS_CURSO.reduce((s,a) => s+(a.duracao_min||0), 0) + dados.duracao_min
+  }).eq('id', cursoAulasId);
+  fecharAula();
+  abrirAulasCurso(cursoAulasId);
+}
+
+async function excluirAula(id) {
+  if (!confirm('Excluir esta aula?')) return;
+  const { error } = await sb.from('aulas').delete().eq('id', id);
+  if (error) { alert('Erro: ' + error.message); return; }
+  abrirAulasCurso(cursoAulasId);
+}
+
+// ════════════════════════════════════════════
+// DOAÇÃO / EXPORTAR / SAIR
+// ════════════════════════════════════════════
+function abrirProjetoDoacao() {
+  alert('Sistema de doações: estrutura no banco pronta. Interface visual será construída na próxima etapa.');
+}
+
 function exportarCSV() {
   const headers = ['Nome','Email','Telefone','Aniversário','País','Cidade','Filhos','Etnia','Signo','Aptidões','Horários','Instagram','YouTube','TikTok','Produto','Objetivo','Origem','Status','Onboarding','Idioma','Cadastro'];
   const linhas = TODOS.map(u => [
-    u.nome_completo||'', u.email||'', u.telefone||'', u.aniversario||'',
-    u.pais||'', u.cidade||'', u.filhos||'', u.etnia||'', u.signo||'',
-    (u.aptidoes||[]).join(';'), (u.horarios||[]).join(';'),
-    u.instagram||'', u.youtube||'', u.tiktok||'',
-    u.produto||'', (u.objetivo||[]).join(';'), u.origem||'',
-    u.status||'', u.onboarding_completo?'Sim':'Não', u.idioma||'',
+    u.nome_completo||'',u.email||'',u.telefone||'',u.aniversario||'',
+    u.pais||'',u.cidade||'',u.filhos||'',u.etnia||'',u.signo||'',
+    (u.aptidoes||[]).join(';'),(u.horarios||[]).join(';'),
+    u.instagram||'',u.youtube||'',u.tiktok||'',
+    u.produto||'',(u.objetivo||[]).join(';'),u.origem||'',
+    u.status||'',u.onboarding_completo?'Sim':'Não',u.idioma||'',
     u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : ''
   ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
-
   const csv = [headers.join(','), ...linhas].join('\n');
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = `iconza-usuarios-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = `iconza-usuarios-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
 }
 
-function sair() {
-  // Agora usa logout centralizado (vai pra sair.html que limpa tudo)
-  IconzaAuth.logout();
-}
+function sair() { IconzaAuth.logout(); }
 
 init();
 </script>
