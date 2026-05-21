@@ -569,7 +569,13 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
     <!-- SIDEBAR -->
     <aside class="iz-side">
       <div class="iz-side-user">
-        <div class="iz-side-av" id="adm-av">L</div>
+        <div class="iz-side-av" id="adm-av" title="Trocar foto" onclick="document.getElementById('avatarInput').click()"
+             style="cursor:pointer;position:relative">L
+          <div style="position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;background:var(--indigo);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--grafite)">
+            <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this.files[0])">
         <div>
           <div class="iz-side-nome" id="adm-nome">Carregando</div>
           <div class="iz-side-cargo">Fundadora · Admin</div>
@@ -1717,6 +1723,81 @@ function exportarCSV() {
 }
 
 function sair() { IconzaAuth.logout(); }
+
+// ── UPLOAD DE AVATAR ─────────────────────────────────
+async function uploadAvatar(file) {
+  if (!file || !perfilAdmin) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Selecione uma imagem (JPG, PNG, WEBP).');
+    return;
+  }
+  if (file.size > 3 * 1024 * 1024) {
+    alert('Imagem muito grande. Máximo 3MB.');
+    return;
+  }
+
+  const av = document.getElementById('adm-av');
+  const originalContent = av.innerHTML;
+  av.style.opacity = '.5';
+
+  try {
+    // Gera nome único: avatars/{userId}.{ext}
+    const ext = file.name.split('.').pop().toLowerCase();
+    const filename = `${perfilAdmin.id}.${ext}`;
+
+    // Upload para bucket avatars
+    const { error: uploadError } = await sb.storage
+      .from('avatars')
+      .upload(filename, file, {
+        upsert: true,          // sobrescreve se já existe
+        contentType: file.type,
+        cacheControl: '3600',
+      });
+
+    if (uploadError) {
+      // Tenta criar bucket se não existir e retentar
+      if (uploadError.message?.includes('Bucket not found') || uploadError.statusCode === 400) {
+        await sb.storage.createBucket('avatars', { public: true }).catch(() => {});
+        const { error: retry } = await sb.storage.from('avatars').upload(filename, file, {
+          upsert: true, contentType: file.type
+        });
+        if (retry) throw retry;
+      } else {
+        throw uploadError;
+      }
+    }
+
+    // Pega URL pública com cache busting
+    const { data: urlData } = sb.storage.from('avatars').getPublicUrl(filename);
+    const avatarUrl = urlData.publicUrl + '?t=' + Date.now();
+
+    // Salva URL no perfil do banco
+    const { error: dbError } = await sb.from('profiles')
+      .update({ avatar_url: urlData.publicUrl })
+      .eq('id', perfilAdmin.id);
+
+    if (dbError) console.warn('Erro ao salvar URL no perfil:', dbError);
+
+    // Atualiza sidebar imediatamente (sem reload)
+    av.innerHTML = `<img src="${avatarUrl}" alt="${perfilAdmin.nome_completo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    av.style.opacity = '1';
+
+    // Atualiza cache local
+    perfilAdmin.avatar_url = urlData.publicUrl;
+
+    // Feedback
+    IconzaUtils?.toast?.('Foto atualizada!') || console.log('Avatar atualizado');
+
+  } catch (e) {
+    console.error('Erro upload avatar:', e);
+    av.innerHTML = originalContent;
+    av.style.opacity = '1';
+    alert('Erro ao enviar foto: ' + (e.message || 'Tente novamente.'));
+  }
+
+  // Limpa input
+  document.getElementById('avatarInput').value = '';
+}
 function trocarContaAdmin() {
   // Preview Mode — mesma sessão, sem logout, só muda visualização
   localStorage.setItem('iconza-preview-mode', 'aluna');
