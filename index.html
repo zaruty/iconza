@@ -85,32 +85,53 @@ body{
    claro após seção Fase 1 (via body + page-bg)
 */
 .page-bg{
-  position:fixed;inset:0;z-index:-1;
+  /* NOT fixed — flows with page height so gradient distributes correctly */
+  position:absolute;
+  top:0;left:0;right:0;
+  /* Height set by JS to match real page height */
+  min-height:100%;
+  z-index:-1;
+  /* Dark stays dominant until ~62% of page height
+     Transition is atmospheric, no hard line */
   background:
-    /* Topo: profundo quase preto */
-    linear-gradient(175deg,
-      var(--d1) 0%,
-      var(--d2) 18%,
-      var(--d3) 32%,
-      var(--d4) 48%,
-      /* transição atmosférica */
-      #3A1E4A 58%,
-      #5C3468 66%,
-      #8A5580 72%,
-      #B8879A 78%,
-      var(--c3) 84%,
-      var(--c2) 90%,
-      var(--c1) 100%
+    linear-gradient(180deg,
+      #07030F  0%,
+      #0D061A  8%,
+      #12091F  18%,
+      #160C24  28%,
+      #1B1028  38%,
+      #1E1230  46%,
+      #22133A  54%,
+      #271544  60%,
+      /* atmospheric dissolve begins here — very slow */
+      #341A50  64%,
+      #4A2260  67%,
+      #663370  70%,
+      #8A5080  73%,
+      #A87090  76%,
+      #C49098  79%,
+      #D8B4B8  82%,
+      #E4CDD0  86%,
+      #EDD8DC  90%,
+      #F0E0E4  94%,
+      #F3E8EA  100%
     );
   pointer-events:none;
 }
-/* Névoa neural — overlay no hero */
+/* Neural glow — right side of hero */
 .page-bg::before{
   content:'';position:absolute;
-  top:0;left:0;right:0;height:70vh;
+  top:0;right:0;width:55%;height:100vh;
   background:
-    radial-gradient(ellipse 80% 60% at 70% 25%, rgba(199,139,190,.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 20% 40%, rgba(185,127,181,.08) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 65% at 75% 28%, rgba(199,139,190,.11) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 55%, rgba(185,127,181,.07) 0%, transparent 55%);
+  pointer-events:none;
+}
+/* Left atmospheric nebula */
+.page-bg::after{
+  content:'';position:absolute;
+  top:20%;left:0;width:45%;height:60vh;
+  background:radial-gradient(ellipse 60% 50% at 15% 40%, rgba(150,100,160,.05) 0%, transparent 65%);
   pointer-events:none;
 }
 
@@ -177,35 +198,38 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .hero{
   min-height:100vh;padding-top:72px;
   position:relative;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;
+  /* Left-aligned editorial layout */
+  justify-content:flex-start;
   overflow:hidden;
 }
-/* Canvas neural por trás */
 #neural-canvas{
   position:absolute;inset:0;pointer-events:none;
-  opacity:.65;
+  opacity:.7;
 }
 
 .hero-content{
   position:relative;z-index:2;
-  text-align:center;
-  max-width:800px;
+  text-align:left;
+  max-width:560px;
   padding:0 var(--pad);
+  margin-left:0;
+  /* Editorial: content occupies left 55% */
 }
 .hero-eyebrow{
-  font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;
+  font-size:.56rem;letter-spacing:.45em;text-transform:uppercase;
   color:var(--g1);font-weight:500;
-  margin-bottom:2rem;opacity:0;
+  margin-bottom:1.75rem;opacity:0;
   animation:fadeUp .7s .1s forwards;display:block;
 }
 .hero-headline{
   font-family:var(--sans);
-  font-size:clamp(3.2rem,6.5vw,6rem);
+  font-size:clamp(3.5rem,7vw,6.4rem);
   font-weight:900;line-height:.88;
   color:var(--t1);
   margin-bottom:.3rem;
   opacity:0;animation:fadeUp .7s .2s forwards;
-  letter-spacing:-.02em;
+  letter-spacing:-.025em;
 }
 .hero-headline .ia{
   font-family:var(--serif);font-style:italic;font-weight:300;
@@ -214,17 +238,18 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .hero-linha{
   width:32px;height:1px;
   background:linear-gradient(90deg, var(--g1), transparent);
-  margin:2rem auto;
+  margin:2rem 0;
   opacity:0;animation:fadeUp .7s .3s forwards;
 }
 .hero-italic{
   font-family:var(--serif);font-style:italic;
-  font-size:1.4rem;color:var(--t3);line-height:1.6;
+  font-size:1.35rem;color:var(--t3);line-height:1.6;
+  text-align:left;
   margin-bottom:1.5rem;
   opacity:0;animation:fadeUp .7s .35s forwards;
 }
 .hero-pills{
-  display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;
+  display:flex;flex-wrap:wrap;gap:.4rem;justify-content:flex-start;
   margin-bottom:2.5rem;
   opacity:0;animation:fadeUp .7s .42s forwards;
 }
@@ -236,12 +261,12 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   border-radius:2px;
 }
 .hero-desc{
-  font-size:.95rem;line-height:1.95;color:var(--t3);
-  max-width:460px;margin:0 auto 3rem;
+  font-size:.9rem;line-height:1.95;color:var(--t3);
+  max-width:440px;margin:0 0 3rem;
   opacity:0;animation:fadeUp .7s .5s forwards;
 }
 .hero-btns{
-  display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;
+  display:flex;gap:1rem;justify-content:flex-start;flex-wrap:wrap;
   opacity:0;animation:fadeUp .7s .6s forwards;
 }
 .btn-prim{
@@ -303,8 +328,10 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   text-align:center;
   position:relative;overflow:hidden;
   border-radius:4px;
+  border:1px solid rgba(199,139,190,.1);
   transition:transform .22s,box-shadow .22s;
   cursor:default;
+  backdrop-filter:blur(4px);
 }
 .ut-card::after{
   content:'';position:absolute;inset:0;
@@ -375,14 +402,16 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   gap:1px;background:rgba(199,139,190,.1);
 }
 .ap-card{
-  background:rgba(255,255,255,.55);
-  backdrop-filter:blur(12px);
+  background:rgba(255,255,255,.35);
+  backdrop-filter:blur(16px) saturate(120%);
+  -webkit-backdrop-filter:blur(16px) saturate(120%);
   overflow:hidden;position:relative;
+  border:1px solid rgba(199,139,190,.12);
   transition:background .25s,box-shadow .25s;
 }
 .ap-card:hover{
-  background:rgba(255,255,255,.7);
-  box-shadow:0 8px 32px rgba(90,40,80,.12);
+  background:rgba(255,255,255,.5);
+  box-shadow:0 8px 32px rgba(90,40,80,.1),0 0 0 1px rgba(199,139,190,.15);
 }
 .ap-img{
   width:100%;height:180px;
@@ -415,13 +444,15 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   margin-top:3rem;
 }
 .tool{
-  background:rgba(255,255,255,.5);
-  backdrop-filter:blur(8px);
+  background:rgba(255,255,255,.28);
+  backdrop-filter:blur(14px) saturate(110%);
+  -webkit-backdrop-filter:blur(14px) saturate(110%);
   padding:2rem 1.5rem;
   display:flex;align-items:flex-start;gap:1rem;
+  border:1px solid rgba(199,139,190,.1);
   transition:background .2s;
 }
-.tool:hover{background:rgba(255,255,255,.68)}
+.tool:hover{background:rgba(255,255,255,.42)}
 .tool-logo{
   width:40px;height:40px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
@@ -439,9 +470,10 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   gap:0;align-items:start;margin-top:4rem;
 }
 .fase{
-  border:1px solid rgba(199,139,190,.2);
-  background:rgba(255,255,255,.45);
-  backdrop-filter:blur(8px);
+  border:1px solid rgba(199,139,190,.15);
+  background:rgba(255,255,255,.28);
+  backdrop-filter:blur(14px) saturate(110%);
+  -webkit-backdrop-filter:blur(14px) saturate(110%);
   padding:2.5rem 2rem;
   transition:transform .3s,border-color .3s,box-shadow .3s;
 }
@@ -551,12 +583,15 @@ footer p{font-size:.6rem;color:rgba(199,139,190,.2);letter-spacing:.06em}
 .reveal-r{opacity:0;transform:translateX(16px);transition:opacity .65s ease,transform .65s ease}
 .reveal-r.on{opacity:1;transform:translateX(0)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl1{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(5deg)}}
+@keyframes fl2{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(-4deg)}}
+@keyframes fl3{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px) rotate(3deg)}}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
   nav{padding:.85rem 1.25rem}
   .nav-links{display:none}
-  .hero-content{padding:0 1.25rem}
+  .hero-content{padding:0 1.25rem;text-align:left;max-width:100%}
   .secao-escura,.secao-transicao,.secao-clara{padding:3.5rem 1.25rem}
   .grid-8{grid-template-columns:repeat(2,1fr)}
   .grid-3,.fases-row{grid-template-columns:1fr}
@@ -607,6 +642,42 @@ footer p{font-size:.6rem;color:rgba(199,139,190,.2);letter-spacing:.06em}
 
 <!-- ══ HERO ══ -->
 <section class="hero" id="metodo">
+
+  <!-- Atmospheric vector elements — editorial, not gamer -->
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1">
+    <!-- Floating orb top right -->
+    <svg style="position:absolute;top:12%;right:8%;opacity:.07;animation:fl1 9s ease-in-out infinite" width="160" height="160" viewBox="0 0 160 160">
+      <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(199,139,190,1)" stroke-width=".8"/>
+      <circle cx="80" cy="80" r="50" fill="none" stroke="rgba(185,127,181,1)" stroke-width=".5" stroke-dasharray="3 6"/>
+      <circle cx="80" cy="80" r="28" fill="rgba(199,139,190,.08)"/>
+    </svg>
+    <!-- Delicate cross -->
+    <svg style="position:absolute;top:22%;left:3%;opacity:.055;animation:fl2 7s ease-in-out infinite .8s" width="58" height="58" viewBox="0 0 58 58">
+      <line stroke="rgba(199,139,190,1)" stroke-width="1" x1="29" y1="4" x2="29" y2="54"/>
+      <line stroke="rgba(199,139,190,1)" stroke-width="1" x1="4" y1="29" x2="54" y2="29"/>
+      <circle fill="none" stroke="rgba(199,139,190,1)" stroke-width=".8" cx="29" cy="29" r="10"/>
+    </svg>
+    <!-- Wave line -->
+    <svg style="position:absolute;bottom:22%;right:4%;opacity:.06;animation:fl3 11s ease-in-out infinite 2s" width="130" height="50" viewBox="0 0 130 50">
+      <path fill="none" stroke="rgba(199,139,190,1)" stroke-width="1" d="M4 25Q22 4 40 25Q58 46 76 25Q94 4 112 25Q121 35 130 25"/>
+      <path fill="none" stroke="rgba(185,127,181,.6)" stroke-width=".6" d="M4 35Q22 14 40 35Q58 56 76 35Q94 14 112 35"/>
+    </svg>
+    <!-- Diamond -->
+    <svg style="position:absolute;top:55%;left:5%;opacity:.05;animation:fl1 8s ease-in-out infinite 1.5s" width="52" height="68" viewBox="0 0 52 68">
+      <polygon fill="none" stroke="rgba(199,139,190,1)" stroke-width="1" points="26,4 48,34 26,64 4,34"/>
+      <polygon fill="none" stroke="rgba(199,139,190,.5)" stroke-width=".6" points="26,14 40,34 26,54 12,34"/>
+    </svg>
+    <!-- Spiral -->
+    <svg style="position:absolute;bottom:30%;right:18%;opacity:.05;animation:fl2 12s ease-in-out infinite 3s" width="72" height="72" viewBox="0 0 72 72">
+      <path fill="none" stroke="rgba(185,127,181,1)" stroke-width="1" d="M36 36Q50 22 36 12Q22 2 12 17Q2 32 17 47Q32 62 52 52Q66 42 62 24Q58 6 38 6"/>
+    </svg>
+    <!-- Tiny glow particles -->
+    <div style="position:absolute;width:3px;height:3px;background:rgba(199,139,190,.25);border-radius:50%;top:18%;right:32%;filter:blur(1px);animation:fl3 6s ease-in-out infinite .4s"></div>
+    <div style="position:absolute;width:2px;height:2px;background:rgba(216,166,204,.3);border-radius:50%;top:65%;right:25%;filter:blur(1px);animation:fl1 8s ease-in-out infinite 1.2s"></div>
+    <div style="position:absolute;width:4px;height:4px;background:rgba(185,127,181,.2);border-radius:50%;top:38%;left:28%;filter:blur(2px);animation:fl2 10s ease-in-out infinite 2.8s"></div>
+    <div style="position:absolute;width:2px;height:2px;background:rgba(199,139,190,.25);border-radius:50%;top:72%;left:15%;filter:blur(1px);animation:fl3 7s ease-in-out infinite .6s"></div>
+  </div>
+
   <div class="hero-content">
     <span class="hero-eyebrow">Da inspiração à obra</span>
     <h1 class="hero-headline">
@@ -925,12 +996,12 @@ document.querySelectorAll('a,button').forEach(el => {
   tick();
 
   // Pausa canvas fora da viewport (performance)
+  // Pause only when page is fully out of view
   const heroObs = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) {
       if (!raf) raf = requestAnimationFrame(tick);
     } else {
-      cancelAnimationFrame(raf);
-      raf = null;
+      cancelAnimationFrame(raf); raf = null;
     }
   }, { threshold: 0 });
   heroObs.observe(document.querySelector('.hero'));
@@ -939,7 +1010,7 @@ document.querySelectorAll('a,button').forEach(el => {
   window.addEventListener('scroll', () => {
     const sy = window.scrollY;
     canvas.style.transform = `translateY(${sy * .12}px)`;
-    canvas.style.opacity = Math.max(0, 1 - sy / (window.innerHeight * .8));
+    canvas.style.opacity = Math.max(0, 1 - sy / (window.innerHeight * 1.2));
   }, { passive: true });
 })();
 
