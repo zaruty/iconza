@@ -147,6 +147,62 @@ body{
   font-size:.82rem;color:#4f46e5;line-height:1.5;
 }
 
+/* ── CARD SESSÃO ENCONTRADA ── */
+.sessao-card{
+  display:none;
+  border:1px solid #e0dbd4;
+  margin-bottom:1.5rem;
+  background:#fff;
+  overflow:hidden;
+}
+.sessao-card.show{display:block}
+.sessao-card-header{
+  background:var(--preto);
+  padding:.75rem 1rem;
+  display:flex;align-items:center;gap:.65rem;
+}
+.sessao-card-av{
+  width:34px;height:34px;border-radius:50%;
+  background:#333;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.85rem;color:#fff;
+  flex-shrink:0;overflow:hidden;
+}
+.sessao-card-av img{width:100%;height:100%;object-fit:cover}
+.sessao-card-nome{font-size:.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sessao-card-email{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sessao-card-body{padding:.85rem 1rem}
+.sessao-card-label{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#aaa;font-weight:600;display:block;margin-bottom:.65rem}
+.sessao-card-actions{display:flex;flex-direction:column;gap:.5rem}
+.btn-continuar{
+  width:100%;padding:.8rem 1rem;
+  background:var(--preto);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .15s;min-height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-continuar:hover,.btn-continuar:active{background:var(--vm)}
+.btn-outra-conta{
+  width:100%;padding:.75rem 1rem;
+  background:transparent;color:#888;
+  font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid #e0dbd4;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all .15s;min-height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-outra-conta:hover,.btn-outra-conta:active{border-color:var(--preto);color:var(--preto)}
+.sessao-divider{
+  display:flex;align-items:center;gap:.75rem;
+  font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
+  color:#ccc;margin:.15rem 0;
+}
+.sessao-divider::before,.sessao-divider::after{content:'';flex:1;height:1px;background:#e8e4de}
+
 /* ── MOBILE ── */
 @media(max-width:768px){
   body{grid-template-columns:1fr;overflow:auto}
@@ -199,6 +255,31 @@ body{
     <div class="banner-troca" id="bannerTrocou">
       🔄 <strong>Sessão anterior encerrada.</strong><br>
       Entre com outra conta para testar a plataforma.
+    </div>
+
+    <!-- CARD: sessão existente encontrada (mobile-first) -->
+    <div class="sessao-card" id="sessaoCard">
+      <div class="sessao-card-header">
+        <div class="sessao-card-av" id="sessaoAv">?</div>
+        <div style="min-width:0;flex:1">
+          <div class="sessao-card-nome" id="sessaoNome">—</div>
+          <div class="sessao-card-email" id="sessaoEmail">—</div>
+        </div>
+      </div>
+      <div class="sessao-card-body">
+        <span class="sessao-card-label">Sessão ativa encontrada</span>
+        <div class="sessao-card-actions">
+          <button class="btn-continuar" id="btnContinuar" onclick="continuarSessao()">
+            Continuar como esta conta
+            <span>→</span>
+          </button>
+          <div class="sessao-divider">ou</div>
+          <button class="btn-outra-conta" onclick="usarOutraConta()">
+            Usar outra conta
+            <span>↺</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <h1 class="form-titulo" id="formTitulo">Bem-vinda de volta</h1>
@@ -335,24 +416,72 @@ async function redirecionarAposLogin(session) {
 }
 
 // ── VERIFICAÇÃO INICIAL DE SESSÃO ────────────────────
-// FIX FLICKERING: usa flag para não redirecionar durante renderização inicial
-// O problema: Supabase emite sessão antes da página terminar de renderizar,
-// causando redirect imediato → página pisca/some antes de aparecer
+// ARQUITETURA MOBILE-FIRST:
+// Se sessão existe → mostra card "continuar ou trocar conta"
+// NUNCA redireciona automaticamente — usuária escolhe explicitamente
+// Isso resolve o ciclo fechado em Android onde não há botão voltar
 let _sessionCheckDone = false;
+let _sessaoAtiva = null; // guarda sessão para uso no card
 
 async function verificarSessaoExistente() {
-  // Pequeno delay para garantir que a página renderizou completamente
-  // antes de qualquer redirect (fix do flash mobile)
-  await new Promise(r => setTimeout(r, 80));
+  await new Promise(r => setTimeout(r, 80)); // aguarda render completo
 
   const { data } = await window.sb.auth.getSession();
   _sessionCheckDone = true;
 
-  if (data.session) {
-    // Já logada: redireciona para o lugar certo
-    mostrarMsg('Você já está conectada. Redirecionando...', 'info');
-    await redirecionarAposLogin(data.session);
-  }
+  if (!data.session) return; // sem sessão: mostra formulário normalmente
+
+  _sessaoAtiva = data.session;
+  const user = data.session.user;
+
+  // Preenche card com dados da sessão
+  const nome = user.user_metadata?.nome_completo ||
+               user.user_metadata?.full_name ||
+               user.email.split('@')[0];
+  const inicial = nome.charAt(0).toUpperCase();
+  const avatar = user.user_metadata?.avatar_url;
+
+  document.getElementById('sessaoNome').textContent = nome;
+  document.getElementById('sessaoEmail').textContent = user.email;
+  const avEl = document.getElementById('sessaoAv');
+  avEl.innerHTML = avatar ? `<img src="${avatar}" alt="${nome}">` : inicial;
+
+  // Mostra card, esconde formulários
+  document.getElementById('sessaoCard').classList.add('show');
+  document.getElementById('formLogin').style.display = 'none';
+  document.getElementById('formCadastro').style.display = 'none';
+  document.querySelector('.tabs').style.display = 'none';
+  document.getElementById('formTitulo').textContent = 'Bem-vinda de volta';
+  document.getElementById('formSubtitulo').style.display = 'none';
+}
+
+// Usuária confirma: quer continuar com a sessão atual
+async function continuarSessao() {
+  if (!_sessaoAtiva) return;
+  const btn = document.getElementById('btnContinuar');
+  btn.innerHTML = '<span class="loading"></span> Entrando...';
+  btn.disabled = true;
+  await redirecionarAposLogin(_sessaoAtiva);
+}
+
+// Usuária quer usar outra conta: desloga e limpa tudo
+async function usarOutraConta() {
+  // Limpa sessão localmente (scope:local = sem chamada de rede, instantâneo)
+  try { await window.sb.auth.signOut({ scope: 'local' }); } catch(e) {}
+  // Limpa localStorage
+  Object.keys(localStorage).forEach(k => {
+    if (k.startsWith('sb-') || k.startsWith('iconza')) localStorage.removeItem(k);
+  });
+  _sessaoAtiva = null;
+  _sessionCheckDone = false;
+
+  // Esconde card, mostra formulário
+  document.getElementById('sessaoCard').classList.remove('show');
+  document.getElementById('formLogin').style.display = 'block';
+  document.querySelector('.tabs').style.display = 'flex';
+  document.getElementById('formTitulo').textContent = 'Entrar com outra conta';
+  document.getElementById('formSubtitulo').style.display = 'block';
+  _sessionCheckDone = true; // permite onAuthStateChange processar novo login
 }
 
 // Executa verificação após DOM estar pronto
