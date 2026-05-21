@@ -308,97 +308,255 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
   :root{--sidebar-w:60px}
 }
 
-/* ── MOBILE: drawer offcanvas ── */
+/* ══ MOBILE: drawer offcanvas premium ══ */
 @media(max-width:768px){
   :root{--sidebar-w:0px}
 
-  /* Shell: uma coluna só */
   .iz-shell{display:flex;flex-direction:column}
   .iz-body{flex:1;min-height:0;position:relative}
-  .iz-content{width:100%}
+  .iz-content{width:100%;overflow-x:hidden}
 
-  /* Sidebar vira drawer */
+  /* ── DRAWER ── */
   .iz-side{
     position:fixed;
     top:0;left:0;bottom:0;
-    width:85vw;max-width:320px;
-    transform:translateX(-100%);
-    transition:transform .28s cubic-bezier(.2,.8,.2,1);
+    width:82vw;max-width:310px;
+    min-width:260px;
+    transform:translateX(-105%);
+    /* Easing cinematográfico — desacelera suavemente como app nativo */
+    transition:transform .32s cubic-bezier(.16,1,.3,1),
+               box-shadow .32s cubic-bezier(.16,1,.3,1);
     z-index:500;
     will-change:transform;
     backface-visibility:hidden;
-    /* Premium gradient — Gemini-inspired */
+    -webkit-backface-visibility:hidden;
+    overflow:hidden;
+
+    /* ── GRADIENTE ESPACIAL ── */
     background:
-      radial-gradient(ellipse at 0% 0%, rgba(99,102,241,.18) 0%, transparent 60%),
-      radial-gradient(ellipse at 100% 100%, rgba(59,130,246,.12) 0%, transparent 60%),
-      linear-gradient(160deg, #0d0d18 0%, #111827 50%, #0a0a14 100%);
-    border-right:1px solid rgba(99,102,241,.15);
-    box-shadow: 0 0 0 0 transparent;
+      radial-gradient(ellipse 80% 40% at 10% 0%,   rgba(56,100,255,.22) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 100%,  rgba(0,180,255,.14) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 60% at 50% 50%,  rgba(30,30,80,.6)   0%, transparent 80%),
+      linear-gradient(175deg, #02030e 0%, #050916 35%, #080d22 65%, #03070f 100%);
+
+    border-right:1px solid rgba(56,100,255,.18);
+
+    /* Noise texture simulado via pseudo-element */
   }
+
+  /* Grain/noise layer */
+  .iz-side::before{
+    content:'';
+    position:absolute;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+    pointer-events:none;z-index:0;opacity:.5;
+  }
+
+  /* Glow edge ao abrir */
+  .iz-side::after{
+    content:'';
+    position:absolute;top:0;right:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,
+      transparent 0%,
+      rgba(56,100,255,.5) 20%,
+      rgba(0,200,255,.4) 50%,
+      rgba(56,100,255,.3) 80%,
+      transparent 100%);
+    pointer-events:none;z-index:1;
+    opacity:0;transition:opacity .3s ease;
+  }
+  .iz-side.is-open::after{opacity:1}
+
   .iz-side.is-open{
     transform:translateX(0);
     box-shadow:
-      4px 0 40px rgba(0,0,0,.6),
-      0 0 80px rgba(99,102,241,.08);
-  }
-  /* Glow accent na borda */
-  .iz-side.is-open::after{
-    content:'';
-    position:absolute;top:0;right:-1px;bottom:0;width:1px;
-    background:linear-gradient(180deg,transparent,rgba(99,102,241,.4),rgba(59,130,246,.3),transparent);
-    pointer-events:none;
+      8px 0 60px rgba(0,0,0,.8),
+      0  0 30px rgba(30,60,255,.1),
+      inset -1px 0 0 rgba(56,100,255,.15);
   }
 
-  /* Avatar com anel de glow */
+  /* ── BRAND no topo ── */
+  .iz-side-brand{
+    padding:.9rem 1rem 1rem;
+    border-bottom:1px solid rgba(56,100,255,.12);
+    position:relative;z-index:1;
+  }
+  .iz-side-wordmark{
+    background:linear-gradient(90deg,#fff 0%,rgba(150,200,255,.9) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    font-size:.82rem;letter-spacing:.2em;
+  }
+  .iz-side-sub{
+    color:rgba(100,160,255,.6);font-size:.58rem;letter-spacing:.2em;
+  }
+
+  /* Logo neon: usa iconzaneo.png */
+  .iz-side-crown{
+    width:26px;height:26px;
+    filter:drop-shadow(0 0 6px rgba(0,200,255,.6)) drop-shadow(0 0 14px rgba(56,100,255,.4));
+  }
+
+  /* ── USER CARD ── */
+  .iz-side-user{
+    padding:.85rem 1rem;
+    border-bottom:1px solid rgba(56,100,255,.1);
+    position:relative;z-index:1;
+  }
+  /* Halo atrás do avatar */
   .iz-side-av{
-    box-shadow:0 0 0 2px rgba(99,102,241,.3),0 0 12px rgba(99,102,241,.15);
+    position:relative;
+    box-shadow:
+      0 0 0 2px rgba(56,100,255,.35),
+      0 0 16px rgba(0,180,255,.25),
+      0 0 32px rgba(30,60,255,.12);
+    border:1px solid rgba(100,160,255,.2);
+  }
+  /* Status online pulsante */
+  .iz-side-av::after{
+    content:'';
+    position:absolute;bottom:1px;right:1px;
+    width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle, #00e5ff 0%, #0080ff 100%);
+    border:1.5px solid #02030e;
+    box-shadow:0 0 6px rgba(0,220,255,.7);
+    animation:pulse-status 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-status{
+    0%,100%{box-shadow:0 0 4px rgba(0,220,255,.6)}
+    50%{box-shadow:0 0 10px rgba(0,220,255,.9),0 0 20px rgba(0,150,255,.4)}
   }
 
-  /* Nav items com hover mais visível */
-  .iz-nav-item:hover,.iz-nav-item.ativo{
-    background:rgba(99,102,241,.12);
+  .iz-side-nome{
+    font-size:.84rem;font-weight:600;
+    background:linear-gradient(90deg,#fff 0%,rgba(180,220,255,.85) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   }
+  .iz-side-cargo{
+    font-size:.56rem;letter-spacing:.12em;
+    color:rgba(100,160,255,.55);
+  }
+
+  /* ── NAV ── */
+  .iz-side-nav{
+    position:relative;z-index:1;
+    padding:.5rem 0;
+    flex:1;overflow-y:auto;overflow-x:hidden;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+  .iz-side-nav::-webkit-scrollbar{display:none}
+
+  .iz-sec-label{
+    font-size:.5rem;letter-spacing:.22em;color:rgba(100,150,255,.3);
+    padding:.7rem .9rem .2rem;display:block;font-weight:600;
+    text-transform:uppercase;
+  }
+
+  /* Item normal */
+  .iz-nav-item{
+    padding:.52rem .9rem;
+    border-left:2px solid transparent;
+    color:rgba(180,200,255,.45);
+    font-size:.8rem;font-weight:400;
+    transition:all .15s ease;
+    position:relative;
+    -webkit-tap-highlight-color:transparent;
+    display:flex;align-items:center;gap:.65rem;
+    width:100%;text-align:left;background:none;border-top:none;border-right:none;border-bottom:none;
+    font-family:'Inter',sans-serif;cursor:pointer;text-decoration:none;
+  }
+  .iz-nav-item:hover,.iz-nav-item:active{
+    color:rgba(200,220,255,.85);
+    background:rgba(56,100,255,.07);
+    border-left-color:rgba(56,100,255,.3);
+  }
+
+  /* Item ATIVO — energizado */
   .iz-nav-item.ativo{
-    border-left-color:#818cf8;
+    color:#e0eeff;
+    background:
+      linear-gradient(90deg, rgba(56,100,255,.14) 0%, rgba(0,180,255,.06) 100%);
+    border-left:2px solid #4d8fff;
+    box-shadow:inset 0 0 20px rgba(56,100,255,.06);
+  }
+  .iz-nav-item.ativo::after{
+    content:'';
+    position:absolute;left:0;top:25%;bottom:25%;width:2px;
+    background:linear-gradient(180deg,transparent,#4d8fff,rgba(0,200,255,.6),#4d8fff,transparent);
+    border-radius:1px;
+    box-shadow:0 0 8px rgba(77,143,255,.8);
+  }
+  .iz-nav-item.ativo .iz-nav-icon{
+    filter:drop-shadow(0 0 4px rgba(77,143,255,.7));
+    opacity:1;
+  }
+  .iz-nav-icon{width:15px;height:15px;flex-shrink:0;opacity:.55;transition:opacity .15s}
+  .iz-nav-item:hover .iz-nav-icon,.iz-nav-item.ativo .iz-nav-icon{opacity:1}
+
+  /* Badge count */
+  .iz-nav-count{
+    margin-left:auto;font-size:.58rem;font-weight:600;
+    background:rgba(56,100,255,.2);
+    color:rgba(150,200,255,.8);
+    padding:.1rem .4rem;border-radius:3px;
+    border:1px solid rgba(56,100,255,.2);
+  }
+  .iz-nav-item.ativo .iz-nav-count{
+    background:rgba(77,143,255,.25);color:#a0c8ff;
+    border-color:rgba(77,143,255,.3);
   }
 
-  /* Backdrop */
+  /* ── FOOTER ── */
+  .iz-side-footer{
+    padding:.65rem .9rem;
+    border-top:1px solid rgba(56,100,255,.1);
+    position:relative;z-index:1;
+  }
+
+  /* ── BACKDROP ── */
   .iz-backdrop{
     display:none;
     position:fixed;inset:0;
-    background:rgba(0,0,0,.65);
-    backdrop-filter:blur(3px);
-    -webkit-backdrop-filter:blur(3px);
+    background:rgba(1,2,14,.72);
+    backdrop-filter:blur(6px) saturate(80%);
+    -webkit-backdrop-filter:blur(6px) saturate(80%);
     z-index:499;
     opacity:0;
-    transition:opacity .25s ease;
+    transition:opacity .28s ease;
   }
-  .iz-backdrop.show{
-    display:block;opacity:1;
-  }
+  .iz-backdrop.show{display:block;opacity:1}
 
-  /* Hamburger no topbar */
+  /* ── HAMBURGER ── */
   .iz-hamburger{
     display:flex;
     width:36px;height:36px;
     align-items:center;justify-content:center;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:6px;cursor:pointer;
-    color:rgba(255,255,255,.7);
-    transition:all .15s;
-    flex-shrink:0;
+    background:rgba(56,100,255,.1);
+    border:1px solid rgba(56,100,255,.2);
+    border-radius:7px;cursor:pointer;
+    color:rgba(200,220,255,.8);
+    transition:all .18s;flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
   }
-  .iz-hamburger:hover{background:rgba(255,255,255,.12);color:#fff}
+  .iz-hamburger:hover,.iz-hamburger:active{
+    background:rgba(56,100,255,.2);
+    border-color:rgba(100,160,255,.4);
+    color:#fff;
+    box-shadow:0 0 12px rgba(56,100,255,.3);
+  }
 
-  /* Cards e grids no mobile */
+  /* ── LAYOUT GERAL ── */
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}
   .grid-2{grid-template-columns:1fr}
-  .modulo{padding:1rem}
-  .filtros{flex-direction:column}
+  .modulo{padding:1rem 1rem 1.5rem}
+  .mod-titulo{font-size:1rem}
+  .filtros{flex-direction:column;gap:.5rem}
   .f-input,.f-select{width:100%;min-width:unset}
-  .tab-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius)}
   table{min-width:640px}
+  .card-highlight::before{font-size:3rem}
+  .btn-prim{font-size:.65rem;padding:.45rem .8rem}
 }
 </style>
 </head>
@@ -418,7 +576,7 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
         </svg>
       </button>
       <a href="admin-crm.html" class="iz-top-logo">
-        <img src="coroa.png" alt="ICONZA">
+        <img src="coroa.png" alt="ICONZA" id="topLogoImg">
         <span class="iz-top-wordmark">ICONZA</span>
       </a>
       <div class="iz-top-divider"></div>
