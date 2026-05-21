@@ -314,7 +314,7 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
   <!-- TOPBAR -->
   <header class="iz-top">
     <div class="iz-top-left">
-      <a href="dashboard.html" class="iz-top-logo">
+      <a href="admin-crm.html" class="iz-top-logo">
         <img src="coroa.png" alt="ICONZA">
         <span class="iz-top-wordmark">ICONZA</span>
       </a>
@@ -428,7 +428,7 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             Modo Teste
           </div>
-          <p style="font-size:.68rem;color:rgba(255,255,255,.25);line-height:1.5;margin-bottom:.5rem">Visualize a plataforma exatamente como uma aluna vê.</p>
+          <p style="font-size:.68rem;color:rgba(255,255,255,.25);line-height:1.5;margin-bottom:.5rem">Visualize a experiência da aluna sem sair da sua conta.</p>
           <button onclick="trocarContaAdmin()" style="width:100%;font-size:.65rem;padding:.4rem .7rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-family:'Inter',sans-serif;border-radius:5px;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:all .15s"
             onmouseenter="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'"
             onmouseleave="this.style.background='rgba(255,255,255,.07)';this.style.color='rgba(255,255,255,.6)'">
@@ -1418,7 +1418,7 @@ function exportarCSV() {
 
 function sair() { IconzaAuth.logout(); }
 function trocarContaAdmin() {
-  // Ativa preview mode — sem logout, mesma sessão Supabase
+  // Preview Mode — mesma sessão, sem logout, só muda visualização
   localStorage.setItem('iconza-preview-mode', 'aluna');
   window.location.href = 'dashboard.html';
 }

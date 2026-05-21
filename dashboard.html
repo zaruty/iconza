@@ -224,9 +224,7 @@ const CARROSSEL_MAX = Math.max(0, UNIVERSOS.length - CARROSSEL_VISIBLE);
 // ── PREVIEW MODE HELPERS ──────────────────────
 function iconzaSairPreview() {
   localStorage.removeItem('iconza-preview-mode');
-  document.body.classList.remove('preview-mode');
-  // Reload para restaurar visão admin completa
-  window.location.reload();
+  window.location.href = 'admin-crm.html';
 }
 
 async function init() {
@@ -235,13 +233,10 @@ async function init() {
   const previewMode = localStorage.getItem('iconza-preview-mode') === 'aluna';
 
   if (previewMode) {
-    // Ativa visual de preview
     document.body.classList.add('preview-mode');
-    // Renderiza como ALUNA independente do role real
-    renderUI({ forceRole: 'aluno' });
-  } else {
-    renderUI();
   }
+  // dashboard.html é sempre experiência aluna — variant definido no renderUI
+  renderUI();
 
   setTimeout(() => {
     document.getElementById('loadingOverlay').classList.add('hide');
@@ -257,13 +252,15 @@ function renderUI(opts = {}) {
 
   const roleEfetivo = forceRole || perfilUsuario.role;
 
-  // Sidebar — usa role efetivo (pode ser forçado para 'aluno' no preview)
+  // Sidebar — SEMPRE variante aluna nesta página
+  // O admin vendo em preview também vê sidebar de aluna
   IconzaSidebar.render({
     target: '#iconza-sidebar',
+    variant: 'aluna',
     activeId: IconzaUtils.getCurrentPage(),
     user: {
       nome: primeiroNome,
-      role: roleEfetivo,
+      role: perfilUsuario.role, // role real passado para sidebar detectar preview mode
       avatar_url: perfilUsuario.avatar_url || null,
     },
   });
