@@ -6,6 +6,8 @@
 <title>ICONZA — Painel Administrativo</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script src="core-supabase.js"></script>
 <script src="core-auth.js"></script>
 <script src="core-utils.js"></script>
@@ -281,40 +283,259 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
 /* ─── MISC ─── */
 .empty{text-align:center;padding:2.5rem;color:var(--cinza-500);font-size:.85rem}
 
-/* ── MÍDIA ── */
-.midia-card{
-  background:var(--branco);border:1px solid var(--borda);
-  border-radius:var(--radius);overflow:hidden;
-  transition:border-color .15s,box-shadow .15s;
-  cursor:pointer;position:relative;
+/* ══ MÍDIA — Premium Dark ══ */
+
+/* Module background override */
+#mod-midia{
+  background:
+    radial-gradient(ellipse 80% 40% at 10% 0%, rgba(79,70,229,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(59,130,246,.05) 0%, transparent 55%),
+    linear-gradient(175deg, #050814 0%, #080d1c 50%, #050814 100%);
+  min-height:100vh;
 }
-.midia-card:hover{border-color:var(--indigo);box-shadow:var(--shadow)}
-.midia-card:hover .midia-actions{opacity:1}
+#mod-midia .mod-titulo{color:rgba(220,228,255,.92)}
+#mod-midia .mod-sub{color:rgba(140,160,220,.45)}
+
+/* Toolbar */
+#mod-midia .filtros{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(79,70,229,.1);
+  backdrop-filter:blur(8px);
+}
+#mod-midia .f-input,#mod-midia .f-select{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(79,70,229,.15);
+  color:rgba(220,228,255,.8);
+}
+#mod-midia .f-input::placeholder{color:rgba(140,160,220,.3)}
+#mod-midia .f-input:focus,#mod-midia .f-select:focus{
+  border-color:rgba(99,102,241,.5);
+  background:rgba(255,255,255,.06);
+}
+
+/* Stats */
+#mod-midia .stat-c{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(79,70,229,.1);
+}
+#mod-midia .stat-num{color:rgba(220,228,255,.9)}
+#mod-midia .stat-label{color:rgba(140,160,220,.4)}
+
+/* Upload button */
+#mod-midia .btn-prim{
+  background:rgba(79,70,229,.85);
+  border:1px solid rgba(99,102,241,.3);
+  letter-spacing:.08em;
+  transition:all .2s;
+}
+#mod-midia .btn-prim:hover{
+  background:rgba(99,102,241,.95);
+  box-shadow:0 0 16px rgba(99,102,241,.25);
+}
+
+/* Progress bar */
+#midiaUploadProgress{
+  background:rgba(255,255,255,.03) !important;
+  border:1px solid rgba(79,70,229,.15) !important;
+  color:rgba(220,228,255,.7);
+}
+#midiaUploadBar{background:var(--indigo) !important}
+
+/* ── SKELETON ── */
+.midia-skeleton{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(79,70,229,.08);
+  border-radius:10px;overflow:hidden;
+  aspect-ratio:1;position:relative;
+}
+.midia-skeleton::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,
+    transparent 0%, rgba(99,102,241,.06) 50%, transparent 100%);
+  animation:shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+/* ── CARDS ── */
+.midia-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(79,70,229,.12);
+  border-radius:10px;overflow:hidden;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  cursor:pointer;position:relative;
+  backdrop-filter:blur(4px);
+}
+.midia-card:hover{
+  border-color:rgba(99,102,241,.35);
+  background:rgba(255,255,255,.055);
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(0,0,0,.3), 0 0 0 1px rgba(99,102,241,.15);
+}
+.midia-card:hover .midia-actions{opacity:1;transform:translateY(0)}
 .midia-thumb{
   width:100%;aspect-ratio:1;object-fit:cover;
-  background:var(--off);display:block;
+  background:rgba(255,255,255,.03);display:block;
+  transition:transform .3s ease;
 }
+.midia-card:hover .midia-thumb{transform:scale(1.03)}
 .midia-thumb-icon{
-  width:100%;aspect-ratio:1;background:var(--off);
+  width:100%;aspect-ratio:1;
+  background:rgba(255,255,255,.03);
   display:flex;align-items:center;justify-content:center;
   font-size:2rem;
 }
-.midia-info{padding:.5rem .6rem;border-top:1px solid var(--borda)}
-.midia-nome{font-size:.68rem;font-weight:500;color:var(--preto);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-.midia-meta{font-size:.6rem;color:var(--cinza-500);margin-top:.15rem}
+.midia-info{
+  padding:.55rem .65rem;
+  border-top:1px solid rgba(79,70,229,.08);
+  background:rgba(0,0,0,.2);
+}
+.midia-nome{
+  font-size:.68rem;font-weight:500;
+  color:rgba(200,215,255,.75);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;
+}
+.midia-meta{font-size:.58rem;color:rgba(140,160,220,.35);margin-top:.15rem}
+
+/* Action buttons — appear on hover */
 .midia-actions{
-  position:absolute;top:.4rem;right:.4rem;
-  display:flex;gap:.3rem;opacity:0;transition:opacity .15s;
+  position:absolute;top:.45rem;right:.45rem;
+  display:flex;gap:.3rem;
+  opacity:0;transform:translateY(-4px);
+  transition:opacity .18s,transform .18s;
 }
 .midia-btn{
-  width:26px;height:26px;border-radius:5px;
-  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  width:27px;height:27px;border-radius:6px;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
   font-size:.65rem;transition:all .15s;
+  backdrop-filter:blur(4px);
 }
-.midia-btn-copy{background:rgba(79,70,229,.9);color:#fff}
-.midia-btn-del{background:rgba(220,38,38,.85);color:#fff}
-.midia-btn:hover{transform:scale(1.05)}
+.midia-btn-copy{
+  background:rgba(79,70,229,.85);
+  border:1px solid rgba(99,102,241,.3);color:#fff;
+}
+.midia-btn-del{
+  background:rgba(220,38,38,.8);
+  border:1px solid rgba(220,38,38,.3);color:#fff;
+}
+.midia-btn:hover{transform:scale(1.08);filter:brightness(1.15)}
+
+/* ── DRAG DROP ZONE ── */
+.midia-dropzone{
+  border:2px dashed rgba(79,70,229,.25);
+  background:rgba(79,70,229,.04);
+  border-radius:10px;padding:2.5rem;
+  text-align:center;
+  transition:all .2s;
+  cursor:pointer;
+  grid-column:1/-1;
+}
+.midia-dropzone.dragover{
+  border-color:rgba(99,102,241,.6);
+  background:rgba(79,70,229,.1);
+  box-shadow:0 0 24px rgba(99,102,241,.12);
+}
+.midia-dropzone-icon{font-size:2rem;opacity:.5;margin-bottom:.5rem}
+.midia-dropzone-txt{font-size:.82rem;color:rgba(180,200,255,.45);line-height:1.6}
+.midia-dropzone-hint{font-size:.7rem;color:rgba(140,160,220,.3);margin-top:.25rem}
+
+/* ── LIGHTBOX PREMIUM ── */
+.midia-lightbox{
+  position:fixed;inset:0;
+  background:rgba(3,4,20,.88);
+  backdrop-filter:blur(12px) saturate(80%);
+  -webkit-backdrop-filter:blur(12px) saturate(80%);
+  z-index:999;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:1.5rem;
+  animation:lbFadeIn .2s ease;
+}
+@keyframes lbFadeIn{from{opacity:0}to{opacity:1}}
+.midia-lightbox-inner{
+  max-width:720px;width:100%;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(79,70,229,.2);
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(99,102,241,.1);
+  animation:lbSlideUp .25s cubic-bezier(.16,1,.3,1);
+}
+@keyframes lbSlideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.midia-lightbox-head{
+  background:rgba(0,0,0,.4);
+  padding:.75rem 1rem;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(79,70,229,.12);
+}
+.midia-lightbox-nome{
+  color:rgba(200,215,255,.8);font-size:.82rem;font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;
+}
+.midia-lightbox-close{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  color:rgba(200,215,255,.6);width:28px;height:28px;
+  border-radius:6px;cursor:pointer;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.midia-lightbox-close:hover{background:rgba(220,38,38,.2);color:#fff;border-color:rgba(220,38,38,.3)}
+.midia-lightbox-img{width:100%;max-height:55vh;object-fit:contain;display:block;background:rgba(0,0,0,.3)}
+.midia-lightbox-foot{
+  padding:.75rem 1rem;
+  border-top:1px solid rgba(79,70,229,.1);
+  display:flex;gap:.5rem;justify-content:flex-end;
+  background:rgba(0,0,0,.2);
+}
+.midia-lightbox-btn{
+  padding:.45rem .9rem;font-family:'Inter',sans-serif;
+  font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;border-radius:6px;transition:all .18s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:.35rem;
+}
+.midia-lightbox-btn-p{
+  background:rgba(79,70,229,.85);color:#fff;
+  border:1px solid rgba(99,102,241,.3);
+}
+.midia-lightbox-btn-p:hover{background:rgba(99,102,241,.95);box-shadow:0 0 12px rgba(99,102,241,.2)}
+.midia-lightbox-btn-s{
+  background:rgba(255,255,255,.05);color:rgba(180,200,255,.7);
+  border:1px solid rgba(79,70,229,.15);
+}
+.midia-lightbox-btn-s:hover{background:rgba(255,255,255,.08);color:rgba(200,220,255,.9)}
+
+/* ── CROP MODAL ── */
+.crop-modal{
+  position:fixed;inset:0;
+  background:rgba(3,4,20,.92);
+  backdrop-filter:blur(10px);
+  z-index:1000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:1.5rem;
+  animation:lbFadeIn .2s ease;
+}
+.crop-modal-inner{
+  max-width:480px;width:100%;
+  background:rgba(10,12,30,.95);
+  border:1px solid rgba(79,70,229,.2);
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.7);
+}
+.crop-modal-head{
+  background:rgba(0,0,0,.4);padding:.75rem 1rem;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(79,70,229,.12);
+}
+.crop-modal-title{color:rgba(200,215,255,.85);font-size:.85rem;font-weight:600}
+.crop-modal-body{padding:1rem;display:flex;justify-content:center;align-items:center;min-height:260px;background:rgba(0,0,0,.3)}
+.crop-modal-body img{max-height:320px;max-width:100%}
+.crop-modal-foot{
+  padding:.75rem 1rem;border-top:1px solid rgba(79,70,229,.1);
+  display:flex;gap:.5rem;justify-content:flex-end;background:rgba(0,0,0,.2);
+}
+
 
 /* ─── CARD DESTAQUE ─── */
 .card-highlight{
@@ -893,17 +1114,17 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
             <h1 class="mod-titulo">Mídia</h1>
             <p class="mod-sub">Biblioteca de assets · Imagens, capas, avatares</p>
           </div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <select class="f-select" id="midiaBucket" onchange="carregarMidia()" style="min-width:140px">
-              <option value="avatars">Avatares</option>
-              <option value="covers">Capas</option>
-              <option value="universos">Universos</option>
-              <option value="aulas">Aulas</option>
-              <option value="posts">Posts</option>
-              <option value="uploads">Uploads gerais</option>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+            <select class="f-select" id="midiaBucket" onchange="carregarMidia()" style="min-width:140px;background:rgba(255,255,255,.04);border:1px solid rgba(79,70,229,.2);color:rgba(200,215,255,.8)">
+              <option value="avatars">👤 Avatares</option>
+              <option value="covers">🖼 Capas</option>
+              <option value="universos">🌌 Universos</option>
+              <option value="aulas">▶ Aulas</option>
+              <option value="posts">📝 Posts</option>
+              <option value="uploads">📁 Uploads gerais</option>
             </select>
-            <label class="btn-prim" style="cursor:pointer;display:inline-flex;align-items:center;gap:.4rem">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <label class="btn-prim" style="cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;user-select:none">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Upload
               <input type="file" id="midiaUploadInput" multiple accept="image/*,video/*,.pdf"
                      style="display:none" onchange="uploadMidia(this.files)">
@@ -911,37 +1132,61 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
           </div>
         </div>
 
-        <!-- Upload progress -->
-        <div id="midiaUploadProgress" style="display:none;background:var(--branco);border:1px solid var(--borda);padding:1rem;margin-bottom:.75rem;border-radius:var(--radius)">
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.5rem">
+        <!-- Progress bar -->
+        <div id="midiaUploadProgress" style="display:none;padding:1rem;margin-bottom:.75rem;border-radius:10px">
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.5rem;color:rgba(180,200,255,.7)">
             <span id="midiaUploadLabel">Enviando...</span>
             <span id="midiaUploadPct">0%</span>
           </div>
-          <div style="height:3px;background:var(--borda);border-radius:2px">
-            <div id="midiaUploadBar" style="height:100%;background:var(--indigo);border-radius:2px;width:0%;transition:width .2s"></div>
+          <div style="height:3px;background:rgba(79,70,229,.2);border-radius:2px">
+            <div id="midiaUploadBar" style="height:100%;border-radius:2px;width:0%;transition:width .2s"></div>
           </div>
         </div>
 
-        <!-- Stats bar -->
-        <div style="display:flex;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap">
-          <div class="stat-c" style="flex:1;min-width:100px"><span class="stat-num" id="midiaCount">—</span><span class="stat-label">Arquivos</span></div>
-          <div class="stat-c" style="flex:1;min-width:100px"><span class="stat-num" id="midiaSize">—</span><span class="stat-label">Tamanho total</span></div>
+        <!-- Stats -->
+        <div style="display:flex;gap:.65rem;margin-bottom:.85rem;flex-wrap:wrap">
+          <div class="stat-c" style="flex:1;min-width:90px">
+            <span class="stat-num" id="midiaCount">—</span>
+            <span class="stat-label">Arquivos</span>
+          </div>
+          <div class="stat-c" style="flex:1;min-width:90px">
+            <span class="stat-num" id="midiaSize">—</span>
+            <span class="stat-label">Tamanho total</span>
+          </div>
         </div>
 
-        <!-- Search -->
-        <div class="filtros" style="margin-bottom:.75rem">
-          <input class="f-input" type="text" placeholder="Buscar por nome..." id="midiaBusca"
+        <!-- Search & sort -->
+        <div class="filtros" style="margin-bottom:.85rem">
+          <input class="f-input" type="text" placeholder="🔍 Buscar por nome..." id="midiaBusca"
                  oninput="filtrarMidia()" style="flex:1">
-          <select class="f-select" id="midiaOrdem" onchange="filtrarMidia()">
+          <select class="f-select" id="midiaOrdem" onchange="filtrarMidia()"
+                  style="background:rgba(255,255,255,.04);border:1px solid rgba(79,70,229,.2);color:rgba(200,215,255,.8)">
             <option value="created_at">Mais recentes</option>
             <option value="name">Nome A-Z</option>
             <option value="metadata-size">Maior tamanho</option>
           </select>
         </div>
 
-        <!-- Grid -->
-        <div id="midiaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem">
-          <p class="empty">Carregando...</p>
+        <!-- Drag & Drop zone + Grid -->
+        <div id="midiaDropTarget"
+             ondragover="midiaOnDragOver(event)" ondragleave="midiaOnDragLeave(event)"
+             ondrop="midiaOnDrop(event)"
+             style="min-height:200px">
+          <div id="midiaGrid"
+               style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem">
+            <!-- skeletons rendered by JS, then real cards -->
+          </div>
+          <!-- Drop hint — shown only when dragging -->
+          <div id="midiaDropHint" style="display:none;
+               position:absolute;inset:0;
+               border:2px dashed rgba(99,102,241,.5);
+               background:rgba(79,70,229,.08);
+               border-radius:10px;
+               pointer-events:none;
+               align-items:center;justify-content:center;flex-direction:column;gap:.5rem">
+            <div style="font-size:2rem">📂</div>
+            <div style="color:rgba(180,200,255,.6);font-size:.85rem">Solte para fazer upload</div>
+          </div>
         </div>
       </section>
 
@@ -1724,6 +1969,75 @@ function exportarCSV() {
 
 function sair() { IconzaAuth.logout(); }
 
+// ── CROP SYSTEM ──────────────────────────────────────
+function abrirCrop(file, title, callback) {
+  _cropFile = file;
+  _cropCallback = callback;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const modal = document.getElementById('cropModal');
+    const img = document.getElementById('cropImage');
+    document.getElementById('cropModalTitle').textContent = title || 'Ajustar foto';
+    img.src = e.target.result;
+    modal.style.display = 'flex';
+    // Destroy previous cropper
+    if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+    // Init Cropper.js
+    setTimeout(() => {
+      _cropperInstance = new Cropper(img, {
+        aspectRatio: 1,           // square crop
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 0.85,
+        background: false,
+        responsive: true,
+        guides: false,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        ready() {
+          // Neon overlay on crop box
+          document.querySelectorAll('.cropper-view-box,.cropper-face').forEach(el => {
+            el.style.borderRadius = callback && callback._circle ? '50%' : '0';
+          });
+        }
+      });
+    }, 100);
+  };
+  reader.readAsDataURL(file);
+}
+
+function fecharCrop() {
+  document.getElementById('cropModal').style.display = 'none';
+  if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+  _cropFile = null;
+  _cropCallback = null;
+}
+
+async function confirmarCrop() {
+  if (!_cropperInstance || !_cropCallback) return;
+  const btn = document.querySelector('#cropModal .midia-lightbox-btn-p');
+  btn.textContent = 'Processando...';
+  btn.disabled = true;
+
+  // Get cropped canvas and convert to Blob
+  const canvas = _cropperInstance.getCroppedCanvas({
+    width: 400, height: 400,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+  });
+
+  canvas.toBlob(async blob => {
+    const croppedFile = new File([blob], _cropFile.name, { type: 'image/jpeg' });
+    const cb = _cropCallback;
+    fecharCrop();
+    await cb(croppedFile);
+    btn.textContent = 'Confirmar';
+    btn.disabled = false;
+  }, 'image/jpeg', 0.88);
+}
+
 // ── UPLOAD DE AVATAR ─────────────────────────────────
 async function uploadAvatar(file) {
   if (!file || !perfilAdmin) return;
@@ -1731,14 +2045,16 @@ async function uploadAvatar(file) {
     alert('Selecione uma imagem (JPG, PNG, WEBP).');
     return;
   }
-  if (file.size > 3 * 1024 * 1024) {
-    alert('Imagem muito grande. Máximo 3MB.');
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Imagem muito grande. Máximo 5MB.');
     return;
   }
 
-  const av = document.getElementById('adm-av');
-  const originalContent = av.innerHTML;
-  av.style.opacity = '.5';
+  // Open crop modal first — callback receives the cropped file
+  const doUpload = async (croppedFile) => {
+    const av = document.getElementById('adm-av');
+    const originalContent = av.innerHTML;
+    av.style.opacity = '.5';
 
   try {
     // Gera nome único: avatars/{userId}.{ext}
@@ -1795,8 +2111,13 @@ async function uploadAvatar(file) {
     alert('Erro ao enviar foto: ' + (e.message || 'Tente novamente.'));
   }
 
-  // Limpa input
+    // Limpa input
   document.getElementById('avatarInput').value = '';
+  }; // end doUpload
+
+  // Mark as circular crop
+  doUpload._circle = true;
+  abrirCrop(file, 'Ajustar foto de perfil', doUpload);
 }
 function trocarContaAdmin() {
   // Preview Mode — mesma sessão, sem logout, só muda visualização
@@ -1805,10 +2126,40 @@ function trocarContaAdmin() {
 }
 
 // ════════════════════════════════════════════
-// MÍDIA — Supabase Storage
+// MÍDIA — Supabase Storage · Premium System
 // ════════════════════════════════════════════
 let MIDIA_TODOS = [];
 const MIDIA_BUCKETS = ['avatars','covers','universos','aulas','posts','uploads'];
+let _cropperInstance = null;
+let _cropFile = null;
+let _cropCallback = null;
+
+// ── DRAG & DROP ──────────────────────────────
+function midiaOnDragOver(e) {
+  e.preventDefault();
+  document.getElementById('midiaDropTarget').style.position = 'relative';
+  const hint = document.getElementById('midiaDropHint');
+  if (hint) { hint.style.display = 'flex'; hint.style.position = 'absolute'; }
+  document.getElementById('midiaDropTarget').classList.add('dragover');
+}
+function midiaOnDragLeave(e) {
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    const hint = document.getElementById('midiaDropHint');
+    if (hint) hint.style.display = 'none';
+  }
+}
+function midiaOnDrop(e) {
+  e.preventDefault();
+  const hint = document.getElementById('midiaDropHint');
+  if (hint) hint.style.display = 'none';
+  if (e.dataTransfer.files?.length) uploadMidia(e.dataTransfer.files);
+}
+
+// ── SKELETON LOADING ─────────────────────────
+function mostrarSkeletons(n = 8) {
+  const grid = document.getElementById('midiaGrid');
+  grid.innerHTML = Array(n).fill('<div class="midia-skeleton"></div>').join('');
+}
 
 async function inicializarStorage() {
   // Tenta criar buckets em paralelo, sem bloquear (fire-and-forget)
@@ -1826,10 +2177,7 @@ async function inicializarStorage() {
 
 async function carregarMidia() {
   const bucket = document.getElementById('midiaBucket').value;
-  const grid = document.getElementById('midiaGrid');
-  grid.innerHTML = '<p class="empty">Carregando...</p>';
-
-  // Garante buckets sem bloquear (non-critical)
+  mostrarSkeletons(12);
   inicializarStorage().catch(() => {});
 
   const { data, error } = await sb.storage.from(bucket).list('', {
@@ -1854,41 +2202,52 @@ async function carregarMidia() {
 
 function renderMidia(lista, bucket) {
   const grid = document.getElementById('midiaGrid');
+  const b = bucket || document.getElementById('midiaBucket').value;
+
   if (!lista.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;background:var(--branco);border:2px dashed var(--borda);border-radius:var(--radius)">
-      <div style="font-size:1.8rem;margin-bottom:.5rem">🖼</div>
-      <p style="font-size:.85rem;color:var(--cinza-500)">Nenhum arquivo neste bucket.</p>
-      <p style="font-size:.78rem;color:var(--cinza-300);margin-top:.25rem">Clique em Upload para adicionar.</p>
+    grid.innerHTML = `<div class="midia-dropzone" onclick="document.getElementById('midiaUploadInput').click()" style="grid-column:1/-1">
+      <div class="midia-dropzone-icon">🖼</div>
+      <div class="midia-dropzone-txt">Nenhum arquivo neste bucket</div>
+      <div class="midia-dropzone-hint">Clique ou arraste imagens para fazer upload</div>
     </div>`;
     return;
   }
 
-  const b = bucket || document.getElementById('midiaBucket').value;
-
   grid.innerHTML = lista.map(f => {
-    const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f.name);
-    const isPdf = /\.pdf$/i.test(f.name);
-    const isVid = /\.(mp4|mov|webm)$/i.test(f.name);
-    const { data: urlData } = sb.storage.from(b).getPublicUrl(f.name);
+    const nm = f.name;
+    const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(nm);
+    const isPdf = /\.pdf$/i.test(nm);
+    const isVid = /\.(mp4|mov|webm)$/i.test(nm);
+    const { data: urlData } = sb.storage.from(b).getPublicUrl(nm);
     const url = urlData.publicUrl;
     const size = formatBytes(f.metadata?.size || 0);
-    const ext = f.name.split('.').pop().toUpperCase();
+    const ext = nm.split('.').pop().toUpperCase();
+    const nomeSafe = nm.replace(/'/g, "\'");
+    const urlSafe = url.replace(/'/g, "\'");
 
     const thumb = isImg
-      ? `<img class="midia-thumb" src="${url}" alt="${f.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=midia-thumb-icon>🖼</div>'">`
-      : `<div class="midia-thumb-icon">${isPdf ? '📄' : isVid ? '🎬' : '📁'}</div>`;
+      ? `<img class="midia-thumb" src="${url}" alt="${nm}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const fallback = `<div class="midia-thumb-icon" style="${isImg?'display:none':''}">
+      ${isPdf ? '📄' : isVid ? '🎬' : '📁'}
+    </div>`;
 
-    return `<div class="midia-card" onclick="midiaPreview('${url}','${f.name}','${b}')">
-      ${thumb}
+    return `<div class="midia-card" onclick="midiaPreview('${urlSafe}','${nomeSafe}','${b}')">
+      ${thumb}${fallback}
       <div class="midia-info">
-        <span class="midia-nome" title="${f.name}">${f.name}</span>
+        <span class="midia-nome" title="${nm}">${nm}</span>
         <span class="midia-meta">${ext} · ${size}</span>
       </div>
       <div class="midia-actions">
-        <button class="midia-btn midia-btn-copy" onclick="event.stopPropagation();copiarUrl('${url}')" title="Copiar URL">
+        <button class="midia-btn midia-btn-copy"
+                onclick="event.stopPropagation();copiarUrl('${urlSafe}')"
+                title="Copiar URL">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         </button>
-        <button class="midia-btn midia-btn-del" onclick="event.stopPropagation();excluirMidia('${f.name}')" title="Excluir">
+        <button class="midia-btn midia-btn-del"
+                onclick="event.stopPropagation();excluirMidia('${nomeSafe}')"
+                title="Excluir">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
       </div>
@@ -1972,31 +2331,35 @@ function copiarUrl(url) {
   });
 }
 
-// Preview lightbox
+// Preview lightbox — premium
 function midiaPreview(url, nome, bucket) {
   const isImg = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(nome);
-  const existing = document.getElementById('midiaLightbox');
-  if (existing) existing.remove();
+  document.getElementById('midiaLightbox')?.remove();
 
   const lb = document.createElement('div');
   lb.id = 'midiaLightbox';
-  lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)';
-  lb.onclick = e => { if(e.target===lb) lb.remove(); };
+  lb.className = 'midia-lightbox';
+  lb.onclick = e => { if (e.target === lb) lb.remove(); };
 
-  lb.innerHTML = `
-    <div style="max-width:700px;width:100%;background:var(--branco);border-radius:var(--radius);overflow:hidden">
-      <div style="background:var(--grafite);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
-        <span style="color:#fff;font-size:.82rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%">${nome}</span>
-        <button onclick="document.getElementById('midiaLightbox').remove()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:.9rem">✕</button>
-      </div>
-      ${isImg
-        ? `<img src="${url}" style="width:100%;max-height:60vh;object-fit:contain;display:block;background:var(--off)">`
-        : `<div style="padding:3rem;text-align:center;font-size:3rem">📄</div>`}
-      <div style="padding:.75rem 1rem;border-top:1px solid var(--borda);display:flex;gap:.5rem;justify-content:flex-end">
-        <button class="btn-prim" onclick="copiarUrl('${url}')">Copiar URL</button>
-        <a href="${url}" target="_blank" class="btn-prim" style="background:var(--indigo);color:#fff;text-decoration:none;display:inline-flex;align-items:center;padding:.5rem 1rem;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;border-radius:var(--radius)">Abrir ↗</a>
-      </div>
-    </div>`;
+  lb.innerHTML = `<div class="midia-lightbox-inner">
+    <div class="midia-lightbox-head">
+      <span class="midia-lightbox-nome">${nome}</span>
+      <button class="midia-lightbox-close" onclick="document.getElementById('midiaLightbox').remove()">✕</button>
+    </div>
+    ${isImg
+      ? `<img class="midia-lightbox-img" src="${url}" alt="${nome}">`
+      : `<div style="padding:3rem;text-align:center;font-size:3rem;background:rgba(0,0,0,.3)">📄</div>`}
+    <div class="midia-lightbox-foot">
+      <button class="midia-lightbox-btn midia-lightbox-btn-s" onclick="copiarUrl('${url}')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar URL
+      </button>
+      <a class="midia-lightbox-btn midia-lightbox-btn-p" href="${url}" target="_blank">
+        Abrir
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </div>`;
 
   document.body.appendChild(lb);
 }
@@ -2055,6 +2418,26 @@ window.mostrar = function(mod, btn) {
   if (window.innerWidth <= 768) fecharSidebar();
 };
 </script>
+<!-- ══ CROP MODAL ══ -->
+<div class="crop-modal" id="cropModal" style="display:none">
+  <div class="crop-modal-inner">
+    <div class="crop-modal-head">
+      <span class="crop-modal-title" id="cropModalTitle">Ajustar foto</span>
+      <button class="midia-lightbox-close" onclick="fecharCrop()">✕</button>
+    </div>
+    <div class="crop-modal-body">
+      <img id="cropImage" src="" alt="crop">
+    </div>
+    <div class="crop-modal-foot">
+      <button class="midia-lightbox-btn midia-lightbox-btn-s" onclick="fecharCrop()">Cancelar</button>
+      <button class="midia-lightbox-btn midia-lightbox-btn-p" onclick="confirmarCrop()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="acesso.js"></script>
 </body>
 </html>
