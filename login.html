@@ -132,8 +132,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--preto);min-height:100vh;d
   <div class="form-box">
 
     <!-- BANNER de troca de conta (oculto por padrão) -->
-    <div id="bannerTrocou" style="display:none;background:rgba(74,140,74,.1);border:1px solid rgba(74,140,74,.3);padding:.8rem 1rem;margin-bottom:1.5rem;font-size:.8rem;color:#3d7a3d;line-height:1.5">
-      ✓ <strong>Sessão anterior encerrada.</strong> Entre com outra conta para continuar.
+    <div id="bannerTrocou" style="display:none;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);padding:.8rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:#4f46e5;line-height:1.5;border-radius:6px">
+      🔄 <strong>Sessão anterior encerrada.</strong><br>Entre com outra conta para testar a plataforma como aluna.
     </div>
 
     <h1 class="form-titulo" id="formTitulo">Bem-vinda de volta</h1>
@@ -220,12 +220,16 @@ const sb = createClient(
   'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
 );
 
-// Detecta modo "troca de conta"
+// Detecta modo "troca de conta" — aceita ?trocar=1 ou ?modo=trocar
 (function detectarTroca() {
   const params = new URLSearchParams(window.location.search);
-  if (params.get('trocar') === '1') {
+  const isTroca = params.get('trocar') === '1' || params.get('modo') === 'trocar';
+  if (isTroca) {
     const banner = document.getElementById('bannerTrocou');
     if (banner) banner.style.display = 'block';
+    // Atualiza título para orientar a usuária
+    const titulo = document.getElementById('formTitulo');
+    if (titulo) titulo.textContent = 'Entrar com outra conta';
     // Limpa o parâmetro da URL para não persistir
     window.history.replaceState({}, document.title, window.location.pathname);
   }

@@ -422,6 +422,21 @@ td{padding:.75rem 1rem;font-size:.82rem;color:var(--preto)}
       </nav>
 
       <div class="iz-side-footer">
+        <!-- MODO TESTE -->
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);padding:.75rem .85rem;margin-bottom:.75rem;border-radius:6px">
+          <div style="display:flex;align-items:center;gap:.4rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:.3rem">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            Modo Teste
+          </div>
+          <p style="font-size:.68rem;color:rgba(255,255,255,.25);line-height:1.5;margin-bottom:.5rem">Trocar de conta para testar como aluna.</p>
+          <button onclick="trocarContaAdmin()" style="width:100%;font-size:.65rem;padding:.4rem .7rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-family:'Inter',sans-serif;border-radius:5px;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:all .15s"
+            onmouseenter="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'"
+            onmouseleave="this.style.background='rgba(255,255,255,.07)';this.style.color='rgba(255,255,255,.6)'">
+            Trocar de conta
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+
         <a href="u.html" target="_blank" class="iz-side-link">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Perfil público
@@ -1402,6 +1417,15 @@ function exportarCSV() {
 }
 
 function sair() { IconzaAuth.logout(); }
+async function trocarContaAdmin() {
+  if (confirm('Sair desta conta e entrar com outra para testar como aluna?\n\nSua sessão atual será encerrada.')) {
+    try { if (window.sb && window.sb.auth) await window.sb.auth.signOut(); } catch(e) {}
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('sb-') || k.startsWith('iconza-')) localStorage.removeItem(k);
+    });
+    window.location.href = 'login.html?modo=trocar';
+  }
+}
 
 init();
 </script>
