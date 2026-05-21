@@ -2,11 +2,14 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2d2d2d">
 <title>ICONZA — Diagnóstico</title>
 <link rel="stylesheet" href="acesso.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="core-supabase.js"></script>
+<script src="core-auth.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -442,15 +445,33 @@ nav{background:var(--grafite);padding:1rem 2rem;display:flex;align-items:center;
 </div>
 
 <script>
-const { createClient } = supabase;
-const sb = createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
-
+// Usa window.sb do core-supabase.js — sem instância duplicada
 const respostas = {};
 let questaoAtual = 0;
+let _sessaoAtiva = null; // sessão do usuário logado
 const TOTAL = 8;
+
+// Auth guard: redireciona para login se não autenticado
+(async function authGuard() {
+  const { data } = await window.sb.auth.getSession();
+  if (!data.session) {
+    window.location.replace('login.html');
+    return;
+  }
+  _sessaoAtiva = data.session;
+  // Se já completou onboarding, vai para dashboard
+  const { data: perfil } = await window.sb
+    .from('profiles')
+    .select('onboarding_completo, role')
+    .eq('id', data.session.user.id)
+    .maybeSingle();
+  if (perfil?.onboarding_completo) {
+    // Admin vai para CRM, aluna vai para dashboard
+    const dest = (perfil.role === 'admin' || perfil.role === 'founder')
+      ? 'admin-crm.html' : 'dashboard.html';
+    window.location.replace(dest);
+  }
+})();
 
 const NIVEIS = [
   { id:1, nome:'Faísca', emoji:'🔴', cor:'#8B0000', desc:'Você está acendendo a chama criativa. O ICONZA começa aqui.' },
@@ -512,8 +533,8 @@ function voltar(n) {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function calcularResultado() {
-  // Pontuação: soma ponderada das respostas
+async function calcularResultado() {
+  // ── Cálculo do nível ────────────────────────────────
   const digital = (respostas.q2 || 1) + (respostas.q5 || 1) + (respostas.q6 || 1);
   const cultural = (respostas.q3 || 1) + (respostas.q7 || 1);
   const frequencia = respostas.q4 || 1;
@@ -534,21 +555,65 @@ function calcularResultado() {
 
   const nivel = NIVEIS[nivelId - 1];
 
-  // Atributos baseados nas respostas
-  const tipoVisual = ['Stories/Reels','Design Gráfico','Vídeo Editado','Arte Conceitual'][( respostas.q1 || 1) - 1];
-  const relacaoIA = ['Explorando','Explorando','Usuária Regular','Referência em IA'][(respostas.q5 || 1) - 1];
-  const objetivo = ['Criação de Conteúdo','Identidade Autoral','Monetização com IA','Repertório Cultural'][(respostas.q8 || 1) - 1];
+  // ── Mapeia respostas para campos legíveis ───────────
+  const tipoVisual = ['Stories/Reels','Design Gráfico','Vídeo Editado','Arte Conceitual'][(respostas.q1 || 1) - 1];
+  const relacaoIA  = ['Iniciante em IA','Explorando IA','Usuária Regular de IA','Referência em IA'][(respostas.q5 || 1) - 1];
+  const objetivo   = ['Criação de Conteúdo','Identidade Autoral','Monetização com IA','Repertório Cultural'][(respostas.q8 || 1) - 1];
 
-  // Salva no localStorage
-  const diagnostico = { nivelId, nivelNome: nivel.nome, nivelCor: nivel.cor, digital: respostas.q6 || 1, cultural: respostas.q7 || 1, objetivo, tipoVisual, relacaoIA, data: new Date().toISOString() };
-  localStorage.setItem('iconza_diagnostico', JSON.stringify(diagnostico));
+  const referenciaCultural = ['Frida Kahlo','Coco Chanel','Julia Child','Nina Simone'][(respostas.q3 || 1) - 1];
+  const ferramentas = ['Celular/Apps básicos','Canva/CapCut','IA (ChatGPT/Midjourney)','Adobe Suite'][(respostas.q2 || 1) - 1];
+  const frequenciaCriacao = ['Raramente','1-2x por mês','Toda semana','Todo dia'][(respostas.q4 || 1) - 1];
 
-  // Salva no Supabase se logado
-  sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      sb.auth.updateUser({ data: { diagnostico } });
+  // ── Dados para o banco ──────────────────────────────
+  const diagnosticoData = {
+    nivelId,
+    nivelNome: nivel.nome,
+    nivelCor: nivel.cor,
+    nivelEmoji: nivel.emoji,
+    nivelDescricao: nivel.desc,
+    nivelDigital: respostas.q6 || 1,
+    nivelCultural: respostas.q7 || 1,
+    tipoVisual,
+    relacaoIA,
+    objetivo,
+    referenciaCultural,
+    ferramentas,
+    frequenciaCriacao,
+    respostasRaw: { ...respostas },
+    data: new Date().toISOString(),
+  };
+
+  // ── Salva no localStorage (fallback offline) ────────
+  localStorage.setItem('iconza_diagnostico', JSON.stringify(diagnosticoData));
+
+  // ── Salva na tabela profiles (CRM) ─────────────────
+  // Esta é a fonte de verdade — não mais auth.updateUser
+  if (_sessaoAtiva) {
+    const userId = _sessaoAtiva.user.id;
+    const { error } = await window.sb
+      .from('profiles')
+      .update({
+        // Campos mapeados para colunas existentes da tabela profiles
+        aptidoes: [tipoVisual, ferramentas, relacaoIA],        // jsonb
+        objetivo: [objetivo, referenciaCultural],               // jsonb
+        horarios: { frequencia: frequenciaCriacao },            // jsonb
+        origem: 'Diagnóstico Criativo',
+        onboarding_completo: true,
+        // Campos extras do diagnóstico em observacoes (JSON stringify)
+        observacoes: JSON.stringify({
+          nivel: `${nivelId} - ${nivel.nome}`,
+          nivelDigital: respostas.q6 || 1,
+          nivelCultural: respostas.q7 || 1,
+          diagnosticoData: new Date().toISOString(),
+        }),
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Erro ao salvar diagnóstico:', error);
+      // Não bloqueia — mostra resultado mesmo com erro de banco
     }
-  });
+  }
 
   mostrarResultado(nivel, nivelId, tipoVisual, relacaoIA, objetivo);
 }
@@ -597,9 +662,26 @@ function mostrarResultado(nivel, nivelId, tipoVisual, relacaoIA, objetivo) {
 }
 
 async function irDashboard() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { window.location.href = 'onboarding.html'; }
-  else { window.location.href = 'login.html'; }
+  if (!_sessaoAtiva) {
+    window.location.replace('login.html');
+    return;
+  }
+
+  const btn = document.querySelector('.btn-dashboard');
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
+
+  // Verifica role para direcionar corretamente
+  const { data: perfil } = await window.sb
+    .from('profiles')
+    .select('role')
+    .eq('id', _sessaoAtiva.user.id)
+    .maybeSingle();
+
+  if (perfil?.role === 'admin' || perfil?.role === 'founder') {
+    window.location.replace('admin-crm.html');
+  } else {
+    window.location.replace('dashboard.html');
+  }
 }
 </script>
 <script src="acesso.js"></script>
