@@ -2,11 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f11">
 <title>ICONZA — Saindo...</title>
 <link rel="stylesheet" href="iconza-tokens.css">
 <link rel="stylesheet" href="iconza-base.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="core-supabase.js"></script>
 <style>
 body{
   display:flex;
@@ -74,12 +76,8 @@ body{
 </div>
 
 <script>
-const sb = supabase.createClient(
-  'https://rwnedxbhlnvmqjsdzwyo.supabase.co',
-  'sb_publishable_Xy_ApKKAENTC_JYpQ4ZH0A_rpSqairk'
-);
-
 async function sairCompletamente() {
+  // Usa window.sb do core-supabase.js — não cria segunda instância
   const status = document.getElementById('status');
   const loader = document.getElementById('loader');
   const titulo = document.getElementById('titulo');
@@ -88,13 +86,14 @@ async function sairCompletamente() {
   try {
     // 1) Logout Supabase (global - encerra em todos os dispositivos)
     status.textContent = 'Encerrando sessão no servidor...';
-    await sb.auth.signOut({ scope: 'global' });
+    await sb.auth.signOut({ scope: 'local' }); // 'local' = sem chamada de rede, zero timeout mobile
 
     // 2) Limpa localStorage TOTAL
     status.textContent = 'Limpando dados locais...';
     try {
       Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-') || key.startsWith('supabase') || key.startsWith('iconza_')) {
+        if (key.startsWith('sb-') || key.startsWith('supabase') ||
+            key.startsWith('iconza_') || key === 'iconza-preview-mode') {
           localStorage.removeItem(key);
         }
       });
@@ -124,20 +123,21 @@ async function sairCompletamente() {
     const params = new URLSearchParams(window.location.search);
     const trocar = params.get('trocar') === '1';
 
+    // Redirect rápido — mobile não tolera delays longos após logout
     setTimeout(() => {
       if (trocar) {
         window.location.href = 'login.html?trocar=1';
       } else {
         window.location.href = 'index.html';
       }
-    }, 1200);
+    }, 600);
 
   } catch (error) {
     console.error('Erro ao sair:', error);
     status.textContent = 'Erro ao sair. Forçando saída...';
     setTimeout(() => {
       window.location.href = 'index.html';
-    }, 1500);
+    }, 800);
   }
 }
 
