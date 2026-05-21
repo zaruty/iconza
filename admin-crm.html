@@ -1966,8 +1966,7 @@ Esta ação não pode ser desfeita.`)) return;
 
 function copiarUrl(url) {
   navigator.clipboard.writeText(url).then(() => {
-    IconzaUtils?.toast?.('URL copiada!') || alert('URL copiada:
-' + url);
+    alert('URL copiada!');
   }).catch(() => {
     prompt('Copie a URL:', url);
   });
