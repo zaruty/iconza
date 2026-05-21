@@ -617,16 +617,46 @@ footer{
 @media(max-width:768px){
   nav{padding:.85rem 1.25rem}
   .nav-links{display:none}
-  .hero-content{padding:0 1.25rem;text-align:left;max-width:100%}
-  .secao-escura,.secao-transicao,.secao-clara{padding:3.5rem 1.25rem}
+
+  /* Hero: centered on mobile too */
+  .hero{justify-content:center}
+  .hero-content{
+    padding:0 1.25rem;
+    text-align:center;
+    max-width:100%;
+  }
+  .hero-linha{margin:2rem auto}
+  .hero-pills{justify-content:center}
+  .hero-btns{justify-content:center}
+  .hero-desc{margin:0 auto 3rem}
+  .hero-headline{font-size:clamp(2.8rem,11vw,4.5rem)}
+
+  /* Sections */
+  .secao-escura{padding:3.5rem 1.25rem}
+  /* Transição: gradient fades to white — same as desktop */
+  .secao-transicao{padding:3.5rem 1.25rem}
+  /* Clara sections: solid white */
+  .secao-clara{padding:3.5rem 1.25rem}
+
+  /* Grids */
   .grid-8{grid-template-columns:repeat(2,1fr)}
   .grid-3,.fases-row{grid-template-columns:1fr}
   .fase-seta{padding:.5rem;transform:rotate(90deg);font-size:.7rem}
   .tools-grid{grid-template-columns:1fr 1fr}
-  .citacao{grid-template-columns:1fr;gap:3rem;padding:3.5rem 1.25rem}
-  footer{flex-direction:column;gap:.65rem;text-align:center;padding:1.75rem 1.25rem}
+
+  /* Cards: full white on mobile */
+  .ap-card{background:#ffffff}
+  .tool{background:#ffffff}
+  .fase{background:#ffffff}
+
+  /* Text colors: dark on white sections */
+  .sec-titulo{color:#241331}
+  .sec-eyebrow{color:#8A5580}
+
   .sep{padding:0 1.25rem}
-  .hero-headline{font-size:clamp(2.8rem,11vw,4.5rem)}
+
+  /* atmos-bg: ensure it spans full mobile page height */
+  #atmos-bg{position:absolute;top:0;left:0;right:0;bottom:0}
 }
 </style>
 </head>
