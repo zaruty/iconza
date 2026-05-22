@@ -128,25 +128,43 @@ section, .sep, .citacao, footer{
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:.9rem var(--pad);
-  background:rgba(7,3,15,.45);
-  backdrop-filter:blur(24px) saturate(160%);
-  -webkit-backdrop-filter:blur(24px) saturate(160%);
-  border-bottom:1px solid rgba(255,255,255,.05);
-  transition:background .4s, border-color .4s;
+  padding:.75rem var(--pad);
+  /* At top: invisible — blends into hero atmosphere */
+  background:rgba(7,3,15,.0);
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+  border-bottom:1px solid transparent;
+  transition:background .5s ease, backdrop-filter .5s ease,
+             border-color .5s ease, padding .3s ease;
 }
+/* Slight depth when user starts scrolling but still in dark area */
+nav.scrolling-dark{
+  background:rgba(7,3,15,.25);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom-color:rgba(168,146,200,.06);
+}
+/* Light-adapted state when over white sections */
 nav.scrolled{
-  background:rgba(255,255,255,.72);
-  border-bottom-color:rgba(0,0,0,.06);
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom-color:rgba(0,0,0,.05);
+  padding:.65rem var(--pad);
 }
-nav.scrolled .logo-name,
-nav.scrolled .nav-links a,
-nav.scrolled .btn-entrar{color:rgba(20,15,35,.75)}
-nav.scrolled .nav-links a:hover{color:rgba(20,15,35,1)}
+nav.scrolled .logo-name{color:rgba(20,15,35,.8)}
+nav.scrolled .logo-tagline{color:rgba(100,80,140,.45)}
+nav.scrolled .nav-links a{color:rgba(40,25,60,.5)}
+nav.scrolled .nav-links a:hover{color:rgba(40,25,60,.9)}
+nav.scrolled .btn-entrar{color:rgba(40,25,60,.55)}
 nav.scrolled .btn-comecar{
-  background:rgba(80,50,120,.12);
-  border-color:rgba(80,50,120,.25);
-  color:rgba(20,15,35,.85);
+  background:rgba(100,70,160,.12);
+  border-color:rgba(100,70,160,.22);
+  color:rgba(30,18,50,.85);
+}
+@media(max-width:768px){
+  nav{padding:.6rem 1.25rem}
+  nav.scrolled{padding:.55rem 1.25rem}
 }
 
 .nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
@@ -1181,9 +1199,26 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
 /* ═══════════════════════════════════════════
    NAV: scroll state
 ═══════════════════════════════════════════ */
-window.addEventListener('scroll', () => {
-  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
-}, { passive: true });
+(function() {
+  const nav = document.getElementById('mainNav');
+  // Threshold: when we reach the white area (gastronomia section)
+  function updateNav() {
+    const sy = window.scrollY;
+    const gast = document.getElementById('gastronomia');
+    const whiteStart = gast ? gast.offsetTop - 80 : window.innerHeight * 1.8;
+    if (sy < 40) {
+      nav.classList.remove('scrolling-dark','scrolled');
+    } else if (sy < whiteStart) {
+      nav.classList.add('scrolling-dark');
+      nav.classList.remove('scrolled');
+    } else {
+      nav.classList.add('scrolled');
+      nav.classList.remove('scrolling-dark');
+    }
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
 
 /* Calibrate atmospheric gradient to actual page layout */
 (function calibrateAtmos() {
