@@ -22,12 +22,12 @@
   --d4: #241331;
   --d5: #2E1A3D;
 
-  /* ── GLOW NEURAL ── */
-  --g1: #C78BBE;
-  --g2: #D8A6CC;
-  --g3: #B97FB5;
-  --g4: rgba(199,139,190,.15);
-  --g5: rgba(199,139,190,.06);
+  /* ── GLOW NEURAL — cold sophisticated violet ── */
+  --g1: #A892C8;   /* violet frio — não lilás comum */
+  --g2: #C4B0E0;   /* lavanda fria premium */
+  --g3: #8878B8;   /* índigo suave */
+  --g4: rgba(168,146,200,.15);
+  --g5: rgba(168,146,200,.06);
 
   /* ── CLARO ── */
   --c1: #F3E8EA;
@@ -129,13 +129,25 @@ nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
   padding:.9rem var(--pad);
-  background:rgba(7,3,15,.75);
-  backdrop-filter:blur(16px) saturate(120%);
-  -webkit-backdrop-filter:blur(16px) saturate(120%);
-  border-bottom:1px solid rgba(199,139,190,.08);
-  transition:background .3s;
+  background:rgba(7,3,15,.45);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .4s, border-color .4s;
 }
-nav.scrolled{background:rgba(7,3,15,.92)}
+nav.scrolled{
+  background:rgba(255,255,255,.72);
+  border-bottom-color:rgba(0,0,0,.06);
+}
+nav.scrolled .logo-name,
+nav.scrolled .nav-links a,
+nav.scrolled .btn-entrar{color:rgba(20,15,35,.75)}
+nav.scrolled .nav-links a:hover{color:rgba(20,15,35,1)}
+nav.scrolled .btn-comecar{
+  background:rgba(80,50,120,.12);
+  border-color:rgba(80,50,120,.25);
+  color:rgba(20,15,35,.85);
+}
 
 .nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
 .logo-crown{width:32px;height:32px;display:flex;align-items:center;justify-content:center}
@@ -168,19 +180,19 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 }
 .btn-entrar:hover{color:var(--g2)}
 .btn-comecar{
-  background:rgba(199,139,190,.15);
+  background:rgba(168,146,200,.15);
   color:var(--t1);
   padding:.55rem 1.2rem;
   font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;
   text-decoration:none;
-  border:1px solid rgba(199,139,190,.25);
+  border:1px solid rgba(168,146,200,.25);
   border-radius:3px;
   transition:all .22s;
 }
 .btn-comecar:hover{
-  background:rgba(199,139,190,.25);
-  border-color:rgba(199,139,190,.5);
-  box-shadow:0 0 16px rgba(199,139,190,.15);
+  background:rgba(168,146,200,.25);
+  border-color:rgba(168,146,200,.5);
+  box-shadow:0 0 16px rgba(168,146,200,.12);
 }
 
 /* ── HERO ── */
@@ -215,7 +227,7 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 }
 .hero-headline{
   font-family:var(--sans);
-  font-size:clamp(3.5rem,7vw,6.4rem);
+  font-size:clamp(4rem,7.5vw,7.2rem);
   font-weight:900;line-height:.88;
   color:var(--t1);
   margin-bottom:.3rem;
@@ -247,8 +259,8 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .pill{
   font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;
   color:var(--t3);padding:.28rem .75rem;
-  border:1px solid rgba(199,139,190,.18);
-  background:rgba(199,139,190,.05);
+  border:1px solid rgba(168,146,200,.2);
+  background:rgba(168,146,200,.05);
   border-radius:2px;
 }
 .hero-desc{
@@ -262,19 +274,19 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 }
 .btn-prim{
   display:inline-flex;align-items:center;gap:.6rem;
-  background:rgba(199,139,190,.18);
+  background:rgba(168,146,200,.18);
   color:var(--t1);
   padding:.95rem 2rem;
   font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;
   text-decoration:none;
-  border:1px solid rgba(199,139,190,.3);
+  border:1px solid rgba(168,146,200,.3);
   border-radius:3px;
   transition:all .25s;
 }
 .btn-prim:hover{
-  background:rgba(199,139,190,.28);
-  border-color:rgba(199,139,190,.55);
-  box-shadow:0 0 24px rgba(199,139,190,.2);
+  background:rgba(168,146,200,.28);
+  border-color:rgba(168,146,200,.52);
+  box-shadow:0 0 24px rgba(168,146,200,.18);
   gap:.9rem;
 }
 .btn-sec{
@@ -449,28 +461,28 @@ nav.scrolled{background:rgba(7,3,15,.92)}
   text-align:center;gap:1rem;
 }
 .tool-icon-wrap{
-  width:88px;height:88px;
+  width:96px;height:96px;
   display:flex;align-items:center;justify-content:center;
   border-radius:50%;
-  border:1px solid rgba(199,139,190,.15);
-  background:rgba(199,139,190,.04);
+  border:1px solid rgba(160,130,210,.22);
+  background:rgba(120,90,170,.06);
   transition:all .25s;
   flex-shrink:0;
 }
-.tool-icon-wrap svg{width:48px;height:48px}
+.tool-icon-wrap svg{width:54px;height:54px}
 .tool-icon:hover .tool-icon-wrap{
   background:rgba(199,139,190,.1);
   border-color:rgba(199,139,190,.3);
   box-shadow:0 0 20px rgba(199,139,190,.12);
 }
 .tool-icon-nome{
-  font-size:.68rem;font-weight:600;
-  color:rgba(244,234,239,.75);
+  font-size:.72rem;font-weight:600;
+  color:rgba(240,235,255,.88);
   letter-spacing:.12em;text-transform:uppercase;
 }
 .tool-icon-desc{
-  font-size:.65rem;line-height:1.6;
-  color:rgba(199,139,190,.45);
+  font-size:.68rem;line-height:1.6;
+  color:rgba(180,160,220,.55);
   max-width:140px;
 }
 @media(max-width:768px){
@@ -654,7 +666,7 @@ footer{
   .hero-pills{justify-content:center}
   .hero-btns{justify-content:center}
   .hero-desc{margin:0 auto 3rem}
-  .hero-headline{font-size:clamp(2.8rem,11vw,4.5rem)}
+  .hero-headline{font-size:clamp(3.2rem,12vw,5rem)}
 
   /* Sections */
   .secao-escura{padding:3.5rem 1.25rem}
@@ -729,24 +741,24 @@ footer{
   <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1">
     <!-- Floating orb top right -->
     <svg style="position:absolute;top:12%;right:8%;opacity:.07;animation:fl1 9s ease-in-out infinite" width="160" height="160" viewBox="0 0 160 160">
-      <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(199,139,190,1)" stroke-width=".8"/>
+      <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(168,146,200,1)" stroke-width=".8"/>
       <circle cx="80" cy="80" r="50" fill="none" stroke="rgba(185,127,181,1)" stroke-width=".5" stroke-dasharray="3 6"/>
-      <circle cx="80" cy="80" r="28" fill="rgba(199,139,190,.08)"/>
+      <circle cx="80" cy="80" r="28" fill="rgba(168,146,200,.08)"/>
     </svg>
     <!-- Delicate cross -->
     <svg style="position:absolute;top:22%;left:3%;opacity:.055;animation:fl2 7s ease-in-out infinite .8s" width="58" height="58" viewBox="0 0 58 58">
-      <line stroke="rgba(199,139,190,1)" stroke-width="1" x1="29" y1="4" x2="29" y2="54"/>
-      <line stroke="rgba(199,139,190,1)" stroke-width="1" x1="4" y1="29" x2="54" y2="29"/>
-      <circle fill="none" stroke="rgba(199,139,190,1)" stroke-width=".8" cx="29" cy="29" r="10"/>
+      <line stroke="rgba(168,146,200,1)" stroke-width="1" x1="29" y1="4" x2="29" y2="54"/>
+      <line stroke="rgba(168,146,200,1)" stroke-width="1" x1="4" y1="29" x2="54" y2="29"/>
+      <circle fill="none" stroke="rgba(168,146,200,1)" stroke-width=".8" cx="29" cy="29" r="10"/>
     </svg>
     <!-- Wave line -->
     <svg style="position:absolute;bottom:22%;right:4%;opacity:.06;animation:fl3 11s ease-in-out infinite 2s" width="130" height="50" viewBox="0 0 130 50">
-      <path fill="none" stroke="rgba(199,139,190,1)" stroke-width="1" d="M4 25Q22 4 40 25Q58 46 76 25Q94 4 112 25Q121 35 130 25"/>
+      <path fill="none" stroke="rgba(168,146,200,1)" stroke-width="1" d="M4 25Q22 4 40 25Q58 46 76 25Q94 4 112 25Q121 35 130 25"/>
       <path fill="none" stroke="rgba(185,127,181,.6)" stroke-width=".6" d="M4 35Q22 14 40 35Q58 56 76 35Q94 14 112 35"/>
     </svg>
     <!-- Diamond -->
     <svg style="position:absolute;top:55%;left:5%;opacity:.05;animation:fl1 8s ease-in-out infinite 1.5s" width="52" height="68" viewBox="0 0 52 68">
-      <polygon fill="none" stroke="rgba(199,139,190,1)" stroke-width="1" points="26,4 48,34 26,64 4,34"/>
+      <polygon fill="none" stroke="rgba(168,146,200,1)" stroke-width="1" points="26,4 48,34 26,64 4,34"/>
       <polygon fill="none" stroke="rgba(199,139,190,.5)" stroke-width=".6" points="26,14 40,34 26,54 12,34"/>
     </svg>
     <!-- Spiral -->
@@ -833,7 +845,7 @@ footer{
       <div class="tool-icon-wrap">
         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="24" cy="24" r="22" stroke="rgba(199,139,190,.25)" stroke-width="1"/>
-          <path d="M24 13C18.48 13 14 17.03 14 22C14 24.5 15.1 26.76 16.93 28.36L16 35L22.45 31.85C22.95 31.95 23.47 32 24 32C29.52 32 34 27.97 34 23C34 18.03 29.52 13 24 13Z" stroke="rgba(199,139,190,.7)" stroke-width="1.4" fill="rgba(199,139,190,.08)" stroke-linejoin="round"/>
+          <path d="M24 13C18.48 13 14 17.03 14 22C14 24.5 15.1 26.76 16.93 28.36L16 35L22.45 31.85C22.95 31.95 23.47 32 24 32C29.52 32 34 27.97 34 23C34 18.03 29.52 13 24 13Z" stroke="rgba(199,139,190,.7)" stroke-width="1.4" fill="rgba(168,146,200,.08)" stroke-linejoin="round"/>
           <circle cx="20" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
           <circle cx="24" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
           <circle cx="28" cy="22.5" r="1.2" fill="rgba(216,166,204,.8)"/>
@@ -893,7 +905,7 @@ footer{
 </section>
 
 <!-- ══ FERRAMENTAS ══ -->
-<section class="secao-clara" id="gastronomia">
+<section class="secao-clara" id="gastronomia" style="padding-top:3rem">
   <span class="sec-eyebrow reveal eyebrow-escuro">Universo 1 — Surrealismo Radical</span>
   <h2 class="sec-titulo reveal titulo-escuro">Três Ícones, Três Caminhos.</h2>
   <p class="reveal" style="text-align:center;max-width:580px;margin:-2rem auto 3.5rem;font-size:.9rem;line-height:1.95;color:#5C3468">
@@ -957,7 +969,7 @@ footer{
 </section>
 
 <!-- ══ TRÊS ÍCONES ══ -->
-<section class="secao-clara" id="fase1">
+<section class="secao-clara" id="fase1" style="padding-bottom:3rem">
   <span class="sec-eyebrow reveal eyebrow-escuro">Aprender os elementos fundamentais</span>
   <h2 class="sec-titulo reveal titulo-escuro">Fase 1 — Mise en Place.</h2>
   <div class="grid-8">
@@ -1066,7 +1078,7 @@ document.querySelectorAll('a,button').forEach(el => {
   buildNodes();
 
   // Paleta neural: lilás/ameixa
-  const COLORS = ['199,139,190','185,127,181','216,166,204','143,122,134'];
+  const COLORS = ['168,146,200','148,128,188','196,176,224','120,108,168'];
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
