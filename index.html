@@ -1284,13 +1284,15 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
 (function calibrateAtmos() {
   function set() {
     const bg   = document.getElementById('atmos-bg');
+    const ferr = document.getElementById('recursos');
     const arte = document.getElementById('arte');
     const gast = document.getElementById('gastronomia');
     const footer = document.querySelector('footer');
-    if (!bg || !arte || !gast || !footer) return;
+    if (!bg || !ferr || !arte || !gast || !footer) return;
 
     const pageH     = document.documentElement.scrollHeight;
-    const pFogStart = Math.round((arte.offsetTop  / pageH) * 100);
+    // Fog starts at the BOTTOM of Ferramentas section
+    const pFogStart = Math.round(((ferr.offsetTop + ferr.offsetHeight) / pageH) * 100);
     const pWhite    = Math.round((gast.offsetTop  / pageH) * 100);
     const glowPct   = Math.round((pFogStart + pWhite) / 2);
 
@@ -1303,7 +1305,7 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
         #07030F   0%,
         #09051C   12%,
         #0E0824   26%,
-        #150C30   ${pFogStart - 6}%,
+        #150C30   ${pFogStart - 4}%,
         #1C1040   ${pFogStart}%,
         #2E1A58   ${Math.round(pFogStart + (pWhite-pFogStart)*.25)}%,
         #4A2878   ${Math.round(pFogStart + (pWhite-pFogStart)*.50)}%,
