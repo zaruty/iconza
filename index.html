@@ -921,8 +921,8 @@ footer{
 </section>
 
 <section class="secao-transicao" id="arte" style="padding-top:0">
-  <span class="sec-eyebrow reveal eyebrow-escuro">Jornada de aprendizado</span>
-  <h2 class="sec-titulo reveal titulo-escuro">O Caminho Completo.</h2>
+  <span class="sec-eyebrow reveal" style="color:var(--g2)">Jornada de aprendizado</span>
+  <h2 class="sec-titulo reveal" style="color:var(--t1)">O Caminho Completo.</h2>
   <div class="fases-row">
     <div class="fase ativa reveal">
       <span class="fase-tag">Fase 1</span>
@@ -1291,8 +1291,10 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
     if (!bg || !ferr || !arte || !gast || !footer) return;
 
     const pageH     = document.documentElement.scrollHeight;
-    // Fog starts at the BOTTOM of Ferramentas section
-    const pFogStart = Math.round(((ferr.offsetTop + ferr.offsetHeight) / pageH) * 100);
+    // Dark zone: hero top → TOP of ferramentas
+    const pDarkEnd  = Math.round((ferr.offsetTop / pageH) * 100);
+    // Fog zone: top of ferramentas → top of gastronomia (três ícones)
+    const pFogStart = pDarkEnd;
     const pWhite    = Math.round((gast.offsetTop  / pageH) * 100);
     const glowPct   = Math.round((pFogStart + pWhite) / 2);
 
@@ -1303,10 +1305,10 @@ document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach((el, i) => {
         rgba(70,35,110,.07) 0%, transparent 50%),
       linear-gradient(180deg,
         #07030F   0%,
-        #09051C   12%,
-        #0E0824   26%,
-        #150C30   ${pFogStart - 4}%,
-        #1C1040   ${pFogStart}%,
+        #09051C   ${Math.round(pDarkEnd * .35)}%,
+        #0E0824   ${Math.round(pDarkEnd * .65)}%,
+        #150C30   ${Math.round(pDarkEnd * .88)}%,
+        #1C1040   ${pDarkEnd}%,
         #2E1A58   ${Math.round(pFogStart + (pWhite-pFogStart)*.25)}%,
         #4A2878   ${Math.round(pFogStart + (pWhite-pFogStart)*.50)}%,
         #7048A0   ${Math.round(pFogStart + (pWhite-pFogStart)*.72)}%,
