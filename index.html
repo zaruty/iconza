@@ -365,7 +365,7 @@ nav.scrolled{background:rgba(7,3,15,.92)}
 .secao-transicao{
   padding:var(--section-pad) var(--pad);
   position:relative;
-  background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,.4) 25%, rgba(255,255,255,.85) 55%, #ffffff 100%);
+  background:transparent;
 }
 .secao-clara{
   padding:var(--section-pad) var(--pad);
@@ -859,7 +859,7 @@ footer{
   </div>
 </section>
 
-<section class="secao-clara" id="arte" style="padding-top:0">
+<section class="secao-transicao" id="arte" style="padding-top:0">
   <span class="sec-eyebrow reveal eyebrow-escuro">Jornada de aprendizado</span>
   <h2 class="sec-titulo reveal titulo-escuro">O Caminho Completo.</h2>
   <div class="fases-row">
@@ -893,7 +893,7 @@ footer{
 </section>
 
 <!-- ══ FERRAMENTAS ══ -->
-<section class="secao-transicao" id="gastronomia">
+<section class="secao-clara" id="gastronomia">
   <span class="sec-eyebrow reveal eyebrow-escuro">Universo 1 — Surrealismo Radical</span>
   <h2 class="sec-titulo reveal titulo-escuro">Três Ícones, Três Caminhos.</h2>
   <p class="reveal" style="text-align:center;max-width:580px;margin:-2rem auto 3.5rem;font-size:.9rem;line-height:1.95;color:#5C3468">
@@ -1176,49 +1176,39 @@ window.addEventListener('scroll', () => {
 /* Calibrate atmospheric gradient to actual page layout */
 (function calibrateAtmos() {
   function set() {
-    const bg = document.getElementById('atmos-bg');
-    const transicao = document.getElementById('recursos');
+    const bg   = document.getElementById('atmos-bg');
+    const arte = document.getElementById('arte');
+    const gast = document.getElementById('gastronomia');
     const footer = document.querySelector('footer');
-    if (!bg || !transicao || !footer) return;
+    if (!bg || !arte || !gast || !footer) return;
 
-    const pageH = document.documentElement.scrollHeight;
-    const transStart = transicao.offsetTop;
-    const footerStart = footer.offsetTop;
-
-    // Convert to percentages of page height
-    const p0 = 0;
-    const pDark = Math.round((transStart * 0.9 / pageH) * 100);      // stays dark until 90% of transicao
-    const pFogStart = Math.round((transStart / pageH) * 100);         // fog begins
-    const pFogMid = Math.round(((transStart + (footerStart - transStart) * .4) / pageH) * 100);
-    const pFogPeak = Math.round(((transStart + (footerStart - transStart) * .7) / pageH) * 100);
-    const pFooterStart = Math.round((footerStart / pageH) * 100);
+    const pageH     = document.documentElement.scrollHeight;
+    const pFogStart = Math.round((arte.offsetTop  / pageH) * 100);
+    const pWhite    = Math.round((gast.offsetTop  / pageH) * 100);
+    const glowPct   = Math.round((pFogStart + pWhite) / 2);
 
     bg.style.background = `
-      radial-gradient(ellipse 110% 45% at 62% ${Math.round(transStart/pageH*100+5)}%,
-        rgba(120,60,120,.18) 0%, transparent 55%),
-      radial-gradient(ellipse 70% 35% at 25% ${Math.round(transStart/pageH*100+15)}%,
-        rgba(90,40,100,.1) 0%, transparent 50%),
+      radial-gradient(ellipse 140% 25% at 50% ${glowPct}%,
+        rgba(110,60,150,.13) 0%, transparent 55%),
+      radial-gradient(ellipse 80% 18% at 15% ${glowPct - 4}%,
+        rgba(70,35,110,.07) 0%, transparent 50%),
       linear-gradient(180deg,
-        #07030F ${p0}%,
-        #0B061C ${Math.round(pDark*.2)}%,
-        #10092A ${Math.round(pDark*.4)}%,
-        #150D32 ${Math.round(pDark*.6)}%,
-        #1B1238 ${Math.round(pDark*.8)}%,
-        #201540 ${pDark}%,
-        #2E1A52 ${pFogStart}%,
-        #4A2665 ${Math.round((pFogStart+pFogMid)/2)}%,
-        #6A3872 ${pFogMid}%,
-        #8A5080 ${Math.round((pFogMid+pFogPeak)/2)}%,
-        #AB6E8C ${pFogPeak}%,
-        #C4909A ${Math.round((pFogPeak+pFooterStart)/2)}%,
-        #D5AEBE ${pFooterStart}%,
-        #E2C8CE ${Math.round(pFooterStart+3)}%,
-        #EDD8DC ${Math.round(pFooterStart+6)}%,
-        #FFFFFF 100%
+        #07030F   0%,
+        #09051C   12%,
+        #0E0824   26%,
+        #150C30   ${pFogStart - 6}%,
+        #1C1040   ${pFogStart}%,
+        #2E1A58   ${Math.round(pFogStart + (pWhite-pFogStart)*.25)}%,
+        #4A2878   ${Math.round(pFogStart + (pWhite-pFogStart)*.50)}%,
+        #7048A0   ${Math.round(pFogStart + (pWhite-pFogStart)*.72)}%,
+        #B898D4   ${Math.round(pFogStart + (pWhite-pFogStart)*.88)}%,
+        #E8E2F5   ${pWhite - 1}%,
+        #FFFFFF   ${pWhite}%,
+        #FFFFFF   100%
       )
     `;
   }
-  // Run after layout stabilizes
+    // Run after layout stabilizes
   if (document.readyState === 'complete') { set(); }
   else { window.addEventListener('load', set); }
   window.addEventListener('resize', set);
