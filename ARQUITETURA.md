@@ -65,7 +65,10 @@ iconza/
 ├── 📚 DOCUMENTAÇÃO
 │   ├── SCHEMA.md               ← mapa do banco
 │   ├── ARQUITETURA.md          ← este documento
-│   └── GUIA_NEXTJS_FUTURO.md   ← plano de migração
+│   └── MIGRACAO_NEXTJS.md      ← plano de migração (em docs/)
+│
+├── web/                        ← app Next.js (migração gradual)
+│   └── README.md
 │
 └── 🖼️ ASSETS
     └── coroa.png               ← logo oficial

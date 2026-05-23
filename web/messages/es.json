@@ -1,0 +1,6 @@
+{
+  "common": {
+    "migrationScaffold": "Migración gradual en curso",
+    "migrationHint": "El sitio legacy sigue activo."
+  }
+}

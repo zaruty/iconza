@@ -1,0 +1,129 @@
+{
+  "common": {
+    "migrationScaffold": "Migração gradual em andamento",
+    "migrationHint": "O site legacy continua ativo. Novas rotas Next.js substituem página a página."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "universos": "Universos",
+    "cerebro": "Cérebro Criativo",
+    "cursos": "Meus Cursos",
+    "comunidade": "Comunidade",
+    "config": "Configurações"
+  },
+  "onboarding": {
+    "diagnostico": {
+      "navLabel": "Diagnóstico",
+      "questionOf": "Pergunta {current} de {total}",
+      "back": "Voltar",
+      "next": "Próxima",
+      "seeResult": "Ver meu resultado",
+      "errors": {
+        "save": "Não foi possível salvar no servidor. Seu resultado está guardado neste dispositivo."
+      },
+      "intro": {
+        "eyebrow": "Antes de começar",
+        "titleLine1": "Qual é o seu",
+        "titleLine2": "nível criativo?",
+        "desc": "Responda 8 perguntas rápidas para descobrirmos seu perfil digital e cultural. Isso nos ajuda a personalizar sua jornada no ICONZA.",
+        "time": "3 minutos",
+        "questions": "8 perguntas",
+        "noWrong": "Sem resposta errada",
+        "cta": "Começar diagnóstico"
+      },
+      "levels": {
+        "1": { "name": "Faísca", "desc": "Você está acendendo a chama criativa. O ICONZA começa aqui." },
+        "2": { "name": "Brasa", "desc": "Curiosidade ativa. Você sente que quer mais mas ainda está construindo a base." },
+        "3": { "name": "Chama", "desc": "Já tem ferramentas nas mãos. Falta direção e método." },
+        "4": { "name": "Luz", "desc": "Equilíbrio entre técnica e repertório. Pronta para acelerar." },
+        "5": { "name": "Brilho", "desc": "Criadora com identidade em formação. A linguagem autoral está emergindo." },
+        "6": { "name": "Estrela", "desc": "Alto nível técnico e cultural. Pronta para criar com propósito e impacto." },
+        "7": { "name": "Ícone", "desc": "Você é referência. O ICONZA vai elevar ainda mais sua narrativa visual." }
+      },
+      "questions": {
+        "q1": {
+          "section": "Estética Visual",
+          "title": "Qual imagem representa melhor sua linguagem visual atual?",
+          "subtitle": "Escolha a que mais ressoa com você hoje — não precisa ser o que você aspira, mas o que você já produz ou consome.",
+          "o1": { "label": "Stories e Reels", "desc": "Conteúdo rápido, filtros, tendências do momento" },
+          "o2": { "label": "Design gráfico", "desc": "Canva, templates, paletas, composição básica" },
+          "o3": { "label": "Vídeo editado", "desc": "Corte, trilha, texto animado, narrativa visual" },
+          "o4": { "label": "Arte conceitual", "desc": "Colagem, surrealismo, identidade visual autoral" }
+        },
+        "q2": {
+          "section": "Ferramentas Digitais",
+          "title": "Quais ferramentas você usa no dia a dia?",
+          "o1": { "label": "Só o celular — câmera, WhatsApp, Instagram", "desc": "Produção básica pelo smartphone" },
+          "o2": { "label": "Canva, CapCut e apps de edição", "desc": "Ferramentas no-code para criação" },
+          "o3": { "label": "ChatGPT, Midjourney ou outras IAs", "desc": "Já uso inteligência artificial na criação" },
+          "o4": { "label": "Photoshop, Premiere, After Effects", "desc": "Ferramentas profissionais da Adobe" }
+        },
+        "q3": {
+          "section": "Referências Culturais",
+          "title": "Qual dessas referências culturais você conhece melhor?",
+          "subtitle": "Escolha a que você já estudou, pesquisou ou sente mais familiaridade.",
+          "o1": { "label": "Frida Kahlo", "desc": "Arte, identidade, surrealismo mexicano" },
+          "o2": { "label": "Coco Chanel", "desc": "Moda, elegância, revolução do estilo feminino" },
+          "o3": { "label": "Julia Child", "desc": "Gastronomia, narrativa culinária, cultura" },
+          "o4": { "label": "Nina Simone", "desc": "Música, ativismo, identidade negra e cultural" }
+        },
+        "q4": {
+          "section": "Frequência Criativa",
+          "title": "Com que frequência você cria conteúdo digital?",
+          "o1": { "label": "Raramente ou nunca", "desc": "Ainda não comecei ou faço muito esporadicamente" },
+          "o2": { "label": "1 a 2 vezes por mês", "desc": "Quando tenho tempo ou inspiração" },
+          "o3": { "label": "Toda semana", "desc": "Tenho uma rotina de criação estabelecida" },
+          "o4": { "label": "Todo dia", "desc": "Criação é parte central da minha vida profissional" }
+        },
+        "q5": {
+          "section": "Relação com IA",
+          "title": "Como você se relaciona com Inteligência Artificial hoje?",
+          "o1": { "label": "Ainda tenho medo", "desc": "Ouço falar mas não sei como usar" },
+          "o2": { "label": "Estou explorando", "desc": "Já testei algumas ferramentas com curiosidade" },
+          "o3": { "label": "Uso regularmente", "desc": "IA já faz parte da minha rotina criativa" },
+          "o4": { "label": "Sou referência", "desc": "Ensino ou oriento outras pessoas sobre IA" }
+        },
+        "q6": {
+          "section": "Autoavaliação",
+          "title": "De 1 a 7, qual seu nível de conhecimento digital?",
+          "subtitle": "1 = Estou começando do zero · 7 = Sou profissional da área digital"
+        },
+        "q7": {
+          "section": "Repertório Cultural",
+          "title": "De 1 a 7, qual seu nível de repertório cultural?",
+          "subtitle": "1 = Pouco contato com arte, história e gastronomia · 7 = Vivo mergulhada em cultura"
+        },
+        "q8": {
+          "section": "Objetivo",
+          "title": "O que você quer conquistar com o ICONZA?",
+          "o1": { "label": "Aprender a criar conteúdo de qualidade", "desc": "Dominar ferramentas e técnicas visuais" },
+          "o2": { "label": "Construir minha identidade visual autoral", "desc": "Ter uma linguagem única e reconhecível" },
+          "o3": { "label": "Monetizar minha criatividade com IA", "desc": "Transformar talento em renda digital" },
+          "o4": { "label": "Aprofundar meu repertório cultural", "desc": "Arte, história, gastronomia e psicologia" }
+        }
+      },
+      "result": {
+        "eyebrow": "Seu diagnóstico ICONZA",
+        "levelBadge": "Nível {level} — {name}",
+        "universes": "{count} universos desbloqueados",
+        "attrVisual": "Linguagem Visual",
+        "attrAi": "Relação com IA",
+        "attrGoal": "Objetivo Principal",
+        "cta": "Entrar no ICONZA",
+        "entering": "Entrando..."
+      }
+    },
+    "crm": {
+      "title": "Bem-vinda à ICONZA",
+      "placeholder": "Formulário CRM — migrar de onboarding.html"
+    }
+  },
+  "dashboard": {
+    "title": "Boas-vindas",
+    "placeholder": "Widgets do dashboard — Etapa 4"
+  },
+  "universos": {
+    "title": "Universos",
+    "placeholder": "Catálogo de cursos — Etapa 5"
+  }
+}

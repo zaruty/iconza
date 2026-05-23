@@ -1,0 +1,22 @@
+{
+  "common": {
+    "migrationScaffold": "Gradual migration in progress",
+    "migrationHint": "The legacy site stays live. Next.js routes replace pages one at a time."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "universos": "Universes",
+    "cerebro": "Creative Brain",
+    "cursos": "My Courses",
+    "comunidade": "Community",
+    "config": "Settings"
+  },
+  "dashboard": {
+    "title": "Welcome",
+    "placeholder": "Dashboard widgets — Phase 4"
+  },
+  "universos": {
+    "title": "Universes",
+    "placeholder": "Course catalog — Phase 5"
+  }
+}
